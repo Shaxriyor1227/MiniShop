@@ -3,7 +3,7 @@
 }
 
 .hero-banner-card {
-  background: linear-gradient(135deg, #FFFFFF 0%, #F8F8FA 100%);
+  background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   display: grid;
@@ -64,7 +64,7 @@
 }
 
 .gradient-text {
-  background: linear-gradient(90deg, #1D1D1F 0%, #0071E3 100%);
+  background: linear-gradient(90deg, var(--ink-primary) 0%, var(--accent-blue) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -95,7 +95,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #F0F0F3;
+  background-color: var(--bg-surface-hover);
   overflow: hidden;
 }
 

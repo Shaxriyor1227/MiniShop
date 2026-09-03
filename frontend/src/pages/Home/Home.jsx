@@ -195,7 +195,6 @@ const Home = () => {
                   key={idx}
                   to={`/catalog?category=${cat.categoryParam}`}
                   className="home-category-card"
-                  style={{ background: cat.gradient }}
                 >
                   <div className="cat-card-header">
                     <div className="cat-card-icon-box" style={{ color: cat.iconColor }}>

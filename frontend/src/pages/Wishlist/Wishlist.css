@@ -53,7 +53,10 @@
   justify-content: center;
   padding: 72px 24px;
   text-align: center;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
   margin: 40px auto;
   max-width: 600px;
 }

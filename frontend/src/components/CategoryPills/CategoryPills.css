@@ -14,7 +14,7 @@
 
 .pill-btn {
   padding: 8px 18px;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
   color: var(--ink-secondary);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-pill);
@@ -31,7 +31,7 @@
 
 .pill-btn.active {
   background-color: var(--ink-primary);
-  color: #FFFFFF;
+  color: var(--ink-inverted);
   border-color: var(--ink-primary);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-soft);
 }

@@ -8,10 +8,11 @@
 /* 1. Free Shipping Progress */
 .free-shipping-card {
   padding: 18px 24px;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
   margin-bottom: 28px;
-  border: 1px solid rgba(0, 113, 227, 0.15);
-  box-shadow: 0 4px 14px rgba(0, 113, 227, 0.04);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-soft);
+  border-radius: var(--radius-lg);
 }
 
 .shipping-progress-text {
@@ -31,7 +32,7 @@
 .progress-bar-track {
   width: 100%;
   height: 8px;
-  background-color: var(--bg-main);
+  background-color: var(--bg-surface-hover);
   border-radius: var(--radius-pill);
   overflow: hidden;
 }
@@ -58,6 +59,9 @@
   font-size: 13.5px;
   color: var(--ink-tertiary);
   transition: color var(--transition-fast);
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .clear-cart-text-btn:hover {
@@ -87,7 +91,10 @@
 .cart-item-card {
   display: flex;
   padding: 20px;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
   gap: 20px;
 }
 
@@ -100,7 +107,7 @@
 .cart-item-img-link {
   width: 100px;
   height: 100px;
-  background-color: var(--bg-main);
+  background-color: var(--bg-surface-hover);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
@@ -149,6 +156,9 @@
   font-size: 12px;
   color: var(--ink-tertiary);
   transition: color var(--transition-fast);
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .item-action-link:hover {
@@ -160,6 +170,9 @@
   padding: 4px;
   border-radius: 4px;
   transition: all var(--transition-fast);
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .item-remove-btn:hover {
@@ -192,7 +205,7 @@
   align-items: center;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-pill);
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
   overflow: hidden;
 }
 
@@ -204,10 +217,13 @@
   justify-content: center;
   font-size: 15px;
   color: var(--ink-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .item-qty-control button:hover {
-  background-color: var(--bg-main);
+  background-color: var(--bg-surface-hover);
 }
 
 .item-qty-control span {
@@ -215,6 +231,7 @@
   text-align: center;
   font-size: 13.5px;
   font-weight: 600;
+  color: var(--ink-primary);
 }
 
 .item-price-col {
@@ -242,7 +259,10 @@
 
 .coupon-box {
   padding: 24px;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
 }
 
 .coupon-box h4 {
@@ -252,6 +272,7 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 12px;
+  color: var(--ink-primary);
 }
 
 .coupon-form {
@@ -264,6 +285,8 @@
   padding: 8px 12px;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
+  background-color: var(--bg-input);
+  color: var(--ink-primary);
   font-size: 13.5px;
   outline: none;
   text-transform: uppercase;
@@ -288,6 +311,9 @@
   font-size: 12px;
   color: var(--color-danger);
   font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .coupon-feedback {
@@ -306,13 +332,17 @@
 /* Order Summary */
 .order-summary-card {
   padding: 24px;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
 }
 
 .summary-title {
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 18px;
+  color: var(--ink-primary);
 }
 
 .summary-row {
@@ -387,7 +417,10 @@
   justify-content: center;
   padding: 72px 24px;
   text-align: center;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
   margin: 40px auto;
   max-width: 540px;
 }
@@ -397,11 +430,13 @@
   height: 140px;
   object-fit: contain;
   margin-bottom: 24px;
+  opacity: 0.8;
 }
 
 .empty-cart-card h2 {
   font-size: 24px;
   margin-bottom: 8px;
+  color: var(--ink-primary);
 }
 
 .empty-cart-card p {

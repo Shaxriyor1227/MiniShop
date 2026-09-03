@@ -6,10 +6,7 @@ export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     try {
       const savedTheme = localStorage.getItem('minishop_theme');
-      if (savedTheme) return savedTheme;
-      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'dark'
-        : 'light';
+      return savedTheme || 'light';
     } catch {
       return 'light';
     }

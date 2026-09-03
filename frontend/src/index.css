@@ -228,9 +228,9 @@ img {
 }
 
 .input-field:focus {
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
   border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+  box-shadow: 0 0 0 3px var(--accent-blue-subtle);
 }
 
 .badge {

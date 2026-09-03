@@ -45,7 +45,10 @@
 
 .product-gallery {
   padding: 36px;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -245,7 +248,7 @@
   align-items: center;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-pill);
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
   overflow: hidden;
 }
 
@@ -257,11 +260,14 @@
   justify-content: center;
   font-size: 16px;
   color: var(--ink-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
   transition: background-color var(--transition-fast);
 }
 
 .qty-selector button:hover:not(:disabled) {
-  background-color: var(--bg-main);
+  background-color: var(--bg-surface-hover);
 }
 
 .qty-selector button:disabled {
@@ -273,6 +279,7 @@
   text-align: center;
   font-size: 14px;
   font-weight: 600;
+  color: var(--ink-primary);
 }
 
 /* Action Buttons */
@@ -316,7 +323,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background-color: var(--bg-main);
+  background-color: var(--bg-surface-hover);
+  border: 1px solid var(--border-subtle);
   padding: 16px 20px;
   border-radius: var(--radius-md);
 }
@@ -337,7 +345,10 @@
 /* 2. Tech Specs Section */
 .product-specs-section {
   padding: 32px;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
   margin-bottom: 40px;
 }
 
@@ -359,10 +370,13 @@
   font-weight: 500;
   color: var(--ink-secondary);
   transition: all var(--transition-fast);
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .spec-tab-btn.active {
-  background-color: rgba(0, 113, 227, 0.08);
+  background-color: var(--accent-blue-subtle);
   color: var(--accent-blue);
   font-weight: 600;
 }
@@ -413,7 +427,8 @@
   align-items: flex-start;
   gap: 12px;
   padding: 16px;
-  background-color: var(--bg-main);
+  background-color: var(--bg-surface-hover);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
 }
 
@@ -426,6 +441,7 @@
   font-size: 13.5px;
   font-weight: 600;
   margin-bottom: 2px;
+  color: var(--ink-primary);
 }
 
 .inbox-item p {
@@ -436,7 +452,10 @@
 /* 3. Reviews Section */
 .product-reviews-section {
   padding: 32px;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
   margin-bottom: 48px;
 }
 

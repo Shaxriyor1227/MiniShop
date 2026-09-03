@@ -25,9 +25,11 @@
   width: 100%;
   max-width: 420px;
   max-height: 80vh;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-modal);
+  color: var(--ink-primary);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -55,6 +57,7 @@
 .notif-title-area h3 {
   font-size: 17px;
   font-weight: 600;
+  color: var(--ink-primary);
 }
 
 .notif-header-actions {
@@ -70,6 +73,9 @@
   font-size: 13px;
   color: var(--ink-secondary);
   transition: color var(--transition-fast);
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .clear-all-btn:hover {
@@ -81,6 +87,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .notif-modal-body {
@@ -117,19 +126,21 @@
   gap: 12px;
   padding: 12px 14px;
   border-radius: var(--radius-md);
-  background-color: var(--bg-main);
+  background-color: var(--bg-surface-hover);
+  border: 1px solid var(--border-subtle);
   transition: all var(--transition-fast);
   cursor: pointer;
 }
 
 .notif-item:hover {
-  background-color: #ECECEE;
+  background-color: var(--bg-surface);
+  border-color: var(--border-focus);
 }
 
 .notif-item.unread {
-  background-color: #FFFFFF;
-  border: 1px solid var(--border-subtle);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  background-color: var(--bg-surface-hover);
+  border: 1px solid var(--accent-blue);
+  box-shadow: var(--shadow-soft);
 }
 
 .notif-dot-col {

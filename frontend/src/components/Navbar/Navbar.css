@@ -6,17 +6,17 @@
   left: 0;
   right: 0;
   z-index: 200;
-  background-color: rgba(255, 255, 255, 0.85);
+  background-color: var(--bg-surface-translucent);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid var(--border-subtle);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modern-navbar.scrolled {
-  background-color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-  border-bottom-color: rgba(0, 0, 0, 0.08);
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-soft);
+  border-bottom-color: var(--border-subtle);
 }
 
 .nav-wrapper {
@@ -82,10 +82,10 @@
   display: flex;
   align-items: center;
   gap: 2px;
-  background-color: rgba(0, 0, 0, 0.035);
+  background-color: var(--bg-surface-hover);
   padding: 3px 4px;
   border-radius: var(--radius-pill);
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border-subtle);
   flex-shrink: 0;
   white-space: nowrap;
 }
@@ -114,14 +114,14 @@
 
 .nav-link-item:hover {
   color: var(--ink-primary);
-  background-color: rgba(255, 255, 255, 0.65);
+  background-color: var(--bg-surface);
 }
 
 .nav-link-item.active {
   color: var(--ink-primary);
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
   font-weight: 600;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-soft);
 }
 
 .promo-badge {
@@ -148,8 +148,8 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background-color: var(--bg-main);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background-color: var(--bg-surface-hover);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-pill);
   padding: 6px 10px;
   color: var(--ink-secondary);
@@ -160,10 +160,10 @@
 }
 
 .spotlight-search-trigger:hover {
-  background-color: #FFFFFF;
-  border-color: #D2D2D7;
+  background-color: var(--bg-surface);
+  border-color: var(--border-focus);
   color: var(--ink-primary);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-soft);
 }
 
 .trigger-search-icon {
@@ -177,7 +177,7 @@
 .trigger-shortcut {
   font-size: 10px;
   font-weight: 600;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   padding: 1px 4px;
   border-radius: 4px;
@@ -439,7 +439,7 @@
   width: 100%;
   max-width: 320px;
   height: 100%;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
   box-shadow: var(--shadow-modal);
   display: flex;
   flex-direction: column;
@@ -496,7 +496,7 @@
 .mobile-search-bar kbd {
   margin-left: auto;
   font-size: 10px;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   padding: 1px 4px;
   border-radius: 4px;

@@ -11,7 +11,10 @@
   align-items: center;
   gap: 24px;
   padding: 28px 32px;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
   margin-bottom: 28px;
 }
 
@@ -117,7 +120,10 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
   position: sticky;
   top: 96px;
 }
@@ -140,13 +146,16 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 14px;
+  padding: 12px 16px;
   border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 500;
   color: var(--ink-secondary);
   transition: all var(--transition-fast);
   text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
   width: 100%;
 }
 
@@ -160,46 +169,52 @@
 }
 
 .nav-tab-btn:hover {
-  background-color: var(--bg-main);
+  background-color: var(--bg-surface-hover);
   color: var(--ink-primary);
 }
 
 .nav-tab-btn.active {
-  background-color: rgba(0, 113, 227, 0.08);
+  background-color: var(--accent-blue-subtle);
   color: var(--accent-blue);
   font-weight: 600;
 }
 
-.tab-arrow {
-  margin-left: auto;
-  opacity: 0.4;
-}
-
-@media (max-width: 900px) {
-  .tab-arrow {
-    display: none;
-  }
-}
-
-.tab-counter {
+.tab-badge-count {
   margin-left: auto;
   font-size: 11px;
   font-weight: 700;
-  background-color: var(--bg-main);
-  padding: 2px 8px;
-  border-radius: var(--radius-pill);
-  color: var(--ink-secondary);
-}
-
-.nav-tab-btn.active .tab-counter {
   background-color: var(--accent-blue);
-  color: #FFFFFF;
+  color: var(--bg-surface);
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
 }
 
-/* Tab Panes */
+.nav-divider {
+  height: 1px;
+  background-color: var(--border-subtle);
+  margin: 8px 0;
+}
+
+.logout-nav-btn {
+  color: var(--color-danger);
+}
+
+.logout-nav-btn:hover {
+  background-color: rgba(255, 59, 48, 0.08);
+  color: var(--color-danger);
+}
+
+/* Tab Content */
+.profile-content-pane {
+  flex: 1;
+}
+
 .tab-pane {
   padding: 32px;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
 }
 
 @media (max-width: 600px) {

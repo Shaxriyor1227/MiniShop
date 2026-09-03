@@ -24,7 +24,8 @@
 .spotlight-modal {
   width: 100%;
   max-width: 620px;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-modal);
   overflow: hidden;
@@ -79,6 +80,9 @@
   align-items: center;
   justify-content: center;
   padding: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .spotlight-clear-btn:hover {
@@ -89,7 +93,7 @@
   font-size: 11px;
   font-weight: 600;
   color: var(--ink-tertiary);
-  background-color: var(--bg-main);
+  background-color: var(--bg-surface-hover);
   border: 1px solid var(--border-subtle);
   padding: 2px 6px;
   border-radius: 4px;
@@ -125,13 +129,15 @@
   gap: 14px;
   padding: 10px 12px;
   border-radius: var(--radius-md);
-  background-color: var(--bg-main);
+  background-color: var(--bg-surface-hover);
+  border: 1px solid var(--border-subtle);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .spotlight-product-item:hover {
-  background-color: #ECECEE;
+  background-color: var(--bg-surface);
+  border-color: var(--border-focus);
   transform: translateX(2px);
 }
 
@@ -140,7 +146,7 @@
   height: 44px;
   border-radius: var(--radius-sm);
   object-fit: cover;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
 }
 
 .spotlight-prod-info {
@@ -194,21 +200,22 @@
   align-items: center;
   gap: 10px;
   padding: 12px 14px;
-  background-color: var(--bg-main);
-  border: 1px solid transparent;
+  background-color: var(--bg-surface-hover);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   font-size: 13px;
   font-weight: 500;
   color: var(--ink-primary);
   text-align: left;
   transition: all var(--transition-fast);
+  cursor: pointer;
 }
 
 .spotlight-cat-btn:hover {
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
   border-color: var(--accent-blue);
   color: var(--accent-blue);
-  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.08);
+  box-shadow: var(--shadow-soft);
 }
 
 .cat-btn-icon {
