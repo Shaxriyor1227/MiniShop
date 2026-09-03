@@ -1,0 +1,169 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import axiosInstance from '../../api/axiosInstance';
+import { Package, Clock, CheckCircle2, Truck, XCircle, ArrowRight } from 'lucide-react';
+import './Orders.css';
+
+const statusConfig = {
+  pending: { label: 'Pending', color: 'badge-amber', icon: Clock },
+  paid: { label: 'Paid & Processing', color: 'badge-blue', icon: CheckCircle2 },
+  shipped: { label: 'Shipped', color: 'badge-blue', icon: Truck },
+  delivered: { label: 'Delivered', color: 'badge-green', icon: CheckCircle2 },
+  cancelled: { label: 'Cancelled', color: 'badge-danger', icon: XCircle }
+};
+
+const Orders = () => {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const res = await axiosInstance.get('/order/getAll');
+      if (res.data.success) {
+        setOrders(res.data.innerData);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const handleCancelOrder = async (orderId) => {
+    if (!window.confirm('Are you sure you want to cancel this order?')) return;
+    try {
+      const res = await axiosInstance.put(`/order/cancel/${orderId}`);
+      if (res.data.success) {
+        setOrders((prev) =>
+          prev.map((o) => (o._id === orderId ? { ...o, status: 'cancelled' } : o))
+        );
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to cancel order');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="orders-page page-enter">
+        <div className="container orders-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading order history...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="orders-page page-enter">
+      <div className="container">
+        <div className="orders-header">
+          <h1 className="page-title">Order History</h1>
+          <p className="page-subtitle">Track, review, and manage your recent purchases</p>
+        </div>
+
+        {orders.length === 0 ? (
+          <div className="empty-orders-card card">
+            <Package size={64} className="empty-order-icon" />
+            <h2>No orders found</h2>
+            <p>You haven't placed any orders yet. Start shopping and track your deliveries right here.</p>
+            <Link to="/" className="btn-primary">
+              Explore Products <ArrowRight size={16} />
+            </Link>
+          </div>
+        ) : (
+          <div className="orders-list">
+            {orders.map((order) => {
+              const statusInfo = statusConfig[order.status] || statusConfig.pending;
+              const StatusIcon = statusInfo.icon;
+
+              return (
+                <div key={order._id} className="order-item-card card">
+                  {/* Order header */}
+                  <div className="order-card-header">
+                    <div>
+                      <span className="order-id-label">Order #{order._id.slice(-8)}</span>
+                      <span className="order-date">
+                        {new Date(order.createdAt).toLocaleDateString()} at {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+
+                    <div className="order-status-group">
+                      <span className={`badge ${statusInfo.color}`}>
+                        <StatusIcon size={12} style={{ marginRight: '4px' }} />
+                        {statusInfo.label}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Order products */}
+                  <div className="order-card-body">
+                    <div className="order-products-list">
+                      {order.items.map((item, idx) => {
+                        const prod = item.product_id || {};
+                        return (
+                          <div key={idx} className="order-product-row">
+                            <img
+                              src={prod.images?.[0] || '/images/product_placeholder.png'}
+                              alt={prod.name}
+                              onError={(e) => {
+                                e.currentTarget.src = '/images/product_placeholder.png';
+                              }}
+                            />
+                            <div className="order-prod-info">
+                              <h5>{prod.name || 'Product'}</h5>
+                              <span className="order-prod-meta">
+                                {item.quantity} x ${Number(item.price).toFixed(2)}
+                              </span>
+                            </div>
+                            <span className="order-prod-total">
+                              ${(item.quantity * item.price).toFixed(2)}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Address & Total */}
+                    <div className="order-meta-footer">
+                      <div className="order-address-box">
+                        <strong>Shipping Address:</strong>
+                        <p>
+                          {order.address_id?.city}, {order.address_id?.street}
+                        </p>
+                      </div>
+
+                      <div className="order-total-box">
+                        <span>Total Paid:</span>
+                        <h4>${Number(order.total).toFixed(2)}</h4>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  {order.status === 'pending' && (
+                    <div className="order-card-actions">
+                      <button
+                        className="cancel-order-btn"
+                        onClick={() => handleCancelOrder(order._id)}
+                      >
+                        Cancel Order
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Orders;

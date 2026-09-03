@@ -1,0 +1,296 @@
+/* MiniShop Footer - World-Class, Apple-Inspired Clean Design */
+
+.footer-root {
+  background-color: #F5F5F7;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  margin-top: auto;
+  width: 100%;
+}
+
+/* 1. Value Props Bar (Full-width, cleanly integrated) */
+.footer-benefits-bar {
+  background-color: #FFFFFF;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 30px 0;
+}
+
+.benefits-unified-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+
+@media (max-width: 1024px) {
+  .benefits-unified-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (max-width: 580px) {
+  .benefits-unified-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+.benefit-col {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.benefit-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: rgba(0, 113, 227, 0.08);
+  color: var(--accent-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.benefit-col:hover .benefit-icon-wrapper {
+  transform: translateY(-2px);
+  background-color: rgba(0, 113, 227, 0.12);
+}
+
+.benefit-text-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.benefit-heading {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  margin-bottom: 2px;
+  line-height: 1.3;
+}
+
+.benefit-sub {
+  font-size: 12px;
+  color: var(--ink-secondary);
+  line-height: 1.4;
+}
+
+/* 2. Main Footer Body */
+.footer-main-area {
+  padding: 56px 0 44px;
+}
+
+.footer-columns-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.1fr 1.1fr 1.2fr;
+  gap: 48px;
+}
+
+@media (max-width: 960px) {
+  .footer-columns-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+  }
+}
+
+@media (max-width: 540px) {
+  .footer-columns-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+/* Brand Column */
+.brand-column {
+  padding-right: 16px;
+}
+
+.footer-brand-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  text-decoration: none;
+}
+
+.footer-brand-description {
+  font-size: 13.5px;
+  color: var(--ink-secondary);
+  line-height: 1.6;
+  margin-bottom: 22px;
+  max-width: 340px;
+}
+
+/* Newsletter Box */
+.newsletter-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.newsletter-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  letter-spacing: -0.01em;
+}
+
+.newsletter-subtitle {
+  font-size: 11.5px;
+  color: var(--ink-tertiary);
+  margin-bottom: 8px;
+  line-height: 1.4;
+  max-width: 320px;
+}
+
+.newsletter-input-group {
+  display: flex;
+  align-items: center;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-pill);
+  padding: 3px 3px 3px 14px;
+  max-width: 320px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  transition: all var(--transition-fast);
+}
+
+.newsletter-input-group:focus-within {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+}
+
+.newsletter-field {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  color: var(--ink-primary);
+  flex: 1;
+}
+
+.newsletter-field::placeholder {
+  color: var(--ink-tertiary);
+}
+
+.newsletter-submit-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--ink-primary);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.newsletter-submit-btn:hover {
+  background-color: var(--accent-blue);
+  transform: scale(1.05);
+}
+
+.newsletter-success-msg {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-success);
+  margin-top: 4px;
+}
+
+/* Links Columns */
+.footer-column-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-primary);
+  margin-bottom: 16px;
+}
+
+.footer-links-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-links-list a {
+  font-size: 13.5px;
+  color: var(--ink-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.footer-links-list a:hover {
+  color: var(--accent-blue);
+}
+
+/* Status Pill */
+.footer-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  margin-top: 20px;
+  width: fit-content;
+}
+
+.status-indicator-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--color-success);
+  box-shadow: 0 0 0 2px rgba(52, 199, 89, 0.2);
+}
+
+/* 3. Bottom Legal Bar */
+.footer-bottom-bar {
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 24px 0 28px;
+}
+
+.footer-bottom-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--ink-tertiary);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.copyright-text {
+  color: var(--ink-tertiary);
+}
+
+.footer-legal-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-legal-links a {
+  color: var(--ink-tertiary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.footer-legal-links a:hover {
+  color: var(--ink-primary);
+}
+
+.legal-dot {
+  color: rgba(0, 0, 0, 0.15);
+  font-size: 8px;
+}
