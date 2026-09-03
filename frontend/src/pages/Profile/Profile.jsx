@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import axiosInstance from '../../api/axiosInstance';
 import {
@@ -32,6 +33,7 @@ const avatarGradients = [
 ];
 
 const Profile = () => {
+  const { t } = useTranslation();
   const { user, updateProfile } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -245,7 +247,7 @@ const Profile = () => {
               onClick={() => setActiveTab('overview')}
             >
               <User size={18} />
-              <span>Personal Info</span>
+              <span>{t('profile.tab_general')}</span>
               <ChevronRight size={15} className="tab-arrow" />
             </button>
 
@@ -254,7 +256,7 @@ const Profile = () => {
               onClick={() => setActiveTab('security')}
             >
               <KeyRound size={18} />
-              <span>Security & Passwords</span>
+              <span>{t('profile.tab_security')}</span>
               <ChevronRight size={15} className="tab-arrow" />
             </button>
 
@@ -263,7 +265,7 @@ const Profile = () => {
               onClick={() => setActiveTab('addresses')}
             >
               <MapPin size={18} />
-              <span>Saved Addresses</span>
+              <span>{t('profile.tab_addresses')}</span>
               <span className="tab-counter">{addresses.length}</span>
             </button>
 
@@ -281,7 +283,7 @@ const Profile = () => {
               onClick={() => setActiveTab('notifications')}
             >
               <Bell size={18} />
-              <span>Notification Settings</span>
+              <span>{t('profile.tab_notifications')}</span>
               <ChevronRight size={15} className="tab-arrow" />
             </button>
           </aside>

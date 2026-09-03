@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../api/axiosInstance';
 import { Package, Clock, CheckCircle2, Truck, XCircle, ArrowRight } from 'lucide-react';
 import './Orders.css';
 
 const statusConfig = {
-  pending: { label: 'Pending', color: 'badge-amber', icon: Clock },
+  pending: { label: 'Processing', color: 'badge-amber', icon: Clock },
   paid: { label: 'Paid & Processing', color: 'badge-blue', icon: CheckCircle2 },
   shipped: { label: 'Shipped', color: 'badge-blue', icon: Truck },
   delivered: { label: 'Delivered', color: 'badge-green', icon: CheckCircle2 },
@@ -13,6 +14,7 @@ const statusConfig = {
 };
 
 const Orders = () => {
+  const { t } = useTranslation();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,7 +55,7 @@ const Orders = () => {
       <div className="orders-page page-enter">
         <div className="container orders-loading">
           <div className="loading-spinner"></div>
-          <p>Loading order history...</p>
+          <p>...</p>
         </div>
       </div>
     );
@@ -63,17 +65,17 @@ const Orders = () => {
     <div className="orders-page page-enter">
       <div className="container">
         <div className="orders-header">
-          <h1 className="page-title">Order History</h1>
+          <h1 className="page-title">{t('orders.title')}</h1>
           <p className="page-subtitle">Track, review, and manage your recent purchases</p>
         </div>
 
         {orders.length === 0 ? (
           <div className="empty-orders-card card">
             <Package size={64} className="empty-order-icon" />
-            <h2>No orders found</h2>
-            <p>You haven't placed any orders yet. Start shopping and track your deliveries right here.</p>
-            <Link to="/" className="btn-primary">
-              Explore Products <ArrowRight size={16} />
+            <h2>{t('orders.empty_title')}</h2>
+            <p>{t('orders.empty_desc')}</p>
+            <Link to="/catalog" className="btn-primary">
+              {t('cart.go_shopping')} <ArrowRight size={16} />
             </Link>
           </div>
         ) : (
@@ -87,7 +89,7 @@ const Orders = () => {
                   {/* Order header */}
                   <div className="order-card-header">
                     <div>
-                      <span className="order-id-label">Order #{order._id.slice(-8)}</span>
+                      <span className="order-id-label">{t('orders.order_no', { id: order._id.slice(-8) })}</span>
                       <span className="order-date">
                         {new Date(order.createdAt).toLocaleDateString()} at {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
@@ -152,7 +154,7 @@ const Orders = () => {
                         className="cancel-order-btn"
                         onClick={() => handleCancelOrder(order._id)}
                       >
-                        Cancel Order
+                        {t('orders.cancel_order')}
                       </button>
                     </div>
                   )}

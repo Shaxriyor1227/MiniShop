@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import {
@@ -17,6 +18,7 @@ import {
 import './Cart.css';
 
 const Cart = () => {
+  const { t } = useTranslation();
   const {
     items,
     subtotal,
@@ -66,10 +68,10 @@ const Cart = () => {
         <div className="container">
           <div className="empty-cart-card card">
             <img src="/images/empty_cart.png" alt="Empty Cart" className="empty-cart-img" />
-            <h2>Your Cart is Empty</h2>
-            <p>Looks like you haven't added anything yet. Discover our premium collection and find something you'll love.</p>
-            <Link to="/" className="btn-primary">
-              Start Shopping <ArrowRight size={16} />
+            <h2>{t('cart.empty_title')}</h2>
+            <p>{t('cart.empty_desc')}</p>
+            <Link to="/catalog" className="btn-primary">
+              {t('cart.go_shopping')} <ArrowRight size={16} />
             </Link>
           </div>
         </div>
@@ -91,9 +93,9 @@ const Cart = () => {
           <div className="shipping-progress-text">
             <Truck size={20} className="truck-icon" />
             {progressPercent >= 100 ? (
-              <span>🎉 Congratulations! You have unlocked <strong>FREE Express Shipping</strong></span>
+              <span>{t('cart.free_shipping_active')}</span>
             ) : (
-              <span>Add <strong>${amountNeeded.toFixed(2)}</strong> more to unlock <strong>FREE Express Shipping</strong></span>
+              <span>{t('cart.free_shipping_unlock', { amount: `$${amountNeeded.toFixed(2)}` })}</span>
             )}
           </div>
           <div className="progress-bar-track">
@@ -105,9 +107,9 @@ const Cart = () => {
         </div>
 
         <div className="cart-header-row">
-          <h1 className="page-title">Shopping Bag ({items.reduce((s, i) => s + i.quantity, 0)})</h1>
+          <h1 className="page-title">{t('cart.title')} ({items.reduce((s, i) => s + i.quantity, 0)})</h1>
           <button className="clear-cart-text-btn" onClick={clearCart}>
-            <Trash2 size={16} /> Clear Bag
+            <Trash2 size={16} /> {t('cart.clear_cart')}
           </button>
         </div>
 
@@ -138,14 +140,14 @@ const Cart = () => {
                         <button
                           className="item-action-link"
                           onClick={() => handleMoveToWishlist(item)}
-                          title="Move to Wishlist"
+                          title="Wishlist"
                         >
-                          <Heart size={15} /> Save for later
+                          <Heart size={15} /> Wishlist
                         </button>
                         <button
                           className="item-remove-btn"
                           onClick={() => removeFromCart(prodId)}
-                          title="Remove item"
+                          title="Remove"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -164,7 +166,7 @@ const Cart = () => {
                       </div>
 
                       <div className="item-price-col">
-                        <span className="unit-price">${Number(prod.price || 0).toFixed(2)} each</span>
+                        <span className="unit-price">${Number(prod.price || 0).toFixed(2)}</span>
                         <span className="total-item-price">
                           ${(Number(prod.price || 0) * item.quantity).toFixed(2)}
                         </span>
@@ -181,25 +183,25 @@ const Cart = () => {
             {/* Coupon Box */}
             <div className="coupon-box card">
               <h4>
-                <Tag size={16} /> Promo Code / Coupon
+                <Tag size={16} /> {t('cart.promo_code')}
               </h4>
               {appliedCoupon ? (
                 <div className="applied-coupon-pill">
                   <span>
                     <strong>{appliedCoupon.code}</strong> (-{appliedCoupon.discount}%)
                   </span>
-                  <button onClick={removeCoupon}>Remove</button>
+                  <button onClick={removeCoupon}>✕</button>
                 </div>
               ) : (
                 <form onSubmit={handleApplyCoupon} className="coupon-form">
                   <input
                     type="text"
-                    placeholder="e.g. WELCOME10"
+                    placeholder={t('cart.promo_placeholder')}
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
                   />
                   <button type="submit" className="btn-secondary" disabled={applying}>
-                    {applying ? '...' : 'Apply'}
+                    {applying ? '...' : t('cart.apply')}
                   </button>
                 </form>
               )}
@@ -212,29 +214,29 @@ const Cart = () => {
 
             {/* Summary Card */}
             <div className="order-summary-card card">
-              <h3 className="summary-title">Order Summary</h3>
+              <h3 className="summary-title">{t('cart.order_summary')}</h3>
 
               <div className="summary-row">
-                <span>Subtotal</span>
+                <span>{t('cart.subtotal')}</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
 
               {discountAmount > 0 && (
                 <div className="summary-row discount-row">
-                  <span>Discount ({appliedCoupon?.code})</span>
+                  <span>{t('cart.discount')} ({appliedCoupon?.code})</span>
                   <span>-${discountAmount.toFixed(2)}</span>
                 </div>
               )}
 
               <div className="summary-row">
-                <span>Shipping</span>
-                <span>{shipping === 0 ? <strong className="free-ship">Free</strong> : `$${shipping.toFixed(2)}`}</span>
+                <span>{t('cart.shipping')}</span>
+                <span>{shipping === 0 ? <strong className="free-ship">{t('cart.free')}</strong> : `$${shipping.toFixed(2)}`}</span>
               </div>
 
               <div className="summary-divider"></div>
 
               <div className="summary-row total-row">
-                <span>Estimated Total</span>
+                <span>{t('cart.total')}</span>
                 <span>${finalTotal.toFixed(2)}</span>
               </div>
 
@@ -242,17 +244,17 @@ const Cart = () => {
                 className="btn-primary checkout-btn"
                 onClick={() => navigate('/checkout')}
               >
-                Proceed to Checkout <ArrowRight size={16} />
+                {t('cart.checkout_btn')} <ArrowRight size={16} />
               </button>
 
               <div className="cart-trust-badges">
                 <div className="trust-badge-row">
                   <ShieldCheck size={16} className="trust-icon" />
-                  <span>256-bit SSL encrypted secure payment</span>
+                  <span>{t('cart.secure_checkout')}</span>
                 </div>
                 <div className="trust-badge-row">
                   <RotateCcw size={16} className="trust-icon" />
-                  <span>14-day hassle-free returns & refunds</span>
+                  <span>{t('product.free_return')}</span>
                 </div>
               </div>
             </div>

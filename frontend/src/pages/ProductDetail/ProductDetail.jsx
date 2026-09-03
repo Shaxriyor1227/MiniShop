@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../api/axiosInstance';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
@@ -31,6 +32,7 @@ const colorOptions = [
 ];
 
 const ProductDetail = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
@@ -141,9 +143,9 @@ const ProductDetail = () => {
       <div className="container">
         {/* Breadcrumb */}
         <div className="breadcrumb-nav">
-          <Link to="/">Home</Link>
+          <Link to="/">{t('catalog.breadcrumb_home')}</Link>
           <span>/</span>
-          <Link to={`/?category=${product.category_id?.name || ''}`}>{product.category_id?.name || 'Catalog'}</Link>
+          <Link to={`/?category=${product.category_id?.name || ''}`}>{product.category_id?.name || t('nav.catalog')}</Link>
           <span>/</span>
           <span className="current-crumb">{product.name}</span>
         </div>
@@ -163,7 +165,7 @@ const ProductDetail = () => {
               />
             </div>
             <div className="gallery-color-indicator">
-              <span>Selected finish: <strong>{selectedColor.name}</strong></span>
+              <span>{t('product.select_color')} <strong>{selectedColor.name}</strong></span>
             </div>
           </div>
 
@@ -190,21 +192,21 @@ const ProductDetail = () => {
             <div className="detail-price-box">
               <span className="detail-price">${Number(product.price).toFixed(2)}</span>
               <span className={`detail-stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
-                {product.stock > 0 ? `In Stock (${product.stock} units)` : 'Out of Stock'}
+                {product.stock > 0 ? `Stock: ${product.stock}` : t('product.out_of_stock')}
               </span>
             </div>
 
             {/* Live Scarcity & Fast Delivery Indicator */}
             <div className="delivery-urgency-banner">
               <Clock size={16} className="clock-blue" />
-              <span>Order within <strong>2h 15m</strong> to get it delivered by <strong>Tomorrow</strong></span>
+              <span>{t('footer.benefit1_title')} — <strong>{t('footer.benefit1_sub')}</strong></span>
             </div>
 
             <div className="detail-divider"></div>
 
             {/* Color Swatches */}
             <div className="swatch-section">
-              <span className="swatch-title">Color Finish: <strong>{selectedColor.name}</strong></span>
+              <span className="swatch-title">{t('product.select_color')} <strong>{selectedColor.name}</strong></span>
               <div className="color-swatches-grid">
                 {colorOptions.map((c, i) => (
                   <button
@@ -222,7 +224,7 @@ const ProductDetail = () => {
 
             {/* Quantity Selector */}
             <div className="quantity-section">
-              <span className="qty-label">Quantity:</span>
+              <span className="qty-label">{t('product.quantity')}</span>
               <div className="qty-selector">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -249,11 +251,11 @@ const ProductDetail = () => {
               >
                 {added ? (
                   <>
-                    <Check size={18} /> Added to Cart
+                    <Check size={18} /> {t('product.added')}
                   </>
                 ) : (
                   <>
-                    <ShoppingBag size={18} /> Add to Cart
+                    <ShoppingBag size={18} /> {product.stock === 0 ? t('product.out_of_stock') : t('product.add_to_cart')}
                   </>
                 )}
               </button>
@@ -261,7 +263,7 @@ const ProductDetail = () => {
               <button
                 className={`btn-secondary detail-wish-btn ${isLiked ? 'liked' : ''}`}
                 onClick={() => toggleWishlist(product)}
-                title={isLiked ? "Remove from wishlist" : "Add to wishlist"}
+                title={isLiked ? "Wishlist" : "Wishlist"}
               >
                 <Heart size={20} fill={isLiked ? '#FF3B30' : 'none'} color={isLiked ? '#FF3B30' : '#1D1D1F'} />
               </button>
@@ -271,15 +273,15 @@ const ProductDetail = () => {
             <div className="detail-perks-list">
               <div className="perk-row">
                 <Truck size={18} className="perk-icon" />
-                <span>Express 2-3 business day tracked delivery</span>
+                <span>{t('product.free_shipping')}</span>
               </div>
               <div className="perk-row">
                 <ShieldCheck size={18} className="perk-icon" />
-                <span>1-Year official manufacturer warranty</span>
+                <span>{t('product.official_warranty')}</span>
               </div>
               <div className="perk-row">
                 <RotateCcw size={18} className="perk-icon" />
-                <span>14-Day money-back guarantee</span>
+                <span>{t('product.free_return')}</span>
               </div>
             </div>
           </div>
@@ -292,13 +294,13 @@ const ProductDetail = () => {
               className={`spec-tab-btn ${activeSpecTab === 'specs' ? 'active' : ''}`}
               onClick={() => setActiveSpecTab('specs')}
             >
-              <Cpu size={16} /> Technical Specifications
+              <Cpu size={16} /> {t('product.specs_tab')}
             </button>
             <button
               className={`spec-tab-btn ${activeSpecTab === 'inbox' ? 'active' : ''}`}
               onClick={() => setActiveSpecTab('inbox')}
             >
-              <Package size={16} /> What's in the Box
+              <Package size={16} /> {t('product.box_tab')}
             </button>
           </div>
 
@@ -357,17 +359,17 @@ const ProductDetail = () => {
         {/* Customer Reviews Section */}
         <div className="product-reviews-section card">
           <div className="reviews-header">
-            <h3>Customer Reviews ({reviews.length})</h3>
-            <span className="reviews-avg-badge">Average Rating: {averageRating} / 5</span>
+            <h3>{t('product.reviews_tab', { count: reviews.length })}</h3>
+            <span className="reviews-avg-badge">Rating: {averageRating} / 5</span>
           </div>
 
           {/* Add Review Form */}
           {isAuthenticated ? (
             <form className="add-review-box" onSubmit={handleReviewSubmit}>
-              <h4>Write a Review</h4>
+              <h4>{t('product.write_review')}</h4>
               {reviewError && <p className="review-err-msg">{reviewError}</p>}
               <div className="rating-select-row">
-                <span>Your Rating:</span>
+                <span>Rating:</span>
                 <div className="stars-input">
                   {[1, 2, 3, 4, 5].map((starVal) => (
                     <button
@@ -394,14 +396,14 @@ const ProductDetail = () => {
                 required
               ></textarea>
               <button type="submit" className="btn-primary" disabled={reviewSubmitting}>
-                {reviewSubmitting ? 'Submitting...' : 'Submit Review'}
+                {reviewSubmitting ? '...' : t('product.write_review')}
               </button>
             </form>
           ) : (
             <div className="login-to-review-box">
-              <p>Sign in to share your review for this product</p>
+              <p>{t('auth.login_subtitle')}</p>
               <Link to="/login" className="btn-secondary">
-                Sign In
+                {t('nav.login')}
               </Link>
             </div>
           )}
@@ -409,14 +411,14 @@ const ProductDetail = () => {
           {/* Review List */}
           <div className="reviews-list">
             {reviews.length === 0 ? (
-              <p className="no-reviews-text">No reviews yet. Be the first to review this product!</p>
+              <p className="no-reviews-text">No reviews yet.</p>
             ) : (
               reviews.map((rev) => (
                 <div key={rev._id} className="review-card">
                   <div className="review-user-row">
                     <div className="rev-avatar">{rev.user_id?.name?.charAt(0) || 'U'}</div>
                     <div>
-                      <h5 className="rev-username">{rev.user_id?.name || 'Verified Customer'}</h5>
+                      <h5 className="rev-username">{rev.user_id?.name || t('product.verified_buyer')}</h5>
                       <span className="rev-date">{new Date(rev.createdAt).toLocaleDateString()}</span>
                     </div>
                     <div className="rev-stars">
@@ -441,8 +443,7 @@ const ProductDetail = () => {
         {relatedProducts.length > 0 && (
           <div className="related-products-section">
             <div className="related-header">
-              <h3>Frequently Bought Together</h3>
-              <p>Complete your minimalist ecosystem with complementary premium gear</p>
+              <h3>{t('product.similar_products')}</h3>
             </div>
             <div className="related-grid">
               {relatedProducts.map((p) => (

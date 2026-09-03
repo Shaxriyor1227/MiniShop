@@ -1,5 +1,5 @@
-/* MiniShop - Lumina Minimalist Design System */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* MiniShop - Modern High-End Editorial Design System */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
   /* Color Palette */
@@ -27,19 +27,20 @@
   --border-light: rgba(0, 0, 0, 0.08);
   --border-focus: #0071E3;
   
-  /* Typography */
-  --font-family-display: -apple-system, BlinkMacSystemFont, "Geist", "SF Pro Display", "Inter", sans-serif;
-  --font-family-body: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", sans-serif;
+  /* Modern High-End Typography */
+  --font-family-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+  --font-family-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', sans-serif;
   
   /* Elevation & Shadows */
   --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.04);
   --shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.08);
   --shadow-modal: 0 24px 48px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.06);
   
   /* Radii */
   --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
   --radius-pill: 9999px;
   
   /* Transitions */
@@ -75,12 +76,15 @@
   --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.35);
   --shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.5);
   --shadow-modal: 0 24px 48px rgba(0, 0, 0, 0.65);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -88,173 +92,108 @@ body {
   background-color: var(--bg-main);
   color: var(--ink-primary);
   line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  min-height: 100vh;
+  transition: background-color var(--transition-smooth), color var(--transition-smooth);
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-family-display);
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-weight: 700;
   color: var(--ink-primary);
+  letter-spacing: -0.02em;
 }
 
 a {
   color: inherit;
   text-decoration: none;
-  transition: color var(--transition-fast);
 }
 
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  outline: none;
-  background: none;
-}
-
-input, textarea, select {
+button, input, select, textarea {
   font-family: inherit;
 }
 
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* Container Utilities */
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: 0 24px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .container {
     padding: 0 16px;
   }
 }
 
-/* Common UI Components */
+/* Button System */
 .btn-primary {
+  background-color: var(--accent-blue);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background-color: var(--ink-primary);
-  color: var(--ink-inverted);
-  padding: 12px 24px;
-  border-radius: var(--radius-pill);
-  font-size: 15px;
-  font-weight: 500;
-  transition: all var(--transition-smooth);
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 113, 227, 0.25);
+  transition: all var(--transition-fast);
 }
 
 .btn-primary:hover {
-  opacity: 0.92;
+  background-color: var(--accent-blue-hover);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-hover);
+  box-shadow: 0 6px 20px rgba(0, 113, 227, 0.35);
 }
 
 .btn-primary:active {
   transform: translateY(0);
 }
 
-.btn-accent {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background-color: var(--accent-blue);
-  color: var(--ink-inverted);
-  padding: 12px 24px;
-  border-radius: var(--radius-pill);
-  font-size: 15px;
-  font-weight: 500;
-  transition: all var(--transition-smooth);
-}
-
-.btn-accent:hover {
-  background-color: var(--accent-blue-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0, 113, 227, 0.25);
-}
-
 .btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
   background-color: var(--bg-surface);
   color: var(--ink-primary);
   border: 1px solid var(--border-subtle);
-  padding: 12px 24px;
   border-radius: var(--radius-pill);
-  font-size: 15px;
-  font-weight: 500;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
   transition: all var(--transition-fast);
 }
 
 .btn-secondary:hover {
   background-color: var(--bg-surface-hover);
-  border-color: #D2D2D7;
+  border-color: var(--border-focus);
 }
 
+/* Card System */
 .card {
   background-color: var(--bg-card);
-  border-radius: var(--radius-lg);
   border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
-  transition: all var(--transition-smooth);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
 }
 
-.card:hover {
-  box-shadow: var(--shadow-hover);
+.page-enter {
+  animation: pageEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.input-field {
-  width: 100%;
-  padding: 14px 18px;
-  background-color: var(--bg-input);
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  color: var(--ink-primary);
-  font-size: 15px;
-  transition: all var(--transition-fast);
-  outline: none;
-}
-
-.input-field:focus {
-  background-color: var(--bg-surface);
-  border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px var(--accent-blue-subtle);
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: var(--radius-pill);
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-.badge-blue {
-  background-color: var(--accent-blue-subtle);
-  color: var(--accent-blue);
-}
-
-.badge-green {
-  background-color: rgba(52, 199, 89, 0.12);
-  color: var(--color-success);
-}
-
-.badge-amber {
-  background-color: rgba(255, 149, 0, 0.12);
-  color: var(--color-warning);
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

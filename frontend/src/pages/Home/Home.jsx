@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../api/axiosInstance';
-import HeroBanner from '../../components/HeroBanner/HeroBanner';
 import ProductCard from '../../components/ProductCard/ProductCard';
 import {
   Sparkles,
@@ -17,53 +17,71 @@ import {
   Lightbulb,
   Tag,
   ChevronRight,
+  ChevronLeft,
   Award,
-  Layers
+  Layers,
+  ShoppingBag,
+  Heart,
+  ArrowUpRight
 } from 'lucide-react';
 import './Home.css';
 
-const brandLogos = ['Apple', 'Sony', 'Keychron', 'Anker', 'Logitech', 'Minimal'];
+const brandLogos = [
+  { name: 'Apple', style: 'font-bold tracking-tight' },
+  { name: 'Sony', style: 'font-bold tracking-[0.2em] uppercase' },
+  { name: 'Keychron', style: 'font-semibold tracking-tight' },
+  { name: 'Anker', style: 'font-bold tracking-wider uppercase' },
+  { name: 'Logitech', style: 'font-medium tracking-tight lowercase' }
+];
 
-const categoryCards = [
+const newArrivalsData = [
   {
-    name: 'Audio & Studio',
-    desc: 'High-fidelity acoustic headphones and noise-cancelling earbuds.',
-    icon: Headphones,
-    categoryParam: 'Audio',
-    gradient: 'linear-gradient(135deg, #1D1D1F 0%, #2C2C2E 100%)',
-    iconColor: '#0071E3'
+    tag: 'TITANIUM DLC',
+    name: 'Chronos Stealth',
+    desc: 'Sapphire crystal lens, 14-day battery',
+    price: 420,
+    img: '/images/stitch/smart_watch.png',
+    link: '/catalog?category=Wearables'
   },
   {
-    name: 'Smart Wearables',
-    desc: 'OLED health tracking smartwatches and titanium bands.',
-    icon: Watch,
-    categoryParam: 'Wearables',
-    gradient: 'linear-gradient(135deg, #1C1C1E 0%, #2A2D34 100%)',
-    iconColor: '#FF2D55'
+    tag: 'LIMITED RUN',
+    name: 'Horizon Noir',
+    desc: 'Matte vapor deposition acoustic finish',
+    price: 540,
+    img: '/images/stitch/audio_headphones.png',
+    link: '/catalog?category=Audio'
   },
   {
-    name: 'Workspace & Input',
-    desc: 'Custom mechanical keyboards and precision ergonomic mice.',
-    icon: Laptop,
-    categoryParam: 'Workspace',
-    gradient: 'linear-gradient(135deg, #18191B 0%, #23272F 100%)',
-    iconColor: '#5856D6'
+    tag: 'SOLID WALNUT',
+    name: 'Form Studio Tray',
+    desc: 'Solid american walnut & anodized aluminum',
+    price: 85,
+    img: '/images/stitch/walnut_tray.png',
+    link: '/catalog?category=Accessories'
   },
   {
-    name: 'Smart Ambient Lighting',
-    desc: 'Intelligent aluminum desk lamps and circadian lighting.',
-    icon: Lightbulb,
-    categoryParam: 'Smart Home',
-    gradient: 'linear-gradient(135deg, #1A1A1D 0%, #2D2721 100%)',
-    iconColor: '#FF9500'
+    tag: 'CUSTOM LINEAR',
+    name: 'Aer Wireless 75',
+    desc: 'Low-profile wireless mechanical keyboard',
+    price: 179,
+    img: '/images/stitch/mechanical_kb.png',
+    link: '/catalog?category=Workspace'
   },
   {
-    name: 'Power & Accessories',
-    desc: 'GaN fast chargers and MagSafe full-grain leather wallets.',
-    icon: Tag,
-    categoryParam: 'Accessories',
-    gradient: 'linear-gradient(135deg, #1E1E24 0%, #2E2532 100%)',
-    iconColor: '#34C759'
+    tag: 'FAST MAG CHARGE',
+    name: 'Linear Stand 3',
+    desc: 'Three-device inductive aluminum tower',
+    price: 129,
+    img: '/images/stitch/mag_stand.png',
+    link: '/catalog?category=Accessories'
+  },
+  {
+    tag: '4K POLLING',
+    name: 'Tangent Mouse',
+    desc: 'Precision machined thumb scroll & ceramic feet',
+    price: 115,
+    img: '/images/stitch/tangent_mouse.png',
+    link: '/catalog?category=Workspace'
   }
 ];
 
@@ -131,8 +149,10 @@ const testimonials = [
 ];
 
 const Home = () => {
+  const { t } = useTranslation();
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const arrivalsScrollRef = useRef(null);
 
   useEffect(() => {
     const fetchFeatured = async () => {
@@ -140,7 +160,6 @@ const Home = () => {
         setLoading(true);
         const res = await axiosInstance.get('/product/getAll');
         if (res.data.success) {
-          // Take top 4 flagship items for home showcase
           setFeaturedProducts(res.data.innerData.slice(0, 4));
         }
       } catch (err) {
@@ -152,87 +171,288 @@ const Home = () => {
     fetchFeatured();
   }, []);
 
-  return (
-    <div className="home-page page-enter">
-      {/* 1. Hero Banner */}
-      <HeroBanner />
+  const handleScrollArrivals = (direction) => {
+    if (arrivalsScrollRef.current) {
+      const scrollAmount = direction === 'left' ? -340 : 340;
+      arrivalsScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
-      {/* 2. Brand Partners Cloud */}
-      <section className="brand-partners-section">
+  return (
+    <div className="home-editorial-page page-enter">
+      {/* 1. EDITORIAL HERO SECTION */}
+      <section className="editorial-hero-section">
         <div className="container">
-          <span className="partners-label">Authorized Retailer & Hardware Partner</span>
-          <div className="partners-cloud">
-            {brandLogos.map((b, i) => (
-              <span key={i} className="partner-item">
-                {b}
+          <div className="hero-top-row">
+            <div className="hero-top-left">
+              <span className="hero-eyebrow-tag">
+                MINISHOP / NEW COLLECTION
+              </span>
+              <h1 className="hero-display-headline">
+                Technology,<br />beautifully simple.
+              </h1>
+              <p className="hero-editorial-subtext">
+                {t('home.hero_desc')}
+              </p>
+              <div className="hero-action-pills">
+                <Link to="/catalog" className="btn-primary hero-main-pill">
+                  <span>{t('home.hero_cta')}</span>
+                  <ArrowRight size={17} />
+                </Link>
+                <a href="#new-arrivals" className="hero-ghost-link group">
+                  <span>{t('home.hero_secondary')}</span>
+                  <ChevronRight size={16} className="transition-transform group-hover:translate-x-1" />
+                </a>
+              </div>
+            </div>
+
+            {/* Live Mechanical Spec Tolerance Counter */}
+            <div className="hero-spec-counter-box card">
+              <div className="spec-counter-header">
+                <span>CATALOG SPEC</span>
+                <span>EST. 2025</span>
+              </div>
+              <div className="spec-counter-val">
+                0.02%
+              </div>
+              <div className="spec-counter-lbl">
+                TOLERANCE THRESHOLD
+              </div>
+              <div className="spec-counter-bar-track">
+                <div className="spec-counter-bar-fill"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Dominant 16:9 Cinematic Hero Image Container */}
+          <div className="hero-cinema-frame">
+            <img
+              src="/images/stitch/hero_podium.png"
+              alt="MiniShop Flagship Workspace Presentation"
+              className="hero-cinema-img"
+              onError={(e) => {
+                e.currentTarget.src = '/images/hero_banner.png';
+              }}
+            />
+            <div className="hero-cinema-badge">
+              <Sparkles size={14} />
+              <span>Studio Grade 5K Retina Ecosystem</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 2. HERO TRUST INFORMATION STRIP */}
+      <section className="editorial-trust-strip">
+        <div className="container">
+          <div className="trust-strip-inner">
+            <div className="trust-item">
+              <span className="trust-dot"></span>
+              <span className="trust-text">100% Original</span>
+            </div>
+            <div className="trust-item">
+              <span className="trust-dot"></span>
+              <span className="trust-text">Express Delivery</span>
+            </div>
+            <div className="trust-item">
+              <span className="trust-dot"></span>
+              <span className="trust-text">4.98 / 5.0 Rating</span>
+            </div>
+            <div className="trust-item">
+              <span className="trust-dot"></span>
+              <span className="trust-text">Secure 256-bit SSL</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. BRAND PARTNERS STRIP */}
+      <section className="editorial-brands-section">
+        <div className="container">
+          <p className="brands-title-label">
+            {t('home.partners_label')}
+          </p>
+          <div className="brands-logo-row">
+            {brandLogos.map((brand, idx) => (
+              <span key={idx} className={`brand-item-text ${brand.style}`}>
+                {brand.name}
               </span>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 3. Explore by Category Grid (Visual Category Cards) */}
-      <section className="home-categories-section">
+      {/* 4. ASYMMETRIC COLLECTIONS GRID */}
+      <section className="editorial-collections-section">
         <div className="container">
-          <div className="home-section-header">
+          <div className="section-title-header">
             <div>
-              <span className="home-sub-badge">Ecosystem</span>
-              <h2 className="home-section-title">Explore by Category</h2>
-              <p className="home-section-subtitle">
-                Engineered hardware crafted for mindful work, studio listening, and seamless mobility.
-              </p>
+              <span className="section-eyebrow">COLLECTIONS</span>
+              <h2 className="section-title-large">Find what fits your world.</h2>
             </div>
-            <Link to="/catalog" className="explore-all-link">
-              Browse Entire Catalog <ArrowRight size={16} />
+            <Link to="/catalog" className="section-header-link">
+              <span>{t('home.explore_all')}</span>
+              <ArrowRight size={16} />
             </Link>
           </div>
 
-          <div className="home-category-cards-grid">
-            {categoryCards.map((cat, idx) => {
-              const IconComp = cat.icon;
-              return (
-                <Link
-                  key={idx}
-                  to={`/catalog?category=${cat.categoryParam}`}
-                  className="home-category-card"
-                >
-                  <div className="cat-card-header">
-                    <div className="cat-card-icon-box" style={{ color: cat.iconColor }}>
-                      <IconComp size={24} strokeWidth={2.2} />
-                    </div>
-                    <span className="cat-arrow-icon">
-                      <ChevronRight size={18} />
-                    </span>
-                  </div>
-                  <div className="cat-card-body">
-                    <h3 className="cat-card-title">{cat.name}</h3>
-                    <p className="cat-card-desc">{cat.desc}</p>
-                  </div>
-                </Link>
-              );
-            })}
+          <div className="collections-asymmetric-grid">
+            {/* Audio (8 Columns) */}
+            <Link to="/catalog?category=Audio" className="collection-tile tile-audio">
+              <img
+                src="/images/stitch/audio_headphones.png"
+                alt="Audio Collection"
+                className="tile-bg-img"
+                onError={(e) => {
+                  e.currentTarget.src = '/images/product_wireless_headphones.png';
+                }}
+              />
+              <div className="tile-gradient-overlay"></div>
+              <div className="tile-content">
+                <span className="tile-micro-tag">ACOUSTIC SYSTEMS</span>
+                <h3 className="tile-title">Audio</h3>
+                <p className="tile-action-link">
+                  <span>Explore sound</span>
+                  <ArrowRight size={15} />
+                </p>
+              </div>
+            </Link>
+
+            {/* Smart Watches (4 Columns) */}
+            <Link to="/catalog?category=Wearables" className="collection-tile tile-watches">
+              <img
+                src="/images/stitch/smart_watch.png"
+                alt="Smart Watches Collection"
+                className="tile-bg-img"
+                onError={(e) => {
+                  e.currentTarget.src = '/images/product_smart_watch.png';
+                }}
+              />
+              <div className="tile-gradient-overlay"></div>
+              <div className="tile-content">
+                <span className="tile-micro-tag">WEARABLE CHRONO</span>
+                <h3 className="tile-title">Smart Watches</h3>
+                <p className="tile-action-link">
+                  <span>Precision timepieces</span>
+                  <ArrowRight size={15} />
+                </p>
+              </div>
+            </Link>
+
+            {/* Workspace (6 Columns) */}
+            <Link to="/catalog?category=Workspace" className="collection-tile tile-workspace">
+              <img
+                src="/images/stitch/workspace_setup.png"
+                alt="Workspace Collection"
+                className="tile-bg-img"
+                onError={(e) => {
+                  e.currentTarget.src = '/images/product_mechanical_keyboard.png';
+                }}
+              />
+              <div className="tile-gradient-overlay"></div>
+              <div className="tile-content">
+                <span className="tile-micro-tag">ERGONOMIC SANCTUARY</span>
+                <h3 className="tile-title">Workspace</h3>
+                <p className="tile-action-link">
+                  <span>Curate your desk</span>
+                  <ArrowRight size={15} />
+                </p>
+              </div>
+            </Link>
+
+            {/* Accessories (6 Columns) */}
+            <Link to="/catalog?category=Accessories" className="collection-tile tile-accessories">
+              <img
+                src="/images/stitch/accessories_flatlay.png"
+                alt="Accessories Collection"
+                className="tile-bg-img"
+                onError={(e) => {
+                  e.currentTarget.src = '/images/product_desk_lamp.png';
+                }}
+              />
+              <div className="tile-gradient-overlay"></div>
+              <div className="tile-content">
+                <span className="tile-micro-tag">TACTILE ESSENTIALS</span>
+                <h3 className="tile-title">Accessories</h3>
+                <p className="tile-action-link">
+                  <span>Essential companions</span>
+                  <ArrowRight size={15} />
+                </p>
+              </div>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* 4. Trending Drops / Curated Featured Innovations */}
-      <section className="featured-drops-section">
+      {/* 5. FEATURED SPECIMEN SHOWCASE */}
+      <section className="editorial-specimen-section">
         <div className="container">
-          <div className="home-section-header">
-            <div>
-              <span className="home-sub-badge">Featured Drops</span>
-              <h2 className="home-section-title">Curated Flagships</h2>
-              <p className="home-section-subtitle">
-                Our most sought-after products of the season, built with precision and timeless design.
-              </p>
+          <div className="specimen-card card">
+            <div className="specimen-visual-pane">
+              <img
+                src="/images/stitch/audio_headphones.png"
+                alt="Acoustic Horizon One Specimen"
+                className="specimen-img"
+                onError={(e) => {
+                  e.currentTarget.src = '/images/product_wireless_headphones.png';
+                }}
+              />
             </div>
-            <Link to="/catalog" className="btn-secondary view-catalog-btn">
-              Open Full Catalog ({featuredProducts.length}+) <ArrowRight size={15} />
+
+            <div className="specimen-info-pane">
+              <span className="specimen-badge">FEATURED SPECIMEN</span>
+              <h2 className="specimen-headline">Acoustic Horizon One</h2>
+              <p className="specimen-desc">
+                Custom 40mm beryllium drivers suspended in aerospace-grade aluminum. Pure acoustic transparency meets uncompromising comfort for deep uninterrupted immersion.
+              </p>
+
+              {/* Technical 3-Column Specification Matrix */}
+              <div className="specimen-tech-matrix">
+                <div className="tech-matrix-col">
+                  <span className="matrix-lbl">DRIVER</span>
+                  <span className="matrix-val">40mm Beryllium</span>
+                </div>
+                <div className="tech-matrix-col">
+                  <span className="matrix-lbl">FREQUENCY</span>
+                  <span className="matrix-val">5Hz – 48kHz</span>
+                </div>
+                <div className="tech-matrix-col">
+                  <span className="matrix-lbl">WEIGHT</span>
+                  <span className="matrix-val">248 Grams</span>
+                </div>
+              </div>
+
+              <div className="specimen-action-row">
+                <div className="specimen-price-box">
+                  <span className="price-lbl">PRICE</span>
+                  <span className="price-val">$499</span>
+                </div>
+                <Link to="/catalog?category=Audio" className="btn-primary specimen-btn">
+                  <span>Discover product</span>
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. POPULAR RIGHT NOW PRODUCT GRID */}
+      <section className="editorial-trending-section">
+        <div className="container">
+          <div className="section-title-header">
+            <div>
+              <span className="section-eyebrow">TRENDING</span>
+              <h2 className="section-title-large">Popular right now</h2>
+            </div>
+            <Link to="/catalog" className="section-header-link">
+              <span>View all products</span>
+              <ArrowRight size={16} />
             </Link>
           </div>
 
           {loading ? (
-            <div className="featured-products-grid">
+            <div className="trending-cards-grid">
               {[1, 2, 3, 4].map((n) => (
                 <div key={n} className="product-skeleton card">
                   <div className="skeleton-img"></div>
@@ -242,162 +462,125 @@ const Home = () => {
               ))}
             </div>
           ) : (
-            <div className="featured-products-grid">
+            <div className="trending-cards-grid">
               {featuredProducts.map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))}
             </div>
           )}
-
-          <div className="catalog-cta-footer-banner card">
-            <div className="cta-banner-text">
-              <div className="cta-pill">
-                <Sparkles size={14} /> Full Hardware Collection
-              </div>
-              <h3>Looking for specific studio gear, cables, or accessories?</h3>
-              <p>Explore our complete catalog with advanced category filters, price sorting, and maker search.</p>
-            </div>
-            <Link to="/catalog" className="btn-primary cta-catalog-btn">
-              Explore All Products in Catalog <ArrowRight size={16} />
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* 5. Flagship Spotlight Showcase */}
-      <section className="flagship-spotlight-section">
+      {/* 7. PROMOTIONAL WORKSPACE ARCHITECTURE BANNER */}
+      <section className="editorial-promo-banner-section">
         <div className="container">
-          <div className="spotlight-card card">
-            <div className="spotlight-info">
-              <span className="spotlight-tag">Flagship Spotlight</span>
-              <h2 className="spotlight-title">Studio Wireless Pro</h2>
-              <p className="spotlight-lead">
-                Immersive 3D Spatial Audio with active head tracking, custom 40mm neodymium transducers, and up to 40 hours of lossless playback.
-              </p>
-
-              <div className="spotlight-specs-grid">
-                <div className="spotlight-spec-box">
-                  <span className="spec-val">40 Hours</span>
-                  <span className="spec-lbl">Battery Life</span>
-                </div>
-                <div className="spotlight-spec-box">
-                  <span className="spec-val">0.02mm</span>
-                  <span className="spec-lbl">CNC Precision</span>
-                </div>
-                <div className="spotlight-spec-box">
-                  <span className="spec-val">Bluetooth 5.3</span>
-                  <span className="spec-lbl">Low-Latency AAC</span>
+          <div className="promo-monolith-card">
+            <div className="promo-ambient-light"></div>
+            <div className="promo-layout-grid">
+              <div className="promo-text-side">
+                <span className="promo-eyebrow">WORKSPACE ARCHITECTURE</span>
+                <h2 className="promo-headline">Build your perfect setup.</h2>
+                <p className="promo-body">
+                  Curated ergonomics, audiophile acoustics, and tactile mechanical precision engineered to elevate your daily focus and quiet your surroundings.
+                </p>
+                <div className="promo-btn-group">
+                  <Link to="/catalog?category=Workspace" className="btn-primary promo-pill-btn">
+                    <span>Build your workspace</span>
+                    <ArrowRight size={16} />
+                  </Link>
+                  <span className="promo-bundles-tag">BUNDLES FROM $699</span>
                 </div>
               </div>
 
-              <div className="spotlight-buttons">
-                <Link to="/catalog?category=Audio" className="btn-primary">
-                  Shop Audio Gear <ArrowRight size={16} />
-                </Link>
-                <Link to="/catalog" className="btn-secondary">
-                  Compare in Catalog
-                </Link>
-              </div>
-            </div>
-
-            <div className="spotlight-image-wrapper">
-              <img
-                src="/images/product_wireless_headphones.png"
-                alt="Studio Wireless Pro"
-                className="spotlight-img"
-                onError={(e) => {
-                  e.currentTarget.src = '/images/product_placeholder.png';
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 6. Bento Highlights Grid (Engineering Philosophy) */}
-      <section className="bento-section">
-        <div className="container">
-          <div className="bento-header">
-            <span className="bento-badge">Engineering Philosophy</span>
-            <h2 className="bento-title">Designed with Intention. Built to Last.</h2>
-            <p className="bento-sub">We believe technology should feel natural, unobtrusive, and exceptionally refined.</p>
-          </div>
-
-          <div className="bento-grid">
-            {/* Card 1: Large Feature */}
-            <div className="bento-card bento-card-large card">
-              <div className="bento-card-content">
-                <div className="bento-icon-pill">
-                  <Sparkles size={18} />
-                  <span>Pure Craftsmanship</span>
-                </div>
-                <h3>Precision Anodized Aluminum</h3>
-                <p>Every corner is CNC-machined from single-billet recycled aluminum for remarkable durability and tactile satisfaction.</p>
-              </div>
-              <div className="bento-visual-stat">
-                <span className="stat-big">0.02mm</span>
-                <span className="stat-label">Micro-tolerance precision</span>
-              </div>
-            </div>
-
-            {/* Card 2: 3D Acoustics */}
-            <div className="bento-card card">
-              <div className="bento-icon-pill">
-                <Zap size={18} />
-                <span>Acoustic Mastery</span>
-              </div>
-              <h3>Spatial Audio 3D</h3>
-              <p>Real-time head tracking creates an immersive cinematic soundstage around you.</p>
-            </div>
-
-            {/* Card 3: Sustainability */}
-            <div className="bento-card card">
-              <div className="bento-icon-pill">
-                <Globe size={18} />
-                <span>Eco-conscious</span>
-              </div>
-              <h3>100% Carbon Neutral</h3>
-              <p>Plastic-free biodegradable packaging with zero net carbon footprint logistics.</p>
-            </div>
-
-            {/* Card 4: Warranty */}
-            <div className="bento-card bento-card-wide card">
-              <div className="bento-wide-content">
-                <div className="bento-icon-pill">
-                  <ShieldCheck size={18} />
-                  <span>MiniCare Promise</span>
-                </div>
-                <h3>2-Year Direct Global Warranty</h3>
-                <p>Hassle-free replacement policy with 24/7 dedicated support specialists worldwide.</p>
+              <div className="promo-visual-side">
+                <img
+                  src="/images/stitch/workspace_setup.png"
+                  alt="Minimal Studio Workspace Architecture"
+                  className="promo-visual-img"
+                  onError={(e) => {
+                    e.currentTarget.src = '/images/hero_banner.png';
+                  }}
+                />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 7. Customer Testimonials Infinite Marquee */}
-      <section className="testimonials-section">
+      {/* 8. NEW ARRIVALS HORIZONTAL SCROLL CAROUSEL */}
+      <section className="editorial-arrivals-section" id="new-arrivals">
         <div className="container">
-          <div className="testimonials-header">
-            <span className="bento-badge">Verified Reviews</span>
-            <h2 className="testimonials-title">Loved by Creators & Builders</h2>
-            <p className="testimonials-sub">See why thousands of developers, designers, and audio purists worldwide choose MiniShop.</p>
+          <div className="section-title-header">
+            <div>
+              <span className="section-eyebrow">EDITION 04</span>
+              <h2 className="section-title-large">Just arrived.</h2>
+            </div>
+            <div className="arrivals-nav-btns">
+              <button
+                className="arrivals-arrow-btn"
+                onClick={() => handleScrollArrivals('left')}
+                aria-label="Scroll left"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button
+                className="arrivals-arrow-btn"
+                onClick={() => handleScrollArrivals('right')}
+                aria-label="Scroll right"
+              >
+                <ChevronRight size={20} />
+              </button>
+            </div>
+          </div>
+
+          <div className="arrivals-carousel-track" ref={arrivalsScrollRef}>
+            {newArrivalsData.map((item, idx) => (
+              <Link to={item.link} key={idx} className="arrival-item-card card">
+                <div className="arrival-img-frame">
+                  <img
+                    src={item.img}
+                    alt={item.name}
+                    className="arrival-img"
+                    onError={(e) => {
+                      e.currentTarget.src = '/images/product_placeholder.png';
+                    }}
+                  />
+                </div>
+                <span className="arrival-tag">{item.tag}</span>
+                <h4 className="arrival-title">{item.name}</h4>
+                <p className="arrival-desc">{item.desc}</p>
+                <div className="arrival-footer-row">
+                  <span className="arrival-price">${item.price}</span>
+                  <ArrowUpRight size={18} className="arrival-link-arrow" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 9. CUSTOMER REVIEWS & TESTIMONIALS (Preserved in full fidelity) */}
+      <section className="editorial-reviews-section">
+        <div className="container">
+          <div className="section-title-header text-center-header">
+            <span className="section-eyebrow">{t('home.reviews_badge')}</span>
+            <h2 className="section-title-large">{t('home.reviews_title')}</h2>
+            <p className="section-subtext-centered">{t('home.reviews_sub')}</p>
           </div>
         </div>
 
-        {/* Infinite Scrolling Marquee Track */}
-        <div className="marquee-wrapper">
-          <div className="marquee-track">
+        <div className="reviews-marquee-container">
+          <div className="reviews-marquee-track">
             {[...testimonials, ...testimonials].map((t, idx) => (
-              <div key={`${t.id}-${idx}`} className="testimonial-card card">
-                <div className="testimonial-rating">
+              <div key={`${t.id}-${idx}`} className="editorial-review-card card">
+                <div className="review-rating-stars">
                   {[...Array(t.rating)].map((_, i) => (
                     <Star key={i} size={15} fill="#FFB800" color="#FFB800" />
                   ))}
                 </div>
-                <p className="testimonial-quote">"{t.text}"</p>
-                <div className="testimonial-author">
-                  <div className="author-avatar-frame">
+                <p className="review-quote-text">"{t.text}"</p>
+                <div className="review-author-meta">
+                  <div className="author-avatar-circle">
                     <img
                       src={t.avatarImg}
                       alt={t.name}
@@ -413,17 +596,31 @@ const Home = () => {
                       {t.avatar}
                     </div>
                   </div>
-                  <div className="author-meta">
+                  <div className="author-text-info">
                     <h5>{t.name}</h5>
                     <span>{t.role}</span>
                   </div>
                 </div>
-                <div className="verified-purchase-badge">
-                  <CheckCircle2 size={13} className="verified-check-icon" />
+                <div className="review-verified-badge">
+                  <CheckCircle2 size={13} className="verified-check" />
                   <span>Verified Purchase: {t.product}</span>
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 10. FINAL MINIMALIST CALIBRATION CTA */}
+      <section className="editorial-final-cta-section">
+        <div className="container">
+          <div className="final-cta-inner">
+            <span className="final-cta-eyebrow">MINIMALIST CALIBRATION</span>
+            <h2 className="final-cta-headline">Your next favorite device is waiting.</h2>
+            <Link to="/catalog" className="btn-primary final-cta-pill">
+              <span>Explore MiniShop</span>
+              <ArrowRight size={17} />
+            </Link>
           </div>
         </div>
       </section>

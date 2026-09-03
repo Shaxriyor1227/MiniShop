@@ -1,0 +1,161 @@
+.lang-switcher-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.lang-trigger-capsule {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: var(--bg-surface-hover);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  padding: 5px 9px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.lang-trigger-capsule:hover,
+.lang-trigger-capsule.active {
+  background-color: var(--bg-surface);
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-soft);
+}
+
+.lang-globe-icon {
+  color: var(--accent-blue);
+  flex-shrink: 0;
+}
+
+.lang-code {
+  letter-spacing: 0.04em;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.lang-chevron {
+  color: var(--ink-tertiary);
+  transition: transform var(--transition-fast);
+}
+
+.lang-chevron.rotate {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu (Clean, no unnecessary headers) */
+.lang-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 175px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-modal);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  z-index: 230;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.lang-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lang-option-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+}
+
+.lang-option-item:hover {
+  background-color: var(--bg-surface-hover);
+}
+
+.lang-option-item.selected {
+  background-color: var(--accent-blue-subtle);
+}
+
+.lang-option-flag {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.lang-option-name {
+  flex: 1;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-primary);
+}
+
+.lang-option-item.selected .lang-option-name {
+  font-weight: 600;
+  color: var(--accent-blue);
+}
+
+.lang-option-code {
+  font-size: 11px;
+  color: var(--ink-tertiary);
+  font-weight: 500;
+}
+
+.lang-check-icon {
+  color: var(--accent-blue);
+  flex-shrink: 0;
+}
+
+/* Segmented Pills Variant (For inside Profile menu & Mobile drawer) */
+.lang-pills-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--bg-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+  width: 100%;
+}
+
+.lang-pill-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 8px;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  border: none;
+  color: var(--ink-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.lang-pill-btn:hover {
+  color: var(--ink-primary);
+  background-color: var(--bg-surface-hover);
+}
+
+.lang-pill-btn.active {
+  background-color: var(--bg-surface);
+  color: var(--accent-blue);
+  box-shadow: var(--shadow-soft);
+}

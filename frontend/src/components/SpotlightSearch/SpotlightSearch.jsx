@@ -1,22 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Search, X, ArrowRight, Sparkles, ShoppingBag, Tag, Headphones, Watch, Laptop } from 'lucide-react';
 import axiosInstance from '../../api/axiosInstance';
 import './SpotlightSearch.css';
 
-const quickCategories = [
-  { name: 'Audio & Headphones', query: 'Audio', icon: Headphones },
-  { name: 'Smart Watches', query: 'Wearables', icon: Watch },
-  { name: 'Workspace & Keyboards', query: 'Workspace', icon: Laptop },
-  { name: 'Deals & Coupons', query: 'Accessories', icon: Tag }
-];
-
 const SpotlightSearch = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
   const navigate = useNavigate();
+
+  const quickCategories = [
+    { name: t('nav.audio'), query: 'Audio', icon: Headphones },
+    { name: t('nav.wearables'), query: 'Wearables', icon: Watch },
+    { name: t('nav.workspace'), query: 'Workspace', icon: Laptop },
+    { name: t('nav.deals'), query: 'Accessories', icon: Tag }
+  ];
 
   // Focus on input when opened
   useEffect(() => {
@@ -96,7 +98,7 @@ const SpotlightSearch = ({ isOpen, onClose }) => {
           <input
             ref={inputRef}
             type="text"
-            placeholder="Search products or categories... (e.g. Headphones, Apple, Watch)"
+            placeholder={t('catalog.search_input')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="spotlight-input"
@@ -114,12 +116,12 @@ const SpotlightSearch = ({ isOpen, onClose }) => {
           {loading ? (
             <div className="spotlight-loading">
               <div className="loading-spinner"></div>
-              <span>Searching...</span>
+              <span>...</span>
             </div>
           ) : query.trim() ? (
             results.length > 0 ? (
               <div className="spotlight-results-section">
-                <span className="spotlight-section-title">Matching Products ({results.length})</span>
+                <span className="spotlight-section-title">{t('catalog.count_products', { count: results.length })}</span>
                 <div className="spotlight-results-list">
                   {results.map((prod) => (
                     <div
@@ -146,13 +148,13 @@ const SpotlightSearch = ({ isOpen, onClose }) => {
               </div>
             ) : (
               <div className="spotlight-no-results">
-                <p>No products found for "{query}"</p>
-                <span>Try a different search term or browse the categories below.</span>
+                <p>{t('catalog.empty_title')}</p>
+                <span>{t('catalog.empty_desc')}</span>
               </div>
             )
           ) : (
             <div className="spotlight-default-view">
-              <span className="spotlight-section-title">Quick Categories</span>
+              <span className="spotlight-section-title">{t('home.categories_title')}</span>
               <div className="spotlight-categories-grid">
                 {quickCategories.map((cat, idx) => {
                   const Icon = cat.icon;
@@ -171,7 +173,7 @@ const SpotlightSearch = ({ isOpen, onClose }) => {
 
               <div className="spotlight-tips-footer">
                 <Sparkles size={14} />
-                <span>Tip: Press <strong>Ctrl+K</strong> or <strong>Cmd+K</strong> anywhere to open search.</span>
+                <span>Tip: <strong>Ctrl + K</strong> / <strong>⌘K</strong></span>
               </div>
             </div>
           )}

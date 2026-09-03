@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ShieldCheck,
   Truck,
@@ -18,6 +19,7 @@ import {
 import './Footer.css';
 
 const Footer = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -41,8 +43,8 @@ const Footer = () => {
                 <Truck size={22} strokeWidth={2} />
               </div>
               <div className="benefit-text-wrap">
-                <h4 className="benefit-heading">Free Express Shipping</h4>
-                <p className="benefit-sub">Complimentary on all orders over $100</p>
+                <h4 className="benefit-heading">{t('footer.benefit1_title')}</h4>
+                <p className="benefit-sub">{t('footer.benefit1_sub')}</p>
               </div>
             </div>
 
@@ -51,8 +53,8 @@ const Footer = () => {
                 <ShieldCheck size={22} strokeWidth={2} />
               </div>
               <div className="benefit-text-wrap">
-                <h4 className="benefit-heading">100% Authentic Gear</h4>
-                <p className="benefit-sub">Certified original with 1-year warranty</p>
+                <h4 className="benefit-heading">{t('footer.benefit2_title')}</h4>
+                <p className="benefit-sub">{t('footer.benefit2_sub')}</p>
               </div>
             </div>
 
@@ -61,8 +63,8 @@ const Footer = () => {
                 <RotateCcw size={22} strokeWidth={2} />
               </div>
               <div className="benefit-text-wrap">
-                <h4 className="benefit-heading">14-Day Money Back</h4>
-                <p className="benefit-sub">No-questions-asked return policy</p>
+                <h4 className="benefit-heading">{t('footer.benefit3_title')}</h4>
+                <p className="benefit-sub">{t('footer.benefit3_sub')}</p>
               </div>
             </div>
 
@@ -71,8 +73,8 @@ const Footer = () => {
                 <Headphones size={22} strokeWidth={2} />
               </div>
               <div className="benefit-text-wrap">
-                <h4 className="benefit-heading">24/7 Expert Support</h4>
-                <p className="benefit-sub">Real human assistance whenever needed</p>
+                <h4 className="benefit-heading">{t('footer.benefit4_title')}</h4>
+                <p className="benefit-sub">{t('footer.benefit4_sub')}</p>
               </div>
             </div>
           </div>
@@ -94,13 +96,13 @@ const Footer = () => {
                 </span>
               </Link>
               <p className="footer-brand-description">
-                Simple. Beautiful. Yours. Minimalist high-performance consumer technology designed to seamlessly fit into your daily workflow.
+                {t('footer.brand_desc')}
               </p>
 
               {/* Newsletter form */}
               <div className="newsletter-box">
-                <span className="newsletter-title">Subscribe to the MiniShop Journal</span>
-                <p className="newsletter-subtitle">Get private access to product drops and 10% off your first purchase.</p>
+                <span className="newsletter-title">{t('footer.newsletter_title')}</span>
+                <p className="newsletter-subtitle">{t('footer.newsletter_sub')}</p>
                 {subscribed ? (
                   <div className="newsletter-success-msg">
                     <CheckCircle2 size={16} /> You're on the VIP list! Welcome aboard.
@@ -109,7 +111,7 @@ const Footer = () => {
                   <form onSubmit={handleSubscribe} className="newsletter-input-group">
                     <input
                       type="email"
-                      placeholder="Enter your email address"
+                      placeholder={t('footer.newsletter_placeholder')}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -125,7 +127,7 @@ const Footer = () => {
 
             {/* Column 2: Shop Catalog */}
             <div className="footer-column">
-              <h4 className="footer-column-title">Products</h4>
+              <h4 className="footer-column-title">{t('footer.products_col')}</h4>
               <ul className="footer-links-list">
                 <li><Link to="/catalog?category=Audio">Audio & Headphones</Link></li>
                 <li><Link to="/catalog?category=Wearables">Smart Watches & Bands</Link></li>
@@ -138,20 +140,20 @@ const Footer = () => {
 
             {/* Column 3: Customer Care */}
             <div className="footer-column">
-              <h4 className="footer-column-title">Customer Care</h4>
+              <h4 className="footer-column-title">{t('footer.customer_col')}</h4>
               <ul className="footer-links-list">
-                <li><Link to="/orders">Order Tracking</Link></li>
-                <li><Link to="/wishlist">Saved Wishlist</Link></li>
-                <li><Link to="/cart">Shopping Bag</Link></li>
-                <li><Link to="/profile">Account Settings</Link></li>
-                <li><Link to="/profile">Shipping Addresses</Link></li>
-                <li><Link to="/login">Sign In / Register</Link></li>
+                <li><Link to="/orders">{t('nav.orders')}</Link></li>
+                <li><Link to="/wishlist">{t('nav.wishlist')}</Link></li>
+                <li><Link to="/cart">{t('nav.cart')}</Link></li>
+                <li><Link to="/profile">{t('nav.profile')}</Link></li>
+                <li><Link to="/profile">{t('profile.tab_addresses')}</Link></li>
+                <li><Link to="/login">{t('nav.login')} / {t('nav.register')}</Link></li>
               </ul>
             </div>
 
             {/* Column 4: Company & Trust */}
             <div className="footer-column">
-              <h4 className="footer-column-title">Company</h4>
+              <h4 className="footer-column-title">{t('footer.company_col')}</h4>
               <ul className="footer-links-list">
                 <li><a href="#about">About MiniShop</a></li>
                 <li><a href="#sustainability">Sustainability</a></li>
@@ -161,7 +163,7 @@ const Footer = () => {
 
               <div className="footer-status-pill">
                 <span className="status-indicator-dot"></span>
-                <span>All Systems Operational</span>
+                <span>{t('footer.operational_status')}</span>
               </div>
             </div>
           </div>
@@ -172,17 +174,17 @@ const Footer = () => {
       <div className="footer-bottom-bar">
         <div className="container footer-bottom-inner">
           <p className="copyright-text">
-            © {new Date().getFullYear()} MiniShop, Inc. All rights reserved. Designed with Apple-level simplicity.
+            {t('footer.rights_reserved')}
           </p>
 
           <div className="footer-legal-links">
-            <a href="#privacy">Privacy Policy</a>
+            <a href="#privacy">{t('footer.privacy')}</a>
             <span className="legal-dot">•</span>
-            <a href="#terms">Terms of Service</a>
+            <a href="#terms">{t('footer.terms')}</a>
             <span className="legal-dot">•</span>
             <a href="#cookies">Cookie Preferences</a>
             <span className="legal-dot">•</span>
-            <a href="#security">Security</a>
+            <a href="#security">{t('footer.security')}</a>
           </div>
         </div>
       </div>

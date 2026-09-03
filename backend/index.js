@@ -28,7 +28,7 @@ const PORT = process.env.PORT || 5000;
 connectDB();
 
 // Global Middlewares
-app.use(cors({ origin: process.env.CLIENT_URL }));
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

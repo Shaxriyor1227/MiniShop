@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { LogIn, ArrowRight, ShieldCheck, Sparkles, ShoppingBag } from 'lucide-react';
 import './Login.css';
 
 const Login = () => {
+  const { t } = useTranslation();
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,15 +48,15 @@ const Login = () => {
               </div>
               <span className="brand-title">Mini<span style={{ color: 'var(--accent-blue)' }}>Shop</span></span>
             </Link>
-            <h2>Welcome Back</h2>
-            <p>Sign in to access your orders, saved items, and settings</p>
+            <h2>{t('auth.login_title')}</h2>
+            <p>{t('auth.login_subtitle')}</p>
           </div>
 
           {errorMsg && <div className="auth-error-alert">{errorMsg}</div>}
 
           <form onSubmit={handleSubmit} className="auth-form">
             <div className="form-group">
-              <label>Email Address</label>
+              <label>{t('auth.email_label')}</label>
               <input
                 type="email"
                 placeholder="name@example.com"
@@ -67,7 +69,7 @@ const Login = () => {
 
             <div className="form-group">
               <div className="pwd-label-row">
-                <label>Password</label>
+                <label>{t('auth.password_label')}</label>
               </div>
               <input
                 type="password"
@@ -80,14 +82,14 @@ const Login = () => {
             </div>
 
             <button type="submit" className="btn-primary auth-submit-btn" disabled={loading}>
-              {loading ? 'Signing In...' : 'Sign In'}
+              {loading ? '...' : t('auth.login_btn')}
             </button>
           </form>
 
           {/* Quick Demo Logins for Pair Programming review */}
           <div className="demo-accounts-box">
             <div className="demo-title">
-              <Sparkles size={14} /> Quick Demo Accounts:
+              <Sparkles size={14} /> {t('auth.quick_demo')}
             </div>
             <div className="demo-buttons">
               <button
@@ -95,21 +97,21 @@ const Login = () => {
                 className="demo-btn"
                 onClick={() => handleQuickLogin('customer@minishop.com', 'customer123')}
               >
-                Customer Demo
+                {t('auth.demo_customer')}
               </button>
               <button
                 type="button"
                 className="demo-btn"
                 onClick={() => handleQuickLogin('admin@minishop.com', 'admin123')}
               >
-                Admin Demo
+                {t('auth.demo_admin')}
               </button>
             </div>
           </div>
 
           <div className="auth-footer">
             <p>
-              Don't have an account? <Link to="/register">Create one here</Link>
+              {t('auth.no_account')} <Link to="/register">{t('auth.register_btn')}</Link>
             </p>
           </div>
         </div>

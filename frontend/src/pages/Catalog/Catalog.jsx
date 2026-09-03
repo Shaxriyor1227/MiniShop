@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../api/axiosInstance';
 import ProductCard from '../../components/ProductCard/ProductCard';
 import {
@@ -11,26 +12,34 @@ import {
   RotateCcw,
   Sparkles,
   Filter,
-  ChevronDown
+  ChevronDown,
+  Layers,
+  Headphones,
+  Watch,
+  Laptop,
+  Tag,
+  CheckSquare,
+  Square
 } from 'lucide-react';
 import './Catalog.css';
 
 const priceRanges = [
-  { label: 'All Prices', min: 0, max: Infinity },
-  { label: 'Under $50', min: 0, max: 50 },
-  { label: '$50 to $150', min: 50, max: 150 },
-  { label: '$150 to $300', min: 150, max: 300 },
-  { label: 'Over $300', min: 300, max: Infinity }
+  { labelKey: 'catalog.all_prices', defaultLabel: 'All Prices', min: 0, max: Infinity },
+  { labelKey: 'catalog.under_50', defaultLabel: 'Under $50', min: 0, max: 50 },
+  { labelKey: 'catalog.50_150', defaultLabel: '$50 to $150', min: 50, max: 150 },
+  { labelKey: 'catalog.150_300', defaultLabel: '$150 to $300', min: 150, max: 300 },
+  { labelKey: 'catalog.over_300', defaultLabel: 'Over $300', min: 300, max: Infinity }
 ];
 
-const sortOptions = [
-  { id: 'featured', label: 'Featured Picks' },
-  { id: 'price_asc', label: 'Price: Low to High' },
-  { id: 'price_desc', label: 'Price: High to Low' },
-  { id: 'name_asc', label: 'Name: A to Z' }
-];
+const categoryIcons = {
+  Audio: Headphones,
+  Wearables: Watch,
+  Workspace: Laptop,
+  Accessories: Tag
+};
 
 const Catalog = () => {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchParam = searchParams.get('search') || '';
   const categoryParam = searchParams.get('category') || '';
@@ -77,8 +86,12 @@ const Catalog = () => {
           axiosInstance.get('/category/getAll'),
           axiosInstance.get('/brand/getAll')
         ]);
-        if (catRes.data.success) setCategories(catRes.data.innerData);
-        if (brandRes.data.success) setBrands(brandRes.data.innerData);
+        if (catRes.data.success && catRes.data.innerData) {
+          setCategories(catRes.data.innerData);
+        }
+        if (brandRes.data.success && brandRes.data.innerData) {
+          setBrands(brandRes.data.innerData);
+        }
       } catch (err) {
         console.error('[Catalog Meta Error]:', err);
       }
@@ -196,7 +209,14 @@ const Catalog = () => {
     setSearchParams(newParams);
   };
 
-  const currentSortLabel = sortOptions.find((s) => s.id === sortBy)?.label || 'Featured Picks';
+  const sortOptions = [
+    { id: 'featured', label: t('catalog.sort_featured') },
+    { id: 'price_asc', label: t('catalog.sort_price_asc') },
+    { id: 'price_desc', label: t('catalog.sort_price_desc') },
+    { id: 'rating', label: t('catalog.sort_rating') }
+  ];
+
+  const currentSortLabel = sortOptions.find((s) => s.id === sortBy)?.label || t('catalog.sort_featured');
 
   const activeFiltersCount =
     (selectedCategory ? 1 : 0) +
@@ -206,35 +226,60 @@ const Catalog = () => {
     (searchParam ? 1 : 0);
 
   return (
-    <div className="catalog-page page-enter">
+    <div className="catalog-editorial-page page-enter">
       <div className="container">
-        {/* Breadcrumb */}
+        {/* Editorial Breadcrumb */}
         <div className="catalog-breadcrumb">
-          <Link to="/">Home</Link>
-          <span>/</span>
-          <span className="current-crumb">Product Catalog</span>
+          <Link to="/">{t('catalog.breadcrumb_home')}</Link>
+          <span className="crumb-sep">/</span>
+          <span className="current-crumb">{t('catalog.breadcrumb_catalog')}</span>
         </div>
 
         {/* Page Header */}
-        <div className="catalog-header-banner">
-          <div>
+        <div className="catalog-editorial-header">
+          <div className="header-left-col">
+            <span className="catalog-eyebrow">MINISHOP / HARDWARE VAULT</span>
             <h1 className="catalog-main-title">
               {categoryParam
-                ? `${categoryParam} Collection`
+                ? `${categoryParam}`
                 : searchParam
-                ? `Search: "${searchParam}"`
-                : 'All Hardware & Gear'}
+                ? `"${searchParam}"`
+                : t('catalog.title')}
             </h1>
             <p className="catalog-main-desc">
-              Curated minimalist technology, studio audio, precision mechanical keyboards, and workspace essentials.
+              {t('catalog.desc')}
             </p>
           </div>
 
-          <div className="catalog-meta-stats">
-            <span className="product-count-chip">
-              <strong>{products.length}</strong> {products.length === 1 ? 'Product' : 'Products'} Available
+          <div className="catalog-header-meta">
+            <span className="catalog-count-badge">
+              <strong>{products.length}</strong> {t('catalog.count_products', { count: products.length })}
             </span>
           </div>
+        </div>
+
+        {/* Quick Category Navigation Pill Bar */}
+        <div className="catalog-quick-nav-pills">
+          <button
+            className={`quick-pill-btn ${selectedCategory === '' ? 'active' : ''}`}
+            onClick={() => handleCategoryChange('')}
+          >
+            <Layers size={15} />
+            <span>{t('catalog.all_categories')}</span>
+          </button>
+          {categories.map((cat) => {
+            const IconComp = categoryIcons[cat.name] || Tag;
+            return (
+              <button
+                key={cat._id}
+                className={`quick-pill-btn ${selectedCategory === cat._id ? 'active' : ''}`}
+                onClick={() => handleCategoryChange(cat._id)}
+              >
+                <IconComp size={15} />
+                <span>{cat.name}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Catalog Main Layout */}
@@ -246,7 +291,7 @@ const Catalog = () => {
               onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
             >
               <Filter size={16} />
-              <span>Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}</span>
+              <span>{t('catalog.filters')} {activeFiltersCount > 0 && `(${activeFiltersCount})`}</span>
             </button>
 
             {/* Custom Mobile Sort Dropdown */}
@@ -283,21 +328,21 @@ const Catalog = () => {
           {/* Left Filter Sidebar */}
           <aside className={`catalog-sidebar card ${mobileFilterOpen ? 'mobile-open' : ''}`}>
             <div className="sidebar-header">
-              <h3>Filters</h3>
+              <h3>{t('catalog.filters')}</h3>
               {activeFiltersCount > 0 && (
                 <button className="reset-sidebar-btn" onClick={handleResetFilters}>
-                  Reset All
+                  {t('catalog.reset_all')}
                 </button>
               )}
             </div>
 
             {/* 1. Search Box */}
             <div className="filter-group">
-              <label className="filter-group-title">Search Keywords</label>
+              <label className="filter-group-title">{t('catalog.search_label', 'Qidirish')}</label>
               <form onSubmit={handleSearchSubmit} className="sidebar-search-box">
                 <input
                   type="text"
-                  placeholder="e.g. Headphones, Watch..."
+                  placeholder={t('catalog.search_input')}
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                 />
@@ -309,13 +354,14 @@ const Catalog = () => {
 
             {/* 2. Categories Facet */}
             <div className="filter-group">
-              <label className="filter-group-title">Categories</label>
+              <label className="filter-group-title">{t('catalog.category')}</label>
               <div className="facet-list">
                 <button
                   className={`facet-pill-btn ${selectedCategory === '' ? 'active' : ''}`}
                   onClick={() => handleCategoryChange('')}
                 >
-                  <span>All Categories</span>
+                  <span>{t('catalog.all_categories')}</span>
+                  {selectedCategory === '' && <Check size={14} className="facet-check" />}
                 </button>
                 {categories.map((cat) => (
                   <button
@@ -324,38 +370,41 @@ const Catalog = () => {
                     onClick={() => handleCategoryChange(cat._id)}
                   >
                     <span>{cat.name}</span>
-                    {selectedCategory === cat._id && <Check size={14} />}
+                    {selectedCategory === cat._id && <Check size={14} className="facet-check" />}
                   </button>
                 ))}
               </div>
             </div>
 
             {/* 3. Brands Facet */}
-            <div className="filter-group">
-              <label className="filter-group-title">Brand / Maker</label>
-              <div className="facet-list">
-                <button
-                  className={`facet-pill-btn ${selectedBrand === '' ? 'active' : ''}`}
-                  onClick={() => handleBrandChange('')}
-                >
-                  <span>All Brands</span>
-                </button>
-                {brands.map((b) => (
+            {brands.length > 0 && (
+              <div className="filter-group">
+                <label className="filter-group-title">{t('catalog.brands')}</label>
+                <div className="facet-list">
                   <button
-                    key={b._id}
-                    className={`facet-pill-btn ${selectedBrand === b._id ? 'active' : ''}`}
-                    onClick={() => handleBrandChange(b._id)}
+                    className={`facet-pill-btn ${selectedBrand === '' ? 'active' : ''}`}
+                    onClick={() => handleBrandChange('')}
                   >
-                    <span>{b.name}</span>
-                    {selectedBrand === b._id && <Check size={14} />}
+                    <span>{t('catalog.all_brands', 'Barcha brendlar')}</span>
+                    {selectedBrand === '' && <Check size={14} className="facet-check" />}
                   </button>
-                ))}
+                  {brands.map((b) => (
+                    <button
+                      key={b._id}
+                      className={`facet-pill-btn ${selectedBrand === b._id ? 'active' : ''}`}
+                      onClick={() => handleBrandChange(b._id)}
+                    >
+                      <span>{b.name}</span>
+                      {selectedBrand === b._id && <Check size={14} className="facet-check" />}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* 4. Price Ranges Facet */}
             <div className="filter-group">
-              <label className="filter-group-title">Price Range</label>
+              <label className="filter-group-title">{t('catalog.price_range')}</label>
               <div className="facet-list">
                 {priceRanges.map((range, idx) => (
                   <button
@@ -363,8 +412,8 @@ const Catalog = () => {
                     className={`facet-pill-btn ${selectedPriceRange === idx ? 'active' : ''}`}
                     onClick={() => setSelectedPriceRange(idx)}
                   >
-                    <span>{range.label}</span>
-                    {selectedPriceRange === idx && <Check size={14} />}
+                    <span>{range.defaultLabel}</span>
+                    {selectedPriceRange === idx && <Check size={14} className="facet-check" />}
                   </button>
                 ))}
               </div>
@@ -379,7 +428,7 @@ const Catalog = () => {
                   onChange={(e) => setInStockOnly(e.target.checked)}
                 />
                 <span className="checkbox-custom"></span>
-                <span className="checkbox-text">In-Stock Only</span>
+                <span className="checkbox-text">{t('catalog.in_stock_only')}</span>
               </label>
             </div>
 
@@ -388,7 +437,7 @@ const Catalog = () => {
                 className="btn-primary apply-mobile-filters-btn"
                 onClick={() => setMobileFilterOpen(false)}
               >
-                View {products.length} Results
+                {t('catalog.apply_filters')} ({products.length})
               </button>
             )}
           </aside>
@@ -400,7 +449,7 @@ const Catalog = () => {
               <div className="active-chips-container">
                 {activeFiltersCount > 0 ? (
                   <>
-                    <span className="chips-title">Active:</span>
+                    <span className="chips-title">{t('catalog.active_filters')}</span>
                     {searchParam && (
                       <span className="active-filter-chip">
                         "{searchParam}"
@@ -431,7 +480,7 @@ const Catalog = () => {
                     )}
                     {selectedPriceRange > 0 && (
                       <span className="active-filter-chip">
-                        {priceRanges[selectedPriceRange].label}
+                        {priceRanges[selectedPriceRange].defaultLabel}
                         <button onClick={() => setSelectedPriceRange(0)}>
                           <X size={12} />
                         </button>
@@ -439,18 +488,20 @@ const Catalog = () => {
                     )}
                     {inStockOnly && (
                       <span className="active-filter-chip">
-                        In-Stock Only
+                        {t('catalog.in_stock_only')}
                         <button onClick={() => setInStockOnly(false)}>
                           <X size={12} />
                         </button>
                       </span>
                     )}
                     <button className="clear-all-chips-btn" onClick={handleResetFilters}>
-                      Clear All
+                      {t('catalog.clear_all')}
                     </button>
                   </>
                 ) : (
-                  <span className="showing-results-text">Showing all curated products</span>
+                  <span className="showing-results-text">
+                    <strong>{products.length}</strong> {t('catalog.count_products', { count: products.length })}
+                  </span>
                 )}
               </div>
 
@@ -461,7 +512,7 @@ const Catalog = () => {
                   onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
                 >
                   <ArrowUpDown size={14} className="sort-icon-blue" />
-                  <span className="sort-trigger-label">Sort: {currentSortLabel}</span>
+                  <span className="sort-trigger-label">{t('catalog.sort_by')}: {currentSortLabel}</span>
                   <ChevronDown size={13} className={`sort-chevron-icon ${sortDropdownOpen ? 'rotate' : ''}`} />
                 </button>
 
@@ -499,10 +550,10 @@ const Catalog = () => {
             ) : products.length === 0 ? (
               <div className="catalog-empty-card card">
                 <img src="/images/empty_cart.png" alt="No items" className="empty-catalog-img" />
-                <h3>No Matching Hardware Found</h3>
-                <p>We couldn't find any products matching your active filters or keywords.</p>
+                <h3>{t('catalog.empty_title')}</h3>
+                <p>{t('catalog.empty_desc')}</p>
                 <button className="btn-primary" onClick={handleResetFilters}>
-                  Reset All Filters
+                  {t('catalog.reset_all')}
                 </button>
               </div>
             ) : (

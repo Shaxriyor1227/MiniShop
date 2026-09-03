@@ -21,15 +21,18 @@ import {
   Moon,
   Shield
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useTheme } from '../../context/ThemeContext';
 import NotificationModal from '../NotificationModal/NotificationModal';
 import SpotlightSearch from '../SpotlightSearch/SpotlightSearch';
+import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
 import './Navbar.css';
 
 const Navbar = () => {
+  const { t } = useTranslation();
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const { itemCount } = useCart();
   const { count: wishlistCount } = useWishlist();
@@ -91,7 +94,7 @@ const Navbar = () => {
                 `nav-link-item ${isActive && !location.search ? 'active' : ''}`
               }
             >
-              Home
+              {t('nav.home')}
             </NavLink>
 
             <NavLink
@@ -100,7 +103,7 @@ const Navbar = () => {
                 `nav-link-item ${isActive && !location.search ? 'active' : ''}`
               }
             >
-              Catalog
+              {t('nav.catalog')}
             </NavLink>
 
             <NavLink
@@ -109,7 +112,7 @@ const Navbar = () => {
                 `nav-link-item ${location.pathname === '/catalog' && location.search.includes('Audio') ? 'active' : ''}`
               }
             >
-              Audio
+              {t('nav.audio')}
             </NavLink>
 
             <NavLink
@@ -118,7 +121,7 @@ const Navbar = () => {
                 `nav-link-item ${location.pathname === '/catalog' && location.search.includes('Wearables') ? 'active' : ''}`
               }
             >
-              Wearables
+              {t('nav.wearables')}
             </NavLink>
 
             <NavLink
@@ -127,7 +130,7 @@ const Navbar = () => {
                 `nav-link-item ${location.pathname === '/catalog' && location.search.includes('Workspace') ? 'active' : ''}`
               }
             >
-              Workspace
+              {t('nav.workspace')}
             </NavLink>
 
             <NavLink
@@ -136,8 +139,8 @@ const Navbar = () => {
                 `nav-link-item promo-link ${location.pathname === '/catalog' && location.search.includes('Accessories') ? 'active' : ''}`
               }
             >
-              <span>Deals</span>
-              <span className="promo-badge">HOT</span>
+              <span>{t('nav.deals')}</span>
+              <span className="promo-badge">{t('nav.hot')}</span>
             </NavLink>
 
             {/* Admin link for Admin users */}
@@ -163,9 +166,12 @@ const Navbar = () => {
               title="Search (Ctrl+K)"
             >
               <Search size={15} className="trigger-search-icon" />
-              <span className="trigger-text">Search</span>
-              <span className="trigger-shortcut">⌘K</span>
+              <span className="trigger-text">{t('nav.search_placeholder').replace('...', '')}</span>
+              <span className="trigger-shortcut">{t('nav.search_shortcut')}</span>
             </button>
+
+            {/* Language Switcher for Guest Users */}
+            {!isAuthenticated && <LanguageSwitcher variant="dropdown" />}
 
             {/* Dark/Light Theme Toggle */}
             <button
@@ -178,13 +184,13 @@ const Navbar = () => {
             </button>
 
             {/* Wishlist */}
-            <Link to="/wishlist" className="nav-action-icon" title="Wishlist">
+            <Link to="/wishlist" className="nav-action-icon" title={t('nav.wishlist')}>
               <Heart size={18} strokeWidth={2} />
               {wishlistCount > 0 && <span className="nav-count-badge">{wishlistCount}</span>}
             </Link>
 
             {/* Cart */}
-            <Link to="/cart" className="nav-action-icon cart-action-icon" title="Shopping Cart">
+            <Link to="/cart" className="nav-action-icon cart-action-icon" title={t('nav.cart')}>
               <ShoppingBag size={18} strokeWidth={2} />
               {itemCount > 0 && <span className="nav-count-badge cart-count-badge">{itemCount}</span>}
             </Link>
@@ -194,7 +200,7 @@ const Navbar = () => {
               <button
                 className="nav-action-icon"
                 onClick={() => setShowNotifications(true)}
-                title="Notifications"
+                title={t('nav.notifications')}
               >
                 <Bell size={18} strokeWidth={2} />
               </button>
@@ -225,6 +231,13 @@ const Navbar = () => {
                     </div>
                     <div className="flyout-divider"></div>
 
+                    {/* Integrated Language Switcher inside Profile Flyout */}
+                    <div className="flyout-lang-picker">
+                      <span className="flyout-lang-label">Til / Language</span>
+                      <LanguageSwitcher variant="pills" />
+                    </div>
+                    <div className="flyout-divider"></div>
+
                     {isAdmin && (
                       <>
                         <Link
@@ -232,7 +245,7 @@ const Navbar = () => {
                           className="flyout-item admin-flyout-item"
                           onClick={() => setUserDropdown(false)}
                         >
-                          <Shield size={15} /> Admin Paneli
+                          <Shield size={15} /> {t('nav.admin')}
                         </Link>
                         <div className="flyout-divider"></div>
                       </>
@@ -243,14 +256,14 @@ const Navbar = () => {
                       className="flyout-item"
                       onClick={() => setUserDropdown(false)}
                     >
-                      <User size={15} /> Profile & Settings
+                      <User size={15} /> {t('nav.profile')}
                     </Link>
                     <Link
                       to="/orders"
                       className="flyout-item"
                       onClick={() => setUserDropdown(false)}
                     >
-                      <Package size={15} /> My Orders
+                      <Package size={15} /> {t('nav.orders')}
                     </Link>
                     <div className="flyout-divider"></div>
                     <button
@@ -261,7 +274,7 @@ const Navbar = () => {
                         navigate('/');
                       }}
                     >
-                      <LogOut size={15} /> Sign Out
+                      <LogOut size={15} /> {t('nav.sign_out')}
                     </button>
                   </div>
                 )}
@@ -269,10 +282,10 @@ const Navbar = () => {
             ) : (
               <div className="nav-auth-cta-group">
                 <Link to="/login" className="nav-login-link">
-                  Sign In
+                  {t('nav.login')}
                 </Link>
                 <Link to="/register" className="btn-primary nav-register-btn">
-                  Sign Up
+                  {t('nav.register')}
                 </Link>
               </div>
             )}
@@ -318,8 +331,8 @@ const Navbar = () => {
                 }}
               >
                 <Search size={16} />
-                <span>Search products...</span>
-                <kbd>⌘K</kbd>
+                <span>{t('nav.search_placeholder')}</span>
+                <kbd>{t('nav.search_shortcut')}</kbd>
               </button>
             </div>
 
@@ -331,13 +344,13 @@ const Navbar = () => {
                   <div className="cat-icon-frame">
                     <HomeIcon size={16} />
                   </div>
-                  <span>Home Landing</span>
+                  <span>{t('nav.home')}</span>
                 </Link>
                 <Link to="/catalog" className="mobile-category-row" onClick={() => setMobileDrawerOpen(false)}>
                   <div className="cat-icon-frame">
                     <Grid size={16} />
                   </div>
-                  <span>Full Catalog</span>
+                  <span>{t('nav.catalog')}</span>
                 </Link>
                 <Link
                   to="/catalog?category=Audio"
@@ -347,7 +360,7 @@ const Navbar = () => {
                   <div className="cat-icon-frame">
                     <Headphones size={16} />
                   </div>
-                  <span>Audio & Headphones</span>
+                  <span>{t('nav.audio')}</span>
                 </Link>
                 <Link
                   to="/catalog?category=Wearables"
@@ -357,7 +370,7 @@ const Navbar = () => {
                   <div className="cat-icon-frame">
                     <Watch size={16} />
                   </div>
-                  <span>Smart Watches</span>
+                  <span>{t('nav.wearables')}</span>
                 </Link>
                 <Link
                   to="/catalog?category=Workspace"
@@ -367,7 +380,7 @@ const Navbar = () => {
                   <div className="cat-icon-frame">
                     <Laptop size={16} />
                   </div>
-                  <span>Workspace & Keyboards</span>
+                  <span>{t('nav.workspace')}</span>
                 </Link>
                 <Link
                   to="/catalog?category=Accessories"
@@ -377,7 +390,7 @@ const Navbar = () => {
                   <div className="cat-icon-frame promo-icon-frame">
                     <Tag size={16} />
                   </div>
-                  <span>Accessories & Deals</span>
+                  <span>{t('nav.deals')}</span>
                 </Link>
 
                 {isAdmin && (
@@ -389,7 +402,7 @@ const Navbar = () => {
                     <div className="cat-icon-frame admin-icon-frame">
                       <Shield size={16} />
                     </div>
-                    <span>Admin Paneli</span>
+                    <span>{t('nav.admin')}</span>
                   </Link>
                 )}
               </div>
@@ -398,6 +411,10 @@ const Navbar = () => {
 
               <div className="drawer-section-title">Account & Settings</div>
               <div className="mobile-nav-categories">
+                <div style={{ padding: '8px 12px' }}>
+                  <LanguageSwitcher variant="pills" />
+                </div>
+
                 <div
                   className="mobile-category-row"
                   onClick={toggleTheme}
@@ -406,7 +423,7 @@ const Navbar = () => {
                   <div className="cat-icon-frame">
                     {isDark ? <Sun size={16} /> : <Moon size={16} />}
                   </div>
-                  <span>Rejim: {isDark ? "Qorong'i (Dark)" : "Yorug' (Light)"}</span>
+                  <span>Rejim: {isDark ? "Dark" : "Light"}</span>
                 </div>
 
                 <Link
@@ -417,7 +434,7 @@ const Navbar = () => {
                   <div className="cat-icon-frame">
                     <Heart size={16} />
                   </div>
-                  <span>Wishlist</span>
+                  <span>{t('nav.wishlist')}</span>
                   {wishlistCount > 0 && <span className="mobile-counter">{wishlistCount}</span>}
                 </Link>
                 <Link
@@ -428,7 +445,7 @@ const Navbar = () => {
                   <div className="cat-icon-frame">
                     <ShoppingBag size={16} />
                   </div>
-                  <span>Cart</span>
+                  <span>{t('nav.cart')}</span>
                   {itemCount > 0 && <span className="mobile-counter">{itemCount}</span>}
                 </Link>
                 {isAuthenticated && (
@@ -441,7 +458,7 @@ const Navbar = () => {
                       <div className="cat-icon-frame">
                         <Package size={16} />
                       </div>
-                      <span>My Orders</span>
+                      <span>{t('nav.orders')}</span>
                     </Link>
                     <Link
                       to="/profile"
@@ -451,7 +468,7 @@ const Navbar = () => {
                       <div className="cat-icon-frame">
                         <User size={16} />
                       </div>
-                      <span>Profile & Settings</span>
+                      <span>{t('nav.profile')}</span>
                     </Link>
                   </>
                 )}
@@ -478,7 +495,7 @@ const Navbar = () => {
                       logout();
                     }}
                   >
-                    <LogOut size={15} /> Sign Out
+                    <LogOut size={15} /> {t('nav.sign_out')}
                   </button>
                 </div>
               ) : (
@@ -488,14 +505,14 @@ const Navbar = () => {
                     className="btn-secondary mobile-auth-btn"
                     onClick={() => setMobileDrawerOpen(false)}
                   >
-                    Sign In
+                    {t('nav.login')}
                   </Link>
                   <Link
                     to="/register"
                     className="btn-primary mobile-auth-btn"
                     onClick={() => setMobileDrawerOpen(false)}
                   >
-                    Create Account
+                    {t('nav.register')}
                   </Link>
                 </div>
               )}

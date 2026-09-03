@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import axiosInstance from '../../api/axiosInstance';
@@ -7,6 +8,7 @@ import { MapPin, CreditCard, ShieldCheck, CheckCircle2, Plus, ArrowLeft } from '
 import './Checkout.css';
 
 const Checkout = () => {
+  const { t } = useTranslation();
   const { items, subtotal, discountAmount, totalAmount, appliedCoupon, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -107,19 +109,19 @@ const Checkout = () => {
         <div className="container">
           <div className="order-success-card card">
             <CheckCircle2 size={64} className="success-icon" />
-            <h2>Order Placed Successfully!</h2>
+            <h2>{t('checkout.success_title')}</h2>
             <p className="order-num-text">
               Order ID: <strong>#{orderSuccess._id.slice(-8)}</strong>
             </p>
             <p className="order-desc-text">
-              We've received your order. You can track your shipment and view full receipt in "My Orders".
+              {t('checkout.success_desc', { id: orderSuccess._id.slice(-8) })}
             </p>
             <div className="success-buttons">
               <Link to="/orders" className="btn-primary">
-                View My Orders
+                {t('checkout.view_orders')}
               </Link>
-              <Link to="/" className="btn-secondary">
-                Continue Shopping
+              <Link to="/catalog" className="btn-secondary">
+                {t('cart.go_shopping')}
               </Link>
             </div>
           </div>
@@ -132,10 +134,10 @@ const Checkout = () => {
     return (
       <div className="checkout-page page-enter">
         <div className="container empty-checkout-wrap">
-          <h2>Your Cart is Empty</h2>
-          <p>Add items to your cart before proceeding to checkout.</p>
-          <Link to="/" className="btn-primary">
-            Browse Catalog
+          <h2>{t('cart.empty_title')}</h2>
+          <p>{t('cart.empty_desc')}</p>
+          <Link to="/catalog" className="btn-primary">
+            {t('cart.go_shopping')}
           </Link>
         </div>
       </div>
@@ -149,9 +151,9 @@ const Checkout = () => {
     <div className="checkout-page page-enter">
       <div className="container">
         <Link to="/cart" className="back-link">
-          <ArrowLeft size={16} /> Back to Cart
+          <ArrowLeft size={16} /> {t('checkout.back_to_cart')}
         </Link>
-        <h1 className="page-title">Checkout</h1>
+        <h1 className="page-title">{t('cart.checkout_btn')}</h1>
 
         {errorMsg && <div className="checkout-error-banner">{errorMsg}</div>}
 
@@ -162,12 +164,12 @@ const Checkout = () => {
             <div className="checkout-step-card card">
               <div className="step-header">
                 <div className="step-num">1</div>
-                <h3>Delivery Address</h3>
+                <h3>{t('checkout.step1_title')}</h3>
                 <button
                   className="add-address-btn"
                   onClick={() => setShowAddressForm(!showAddressForm)}
                 >
-                  <Plus size={16} /> Add Address
+                  <Plus size={16} /> {t('checkout.add_new_address')}
                 </button>
               </div>
 
@@ -175,7 +177,7 @@ const Checkout = () => {
                 <form onSubmit={handleAddNewAddress} className="new-address-form">
                   <input
                     type="text"
-                    placeholder="City / State (e.g. San Francisco, CA)"
+                    placeholder="City / State (e.g. Tashkent, Yunusabad)"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     required
@@ -191,14 +193,14 @@ const Checkout = () => {
                   />
                   <div className="address-form-btns">
                     <button type="submit" className="btn-primary">
-                      Save Address
+                      {t('checkout.save_address')}
                     </button>
                     <button
                       type="button"
                       className="btn-secondary"
                       onClick={() => setShowAddressForm(false)}
                     >
-                      Cancel
+                      {t('checkout.cancel')}
                     </button>
                   </div>
                 </form>
@@ -240,14 +242,14 @@ const Checkout = () => {
             <div className="checkout-step-card card">
               <div className="step-header">
                 <div className="step-num">2</div>
-                <h3>Payment Method</h3>
+                <h3>{t('checkout.step2_title')}</h3>
               </div>
 
               <div className="payment-options-grid">
                 {[
-                  { id: 'Credit Card', label: 'Credit / Debit Card (Visa, Mastercard, Amex)' },
-                  { id: 'Apple Pay / Google Pay', label: 'Apple Pay / Google Pay' },
-                  { id: 'Cash On Delivery', label: 'Cash on Delivery (Pay upon arrival)' }
+                  { id: 'Credit Card', label: t('checkout.pay_card') },
+                  { id: 'Click / Payme', label: t('checkout.pay_click') },
+                  { id: 'Cash On Delivery', label: t('checkout.pay_cash') }
                 ].map((pm) => (
                   <label
                     key={pm.id}
@@ -271,7 +273,7 @@ const Checkout = () => {
           {/* Right Column: Order Review */}
           <div className="checkout-summary-col">
             <div className="checkout-summary-card card">
-              <h3 className="summary-title">Order Summary</h3>
+              <h3 className="summary-title">{t('checkout.order_summary')}</h3>
 
               <div className="checkout-items-list">
                 {items.map((item) => {
@@ -300,26 +302,26 @@ const Checkout = () => {
               <div className="summary-divider"></div>
 
               <div className="summary-row">
-                <span>Subtotal</span>
+                <span>{t('cart.subtotal')}</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
 
               {discountAmount > 0 && (
                 <div className="summary-row discount-row">
-                  <span>Discount ({appliedCoupon?.code})</span>
+                  <span>{t('cart.discount')} ({appliedCoupon?.code})</span>
                   <span>-${discountAmount.toFixed(2)}</span>
                 </div>
               )}
 
               <div className="summary-row">
-                <span>Shipping</span>
-                <span>{shipping === 0 ? <strong className="free-ship">Free</strong> : `$${shipping.toFixed(2)}`}</span>
+                <span>{t('cart.shipping')}</span>
+                <span>{shipping === 0 ? <strong className="free-ship">{t('cart.free')}</strong> : `$${shipping.toFixed(2)}`}</span>
               </div>
 
               <div className="summary-divider"></div>
 
               <div className="summary-row total-row">
-                <span>Total Amount</span>
+                <span>{t('cart.total')}</span>
                 <span>${finalTotal.toFixed(2)}</span>
               </div>
 
@@ -328,12 +330,12 @@ const Checkout = () => {
                 onClick={handlePlaceOrder}
                 disabled={submitting}
               >
-                {submitting ? 'Processing Order...' : 'Place Order Now'}
+                {submitting ? '...' : t('checkout.place_order')}
               </button>
 
               <div className="security-guarantee">
                 <ShieldCheck size={16} />
-                <span>256-bit SSL encrypted secure transaction</span>
+                <span>{t('cart.secure_checkout')}</span>
               </div>
             </div>
           </div>

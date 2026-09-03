@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Heart, ShoppingBag, Check } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import './ProductCard.css';
 
 const ProductCard = ({ product }) => {
+  const { t } = useTranslation();
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const [addedAnimation, setAddedAnimation] = useState(false);
@@ -32,7 +34,7 @@ const ProductCard = ({ product }) => {
       {/* Top badges & Wishlist */}
       <div className="card-top-bar">
         {product.stock <= 5 && product.stock > 0 ? (
-          <span className="badge badge-amber">Low Stock ({product.stock})</span>
+          <span className="badge badge-amber">Stock: {product.stock}</span>
         ) : product.brand_id?.name ? (
           <span className="badge-brand">{product.brand_id.name}</span>
         ) : <span />}
@@ -40,7 +42,7 @@ const ProductCard = ({ product }) => {
         <button
           className={`wishlist-btn ${isLiked ? 'liked' : ''}`}
           onClick={handleToggleWishlist}
-          title={isLiked ? "Remove from wishlist" : "Add to wishlist"}
+          title={isLiked ? "Wishlist" : "Wishlist"}
         >
           <Heart size={18} fill={isLiked ? '#FF3B30' : 'none'} color={isLiked ? '#FF3B30' : '#1D1D1F'} />
         </button>
@@ -74,15 +76,15 @@ const ProductCard = ({ product }) => {
             className={`add-cart-btn ${addedAnimation ? 'added' : ''}`}
             onClick={handleAddToCart}
             disabled={product.stock === 0}
-            title={product.stock === 0 ? "Out of stock" : "Add to cart"}
+            title={product.stock === 0 ? t('product.out_of_stock') : t('product.add_to_cart')}
           >
             {addedAnimation ? (
               <>
-                <Check size={16} /> Added
+                <Check size={16} /> {t('product.added')}
               </>
             ) : (
               <>
-                <ShoppingBag size={16} /> {product.stock === 0 ? 'Out of stock' : 'Add to Cart'}
+                <ShoppingBag size={16} /> {product.stock === 0 ? t('product.out_of_stock') : t('product.add_to_cart')}
               </>
             )}
           </button>
