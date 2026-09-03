@@ -18,6 +18,8 @@ const orderRoute = require('./routes/orderRoute');
 const paymentRoute = require('./routes/paymentRoute');
 const couponRoute = require('./routes/couponRoute');
 const notificationRoute = require('./routes/notificationRoute');
+const uploadRoute = require('./routes/uploadRoute');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -29,6 +31,9 @@ connectDB();
 app.use(cors({ origin: process.env.CLIENT_URL }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -53,6 +58,7 @@ app.use('/order', orderRoute);
 app.use('/payment', paymentRoute);
 app.use('/coupon', couponRoute);
 app.use('/notification', notificationRoute);
+app.use('/upload', uploadRoute);
 
 // Swagger Documentation
 setupSwagger(app);

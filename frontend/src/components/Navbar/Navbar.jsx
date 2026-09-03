@@ -16,19 +16,24 @@ import {
   Tag,
   ChevronDown,
   Home as HomeIcon,
-  Grid
+  Grid,
+  Sun,
+  Moon,
+  Shield
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useTheme } from '../../context/ThemeContext';
 import NotificationModal from '../NotificationModal/NotificationModal';
 import SpotlightSearch from '../SpotlightSearch/SpotlightSearch';
 import './Navbar.css';
 
 const Navbar = () => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const { itemCount } = useCart();
   const { count: wishlistCount } = useWishlist();
+  const { isDark, toggleTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -134,6 +139,19 @@ const Navbar = () => {
               <span>Deals</span>
               <span className="promo-badge">HOT</span>
             </NavLink>
+
+            {/* Admin link for Admin users */}
+            {isAdmin && (
+              <NavLink
+                to="/admin"
+                className={({ isActive }) =>
+                  `nav-link-item admin-nav-pill ${isActive ? 'active' : ''}`
+                }
+              >
+                <Shield size={14} />
+                <span>Admin</span>
+              </NavLink>
+            )}
           </nav>
 
           {/* 3. Action Group & User Profile */}
@@ -147,6 +165,16 @@ const Navbar = () => {
               <Search size={15} className="trigger-search-icon" />
               <span className="trigger-text">Search</span>
               <span className="trigger-shortcut">⌘K</span>
+            </button>
+
+            {/* Dark/Light Theme Toggle */}
+            <button
+              className="nav-action-icon theme-toggle-btn"
+              onClick={toggleTheme}
+              title={isDark ? "Yorug' rejim (Light)" : "Qorong'i rejim (Dark)"}
+              aria-label="Toggle Theme"
+            >
+              {isDark ? <Sun size={18} strokeWidth={2} /> : <Moon size={18} strokeWidth={2} />}
             </button>
 
             {/* Wishlist */}
@@ -196,6 +224,20 @@ const Navbar = () => {
                       <p className="flyout-user-email">{user?.email}</p>
                     </div>
                     <div className="flyout-divider"></div>
+
+                    {isAdmin && (
+                      <>
+                        <Link
+                          to="/admin"
+                          className="flyout-item admin-flyout-item"
+                          onClick={() => setUserDropdown(false)}
+                        >
+                          <Shield size={15} /> Admin Paneli
+                        </Link>
+                        <div className="flyout-divider"></div>
+                      </>
+                    )}
+
                     <Link
                       to="/profile"
                       className="flyout-item"
@@ -337,12 +379,36 @@ const Navbar = () => {
                   </div>
                   <span>Accessories & Deals</span>
                 </Link>
+
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    className="mobile-category-row mobile-admin-link"
+                    onClick={() => setMobileDrawerOpen(false)}
+                  >
+                    <div className="cat-icon-frame admin-icon-frame">
+                      <Shield size={16} />
+                    </div>
+                    <span>Admin Paneli</span>
+                  </Link>
+                )}
               </div>
 
               <div className="drawer-divider"></div>
 
-              <div className="drawer-section-title">Account</div>
+              <div className="drawer-section-title">Account & Settings</div>
               <div className="mobile-nav-categories">
+                <div
+                  className="mobile-category-row"
+                  onClick={toggleTheme}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="cat-icon-frame">
+                    {isDark ? <Sun size={16} /> : <Moon size={16} />}
+                  </div>
+                  <span>Rejim: {isDark ? "Qorong'i (Dark)" : "Yorug' (Light)"}</span>
+                </div>
+
                 <Link
                   to="/wishlist"
                   className="mobile-category-row"

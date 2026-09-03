@@ -1,21 +1,30 @@
 # 🛍️ MiniShop — Modern Full-Stack E-Commerce Platform
 
-MiniShop — bu zamonaviy dizayn, tezkor ishlash va to'liq e-tijorat funksiyalariga ega bo'lgan Full-Stack (MERN) veb-platforma. Loyihada foydalanuvchilar mahsulotlarni qidirish, filtrlash, savatchaga va istaklar ro'yxatiga qo'shish, buyurtma berish, sharhlar qoldirish va profillarini boshqarishlari mumkin. Shuningdek, to'liq Swagger API hujjatlari bilan ta'minlangan.
+MiniShop — bu zamonaviy dizayn, tezkor ishlash va to'liq e-tijorat funksiyalariga ega bo'lgan Full-Stack (MERN) veb-platforma. Loyihada mijozlar tovarlarni izlashi, filtrlashi, savatcha va istaklar ro'yxatiga qo'shishi, xarid qilishi hamda profilini boshqarishi mumkin. Shuningdek, adminlar uchun to'liq **Admin Dashboard**, **Telegram Bot**, **Rasm yuklash tizimi**, **Dark/Light Mode** va **Swagger API** hujjatlari bilan ta'minlangan.
 
 ---
 
 ## ✨ Asosiy Xususiyatlar (Features)
 
-- **🎨 Zamonaviy va Premium UI/UX:** Glassmorphism, yumshoq animatsiyalar, to'liq responsive dizayn (mobil, planshet, desktop).
-- **🔐 Autentifikatsiya va Xavfsizlik:** JWT tokenlar, parollarni `bcryptjs` bilan xeshlash, ro'yxatdan o'tish, kirish va profil boshqaruvi.
-- **⚡ Spotlight Search (Ctrl + K):** Tezkor qidiruv va kategoriyalar bo'yicha navigatsiya.
-- **📦 Mahsulotlar Katalogi va Filtrlash:** Narx, brend, kategoriya, reyting bo'yicha real-vaqtda saralash va filtrlash.
-- **🛒 Savat va Istaklar ro'yxati (Wishlist):** LocalStorage va backend sinxronizatsiyasi bilan to'liq boshqaruv.
-- **🏷️ Kupon va Chegirmalar:** Promokodlarni tekshirish va chegirmalarni hisoblash.
-- **💳 Buyurtma va To'lov Tizimi:** Yetkazib berish manzillari, to'lov usullari (Karta, Naqd, Click/Payme simulyatsiyasi) va buyurtma holatini kuzatish.
-- **⭐ Sharhlar va Reytinglar:** Mahsulotlarga baho berish va foydalanuvchi fikr-mulohazalari.
-- **🔔 Bildirishnomalar Tizimi:** Foydalanuvchi hisobi bo'yicha bildirishnomalar va yangiliklar.
-- **📖 To'liq Swagger API:** Barcha backend endpointlar uchun interaktiv Swagger UI hujjati.
+- **🛡️ Admin Dashboard & Boshqaruv Paneli (`/admin`):**
+  - **Statistika:** Jami tushum, jami buyurtmalar, tovarlar soni va kam qolgan zaxiralar monitoringi.
+  - **Tovarlar CRUD:** Yangi tovar qo'shish, narx va zaxirasini tahrirlash, o'chirish.
+  - **Rasm yuklash:** Yangi tovar qo'shishda kompyuterdan rasm yuklash (Multer orqali).
+  - **Buyurtmalar nazorati:** Buyurtma holatini darhol o'zgartirish (`pending` ➔ `paid` ➔ `shipped` ➔ `delivered` ➔ `cancelled`).
+- **🤖 Telegram Bot Integratsiyasi:**
+  - Har bir yangi buyurtma tushganda admin Telegram botiga yoki guruhiga avtomatik ravishda to'liq chek (mijoz ismi, tel, manzil, mahsulotlar va jami summa) yuboriladi.
+  - `.env` faylga bot tokeni va chat ID kiritilishi bilan avtomatik ishga tushadi.
+- **🌓 Dark / Light Mode (Tun va Kun rejimi):**
+  - Navbar orqali bir marta bosishda butun interfeys mavzusini almashtirish.
+  - Tanlangan rejim `localStorage` da avtomatik eslab qolinadi.
+- **🖼️ Rasm Yuklash Servisi (`/upload/image`):**
+  - `Multer` orqali xavfsiz va tezkor rasm yuklash (JPG, PNG, WEBP).
+- **✉️ Bepul Email Xabarnomasi (Nodemailer):**
+  - Gmail SMTP orqali xaridorlarga xarid tasdiq xatini bepul jo'natish imkoniyati.
+- **🎨 Zamonaviy UI/UX:** Apple-grade minimalist dizayn, glassmorphism, responsive mobil slide-drawer.
+- **⚡ Spotlight Search (Ctrl + K / ⌘K):** Tezkor interaktiv qidiruv.
+- **🔐 Xavfsiz Autentifikatsiya:** JWT tokenlar, parollarni `bcryptjs` bilan xeshlash, Role-based ruxsatlar (`customer` va `admin`).
+- **📖 To'liq Swagger API:** [http://localhost:8000/api-docs](http://localhost:8000/api-docs)
 
 ---
 
@@ -23,18 +32,20 @@ MiniShop — bu zamonaviy dizayn, tezkor ishlash va to'liq e-tijorat funksiyalar
 
 ### **Frontend**
 - **React 18** + **Vite 6**
-- **React Router DOM v7** (SPA routing)
-- **Lucide React** (Zamonaviy vektor ikonkalari)
+- **React Router DOM v7** (SPA routing va Protected Routes)
+- **Lucide React** (Ikonkalar to'plami)
 - **Axios** (Interceptors bilan API so'rovlari)
-- **Vanilla CSS** (Dizayn tizimi, CSS o'zgaruvchilari, glassmorphism)
+- **Vanilla CSS** (Design system tokenlari va dark theme)
 
 ### **Backend**
 - **Node.js** + **Express 5**
 - **MongoDB** + **Mongoose 8**
-- **JWT (JSON Web Tokens)** & **Bcryptjs**
-- **Joi Validation** (Barcha so'rovlar uchun qat'iy ma'lumotlar tekshiruvi)
-- **Swagger UI Express** + **Swagger-jsdoc** (Avtomatlashtirilgan API dokumentatsiyasi)
-- **Cors** & **Dotenv**
+- **Multer** (Fayl va rasmlarni yuklash)
+- **Nodemailer** (Email xabarnomalar)
+- **Telegram Bot API** (Yangi buyurtmalar haqida xabar)
+- **JWT & Bcryptjs** (Xavfsiz autentifikatsiya)
+- **Joi Validation** (Ma'lumotlar tekshiruvi)
+- **Swagger UI Express** (Avtomatik API dokumentatsiya)
 
 ---
 
@@ -44,32 +55,32 @@ MiniShop — bu zamonaviy dizayn, tezkor ishlash va to'liq e-tijorat funksiyalar
 MiniShop/
 ├── backend/
 │   ├── config/             # DB va Swagger konfiguratsiyalari
-│   ├── controllers/        # REST API controllerlari (Auth, Product, Cart, Order, ...)
-│   ├── middleware/         # Auth va Joi validatsiya middleware'lari
-│   ├── model/              # Mongoose sxemalari va modellari
+│   ├── controllers/        # REST API controllerlari (Auth, Product, Cart, Order, Upload)
+│   ├── middleware/         # Auth, isAdmin va Joi validatsiya middleware'lari
+│   ├── model/              # Mongoose sxemalari
 │   ├── routes/             # Express API yo'nalishlari
-│   ├── validation/         # Joi validatsiya sxemalari
-│   ├── seed.js             # Boshlang'ich test ma'lumotlarini yuklash skripti
-│   ├── index.js            # Server asosiy kirish nuqtasi
-│   ├── .env.example        # Backend muhit o'zgaruvchilari namunasi
+│   ├── uploads/            # Yuklangan rasmlar saqlanadigan papka
+│   ├── utils/              # Telegram bot va Email yordamchi modullari
+│   ├── validation/         # Joi sxemalari
+│   ├── seed.js             # Boshlang'ich ma'lumotlar skripti
+│   ├── index.js            # Server kirish nuqtasi
+│   ├── .env.example        # Backend muhit o'zgaruvchilari
 │   └── package.json
 │
 ├── frontend/
-│   ├── public/             # Statik fayllar va rasmlar
+│   ├── public/             # Rasmlar va statik fayllar
 │   ├── src/
-│   │   ├── api/            # Axios API mijozi
-│   │   ├── components/     # UI komponentlari (Navbar, Hero, ProductCard, Search, ...)
-│   │   ├── context/        # React Context (Auth, Cart, Wishlist)
-│   │   ├── pages/          # Sahifalar (Home, Catalog, ProductDetail, Cart, Checkout, Profile, ...)
-│   │   ├── App.jsx         # Asosiy router va sahifalar marshruti
-│   │   ├── index.css       # Global stillar va ranglar palitrasi
-│   │   └── main.jsx        # React kirish nuqtasi
-│   ├── .env.example        # Frontend muhit o'zgaruvchilari namunasi
+│   │   ├── api/            # Axios so'rovlar mijozi
+│   │   ├── components/     # UI komponentlari (Navbar, AdminRoute, SpotlightSearch...)
+│   │   ├── context/        # React Context (AuthContext, CartContext, ThemeContext...)
+│   │   ├── pages/          # Sahifalar (Home, Catalog, ProductDetail, Cart, Profile, AdminDashboard)
+│   │   ├── App.jsx         # Marshrutlar va ThemeProvider
+│   │   └── index.css       # Global stillar va Dark mode tokenlari
 │   └── package.json
 │
-├── .gitignore              # Git tomonidan e'tiborsiz qoldiriladigan fayllar
-├── package.json            # Root workspace package.json (Concurrently orqali boshqarish)
-└── README.md               # Loyiha hujjati
+├── .gitignore
+├── package.json            # Root workspace package.json
+└── README.md
 ```
 
 ---
@@ -78,15 +89,14 @@ MiniShop/
 
 ### 1. Repozitoriyani klonlash:
 ```bash
-git clone <SPOY_GITHUB_REPO_URL>
+git clone https://github.com/Shaxriyor1227/MiniShop.git
 cd MiniShop
 ```
 
-### 2. Barcha bog'liqliklarni o'rnatish (Root, Backend, Frontend):
+### 2. Barcha paketlarni o'rnatish:
 ```bash
 npm run install:all
 ```
-*(yoki alohida `cd backend && npm install`, `cd ../frontend && npm install`)*
 
 ### 3. Muhit o'zgaruvchilarini sozlash:
 
@@ -95,8 +105,18 @@ npm run install:all
 PORT=8000
 CLIENT_URL=http://localhost:5173
 MONGODB_URI=mongodb://127.0.0.1:27017/minishop_db
-JWT_SECRET=your_super_secret_jwt_key_here
+JWT_SECRET=minishop_super_secret_jwt_key_2026_experience
 JWT_EXPIRES_IN=7d
+
+# Telegram Bot (Ixtiyoriy - @BotFather dan olingan token va chat ID)
+TELEGRAM_BOT_TOKEN=your_bot_token_here
+TELEGRAM_CHAT_ID=your_chat_id_here
+
+# Email (Ixtiyoriy - Gmail App Password)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_gmail_app_password
 ```
 
 **Frontend (`frontend/.env`):**
@@ -104,41 +124,38 @@ JWT_EXPIRES_IN=7d
 VITE_API_URL=http://localhost:8000
 ```
 
-### 4. Boshlang'ich ma'lumotlarni bazaga yuklash (Seed Database):
+### 4. Boshlang'ich ma'lumotlarni yuklash:
 ```bash
 npm run seed
 ```
+> 💡 **Admin hisobi:** `admin@minishop.com` / `admin123`  
+> 💡 **Mijoz hisobi:** `customer@minishop.com` / `customer123`
 
-### 5. Loyihani ishga tushirish (Frontend va Backend birgalikda):
+### 5. Loyihani bir vaqtda ishga tushirish:
 ```bash
 npm run dev
 ```
 
-Platforma manzillari:
-- 🌐 **Frontend:** [http://localhost:5173](http://localhost:5173)
+Manzillar:
+- 🌐 **Frontend Do'kon:** [http://localhost:5173](http://localhost:5173)
+- 🛡️ **Admin Panel:** [http://localhost:5173/admin](http://localhost:5173/admin)
 - 🔌 **Backend API:** [http://localhost:8000](http://localhost:8000)
-- 📚 **Swagger API Docs:** [http://localhost:8000/api-docs](http://localhost:8000/api-docs)
+- 📚 **Swagger Dokumentatsiya:** [http://localhost:8000/api-docs](http://localhost:8000/api-docs)
 
 ---
 
-## 📚 API Endpointlar (Swagger orqali ham mavjud)
+## 🤖 Telegram Botni sozlash bo'yicha tezkor qo'llanma
 
-| Bo'lim | Metod | Endpoint | Tavsif |
-| :--- | :--- | :--- | :--- |
-| **Auth** | `POST` | `/api/auth/register` | Yangi foydalanuvchi ro'yxatdan o'tkazish |
-| **Auth** | `POST` | `/api/auth/login` | Tizimga kirish (JWT token olish) |
-| **Products** | `GET` | `/api/products` | Mahsulotlar ro'yxatini olish (Filtrlash, Qidiruv, Sahifalash) |
-| **Products** | `GET` | `/api/products/:id` | Bitta mahsulot tafsilotlarini olish |
-| **Categories** | `GET` | `/api/categories` | Kategoriyalar ro'yxati |
-| **Cart** | `GET` / `POST` | `/api/cart` | Savatchani ko'rish va mahsulot qo'shish |
-| **Wishlist** | `GET` / `POST` | `/api/wishlist` | Istaklar ro'yxatini boshqarish |
-| **Orders** | `GET` / `POST` | `/api/orders` | Buyurtmalar tarixi va yangi buyurtma yaratish |
-| **Reviews** | `GET` / `POST` | `/api/reviews` | Sharhlarni ko'rish va yangi sharh qoldirish |
-| **Coupons** | `POST` | `/api/coupons/validate` | Chegirma promokodini tekshirish |
+1. Telegramda [@BotFather](https://t.me/BotFather) botiga kiring va `/newbot` buyrug'i orqali yangi bot ochib, **API Token** oling.
+2. O'zingizning Chat ID raqamingizni bilish uchun [@userinfobot](https://t.me/userinfobot) botiga start bosing.
+3. Ushbu ma'lumotlarni `backend/.env` faylidagi quyidagi qatorlarga qo'ying:
+   ```env
+   TELEGRAM_BOT_TOKEN=123456789:ABCDefGhIjKlmnOpQrStUvWxYz
+   TELEGRAM_CHAT_ID=123456789
+   ```
+4. Endi mijoz saytda istalgan xaridni amalga oshirishi bilan, botingizga avtomatik tarzda to'liq chek xabari yetib boradi!
 
 ---
 
-## 📝 Muallif va Litsenziya
-
-Loyiha ochiq manbali va o'rganish yoki tijoriy loyihalarda foydalanish uchun qulay qilib tuzilgan.
+## 📝 Litsenziya
 MIT License © 2026 MiniShop Team.

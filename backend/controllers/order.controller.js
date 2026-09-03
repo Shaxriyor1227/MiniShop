@@ -3,6 +3,8 @@ const Cart = require('../model/cartSchema');
 const Coupon = require('../model/couponSchema');
 const Payment = require('../model/paymentSchema');
 const Notification = require('../model/notificationSchema');
+const { sendOrderTelegramNotification } = require('../utils/telegram');
+const { sendOrderConfirmationEmail } = require('../utils/mailer');
 
 const create = async (req, res) => {
   try {
@@ -60,9 +62,18 @@ const create = async (req, res) => {
     });
 
     const populatedOrder = await Order.findById(order._id)
+      .populate('user_id', 'name email phone_number')
       .populate('address_id')
       .populate('coupon_id')
       .populate('items.product_id', 'name images price');
+
+    // Asynchronously dispatch notifications (non-blocking)
+    sendOrderTelegramNotification(populatedOrder).catch((err) =>
+      console.error('[Telegram notification error]:', err.message)
+    );
+    sendOrderConfirmationEmail(populatedOrder, populatedOrder.user_id).catch((err) =>
+      console.error('[Email notification error]:', err.message)
+    );
 
     return res.status(201).json({
       success: true,

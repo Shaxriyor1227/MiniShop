@@ -631,3 +631,38 @@
   text-align: center;
   padding: 9px;
 }
+
+/* Admin and Theme Toggle enhancements */
+.admin-nav-pill {
+  color: var(--accent-blue) !important;
+  font-weight: 600 !important;
+}
+
+.admin-nav-pill.active {
+  background-color: var(--accent-blue) !important;
+  color: #FFFFFF !important;
+}
+
+.theme-toggle-btn {
+  transition: transform var(--transition-fast);
+}
+
+.theme-toggle-btn:hover {
+  transform: rotate(15deg) scale(1.08);
+}
+
+.admin-flyout-item {
+  color: var(--accent-blue) !important;
+  font-weight: 600;
+}
+
+.mobile-admin-link {
+  color: var(--accent-blue) !important;
+  font-weight: 600;
+}
+
+.admin-icon-frame {
+  background-color: var(--accent-blue-subtle) !important;
+  color: var(--accent-blue) !important;
+}
+
