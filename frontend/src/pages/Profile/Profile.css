@@ -456,13 +456,13 @@ input:checked + .slider-round:before {
   width: 42px;
   height: 42px;
   border-radius: 10px;
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface-hover);
+  border: 1px solid var(--border-subtle);
   color: var(--ink-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .session-details {
@@ -478,6 +478,7 @@ input:checked + .slider-round:before {
 
 .session-top strong {
   font-size: 14px;
+  color: var(--ink-primary);
 }
 
 .current-badge {
@@ -534,13 +535,14 @@ input:checked + .slider-round:before {
   padding: 18px 20px;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background-color: #FFFFFF;
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-soft);
   transition: all var(--transition-fast);
 }
 
 .address-item-card:hover {
   border-color: var(--accent-blue);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-hover);
 }
 
 .addr-card-top {
@@ -554,6 +556,9 @@ input:checked + .slider-round:before {
   display: flex;
   align-items: center;
   gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-primary);
 }
 
 .pin-blue {

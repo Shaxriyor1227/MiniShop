@@ -154,9 +154,9 @@ img {
 }
 
 .btn-primary:hover {
-  background-color: #000000;
+  opacity: 0.92;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-hover);
 }
 
 .btn-primary:active {
