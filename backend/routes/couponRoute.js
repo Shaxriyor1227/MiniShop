@@ -38,7 +38,7 @@ const { verifyToken, isAdmin } = require('../middleware/auth.middleware');
  *       400:
  *         description: Invalid or expired coupon
  */
-router.post('/apply', verifyToken, validateSchema(couponApplyValidation), couponController.applyCoupon);
+router.post('/apply', validateSchema(couponApplyValidation), couponController.applyCoupon);
 
 /**
  * @swagger

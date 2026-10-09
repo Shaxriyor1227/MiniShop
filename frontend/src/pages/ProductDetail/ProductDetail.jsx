@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../api/axiosInstance';
@@ -81,14 +81,14 @@ const ProductDetail = () => {
     window.scrollTo(0, 0);
   }, [id]);
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = useCallback(async () => {
     if (!product) return;
     await addToCart(product, quantity);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
-  };
+  }, [product, addToCart, quantity]);
 
-  const handleReviewSubmit = async (e) => {
+  const handleReviewSubmit = useCallback(async (e) => {
     e.preventDefault();
     if (!isAuthenticated) return;
     try {
@@ -100,7 +100,7 @@ const ProductDetail = () => {
         comment
       });
       if (res.data.success) {
-        setReviews([res.data.innerData, ...reviews]);
+        setReviews((prev) => [res.data.innerData, ...prev]);
         setComment('');
         setRating(5);
       }
@@ -109,7 +109,12 @@ const ProductDetail = () => {
     } finally {
       setReviewSubmitting(false);
     }
-  };
+  }, [isAuthenticated, id, rating, comment]);
+
+  const averageRating = useMemo(() => {
+    if (!reviews.length) return '5.0';
+    return (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1);
+  }, [reviews]);
 
   if (loading) {
     return (
@@ -133,10 +138,6 @@ const ProductDetail = () => {
 
   const isLiked = isInWishlist(product._id);
   const imageUrl = product.images?.[0] || '/images/product_placeholder.png';
-
-  const averageRating = reviews.length
-    ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
-    : '5.0';
 
   return (
     <div className="product-detail-page page-enter">

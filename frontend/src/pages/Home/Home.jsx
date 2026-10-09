@@ -29,6 +29,9 @@ import './Home.css';
 const brandLogos = [
   { name: 'Apple', style: 'font-bold tracking-tight' },
   { name: 'Sony', style: 'font-bold tracking-[0.2em] uppercase' },
+  { name: 'Bose', style: 'font-extrabold tracking-widest uppercase' },
+  { name: 'Dell', style: 'font-bold tracking-widest uppercase' },
+  { name: 'Samsung', style: 'font-semibold tracking-wider uppercase' },
   { name: 'Keychron', style: 'font-semibold tracking-tight' },
   { name: 'Anker', style: 'font-bold tracking-wider uppercase' },
   { name: 'Logitech', style: 'font-medium tracking-tight lowercase' }

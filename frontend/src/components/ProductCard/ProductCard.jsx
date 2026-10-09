@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Heart, ShoppingBag, Check } from 'lucide-react';
@@ -12,22 +12,30 @@ const ProductCard = ({ product }) => {
   const { isInWishlist, toggleWishlist } = useWishlist();
   const [addedAnimation, setAddedAnimation] = useState(false);
 
-  const isLiked = isInWishlist(product._id);
-  const imageUrl = product.images?.[0] || '/images/product_placeholder.png';
+  const isLiked = isInWishlist(product?._id);
+  const imageUrl = product?.images?.[0] || '/images/product_placeholder.png';
 
-  const handleAddToCart = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    await addToCart(product, 1);
-    setAddedAnimation(true);
-    setTimeout(() => setAddedAnimation(false), 1500);
-  };
+  const handleAddToCart = useCallback(
+    async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      await addToCart(product, 1);
+      setAddedAnimation(true);
+      setTimeout(() => setAddedAnimation(false), 1500);
+    },
+    [addToCart, product]
+  );
 
-  const handleToggleWishlist = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    await toggleWishlist(product);
-  };
+  const handleToggleWishlist = useCallback(
+    async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      await toggleWishlist(product);
+    },
+    [toggleWishlist, product]
+  );
+
+  if (!product) return null;
 
   return (
     <div className="product-card card">
@@ -37,12 +45,14 @@ const ProductCard = ({ product }) => {
           <span className="badge badge-amber">Stock: {product.stock}</span>
         ) : product.brand_id?.name ? (
           <span className="badge-brand">{product.brand_id.name}</span>
-        ) : <span />}
+        ) : (
+          <span />
+        )}
 
         <button
           className={`wishlist-btn ${isLiked ? 'liked' : ''}`}
           onClick={handleToggleWishlist}
-          title={isLiked ? "Wishlist" : "Wishlist"}
+          title={isLiked ? 'Remove from wishlist' : 'Add to wishlist'}
         >
           <Heart size={18} fill={isLiked ? '#FF3B30' : 'none'} color={isLiked ? '#FF3B30' : '#1D1D1F'} />
         </button>
@@ -54,6 +64,7 @@ const ProductCard = ({ product }) => {
           src={imageUrl}
           alt={product.name}
           className="product-img"
+          loading="lazy"
           onError={(e) => {
             e.currentTarget.src = '/images/product_placeholder.png';
           }}
@@ -69,7 +80,7 @@ const ProductCard = ({ product }) => {
 
         <div className="product-bottom-row">
           <div className="product-pricing">
-            <span className="product-price">${Number(product.price).toFixed(2)}</span>
+            <span className="product-price">${Number(product.price || 0).toFixed(2)}</span>
           </div>
 
           <button
@@ -94,4 +105,4 @@ const ProductCard = ({ product }) => {
   );
 };
 
-export default ProductCard;
+export default memo(ProductCard);

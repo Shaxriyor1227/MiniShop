@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../api/axiosInstance';
@@ -17,6 +17,7 @@ import {
   Headphones,
   Watch,
   Laptop,
+  Lightbulb,
   Tag,
   CheckSquare,
   Square
@@ -34,8 +35,10 @@ const priceRanges = [
 const categoryIcons = {
   Audio: Headphones,
   Wearables: Watch,
-  Workspace: Laptop,
-  Accessories: Tag
+  Workspace: Layers,
+  Accessories: Tag,
+  'Smart Home': Lightbulb,
+  'Laptops & PCs': Laptop
 };
 
 const Catalog = () => {
@@ -162,7 +165,7 @@ const Catalog = () => {
     fetchProducts();
   }, [fetchProducts]);
 
-  const handleSearchSubmit = (e) => {
+  const handleSearchSubmit = useCallback((e) => {
     e.preventDefault();
     const newParams = new URLSearchParams(searchParams);
     if (searchInput.trim()) {
@@ -171,9 +174,9 @@ const Catalog = () => {
       newParams.delete('search');
     }
     setSearchParams(newParams);
-  };
+  }, [searchInput, searchParams, setSearchParams]);
 
-  const handleResetFilters = () => {
+  const handleResetFilters = useCallback(() => {
     setSelectedCategory('');
     setSelectedBrand('');
     setSelectedPriceRange(0);
@@ -181,9 +184,9 @@ const Catalog = () => {
     setSortBy('featured');
     setSearchInput('');
     setSearchParams({});
-  };
+  }, [setSearchParams]);
 
-  const handleCategoryChange = (catId) => {
+  const handleCategoryChange = useCallback((catId) => {
     const newCat = selectedCategory === catId ? '' : catId;
     setSelectedCategory(newCat);
     const newParams = new URLSearchParams(searchParams);
@@ -194,9 +197,9 @@ const Catalog = () => {
       newParams.delete('category');
     }
     setSearchParams(newParams);
-  };
+  }, [selectedCategory, searchParams, categories, setSearchParams]);
 
-  const handleBrandChange = (brandId) => {
+  const handleBrandChange = useCallback((brandId) => {
     const newBrand = selectedBrand === brandId ? '' : brandId;
     setSelectedBrand(newBrand);
     const newParams = new URLSearchParams(searchParams);
@@ -207,7 +210,7 @@ const Catalog = () => {
       newParams.delete('brand');
     }
     setSearchParams(newParams);
-  };
+  }, [selectedBrand, searchParams, brands, setSearchParams]);
 
   const sortOptions = [
     { id: 'featured', label: t('catalog.sort_featured') },
@@ -218,12 +221,15 @@ const Catalog = () => {
 
   const currentSortLabel = sortOptions.find((s) => s.id === sortBy)?.label || t('catalog.sort_featured');
 
-  const activeFiltersCount =
-    (selectedCategory ? 1 : 0) +
-    (selectedBrand ? 1 : 0) +
-    (selectedPriceRange > 0 ? 1 : 0) +
-    (inStockOnly ? 1 : 0) +
-    (searchParam ? 1 : 0);
+  const activeFiltersCount = useMemo(
+    () =>
+      (selectedCategory ? 1 : 0) +
+      (selectedBrand ? 1 : 0) +
+      (selectedPriceRange > 0 ? 1 : 0) +
+      (inStockOnly ? 1 : 0) +
+      (searchParam ? 1 : 0),
+    [selectedCategory, selectedBrand, selectedPriceRange, inStockOnly, searchParam]
+  );
 
   return (
     <div className="catalog-editorial-page page-enter">

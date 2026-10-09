@@ -44,8 +44,10 @@ const addToCart = async (req, res) => {
       cart = await Cart.create({ user_id: req.user.id, items: [] });
     }
 
+    const getPid = (it) => (it.product_id?._id || it.product_id || '').toString();
+
     const itemIndex = cart.items.findIndex(
-      (item) => item.product_id.toString() === product_id.toString()
+      (item) => getPid(item) === product_id.toString()
     );
 
     if (itemIndex > -1) {
@@ -88,13 +90,15 @@ const updateCartItem = async (req, res) => {
       });
     }
 
+    const getPid = (it) => (it.product_id?._id || it.product_id || '').toString();
+
     if (Number(quantity) <= 0) {
       cart.items = cart.items.filter(
-        (item) => item.product_id.toString() !== product_id.toString()
+        (item) => getPid(item) !== product_id.toString()
       );
     } else {
       const itemIndex = cart.items.findIndex(
-        (item) => item.product_id.toString() === product_id.toString()
+        (item) => getPid(item) === product_id.toString()
       );
       if (itemIndex > -1) {
         cart.items[itemIndex].quantity = Number(quantity);
@@ -137,8 +141,10 @@ const removeFromCart = async (req, res) => {
       });
     }
 
+    const getPid = (it) => (it.product_id?._id || it.product_id || '').toString();
+
     cart.items = cart.items.filter(
-      (item) => item.product_id.toString() !== productId.toString()
+      (item) => getPid(item) !== productId.toString()
     );
     await cart.save();
 

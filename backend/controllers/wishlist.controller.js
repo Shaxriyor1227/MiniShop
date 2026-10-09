@@ -45,7 +45,7 @@ const toggleWishlist = async (req, res) => {
     }
 
     const index = wishlist.products.findIndex(
-      (id) => id.toString() === product_id.toString()
+      (id) => (id?._id || id).toString() === product_id.toString()
     );
 
     let isAdded = false;

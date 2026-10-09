@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../../context/CartContext';
@@ -38,7 +38,7 @@ const Cart = () => {
   const [applying, setApplying] = useState(false);
   const navigate = useNavigate();
 
-  const handleApplyCoupon = async (e) => {
+  const handleApplyCoupon = useCallback(async (e) => {
     e.preventDefault();
     if (!couponCode.trim()) return;
     setApplying(true);
@@ -52,15 +52,34 @@ const Cart = () => {
       setCouponMsg({ text: result.message || 'Invalid coupon code', isError: true });
     }
     setApplying(false);
-  };
+  }, [applyCoupon, couponCode]);
 
-  const handleMoveToWishlist = (product) => {
+  const handleMoveToWishlist = useCallback((product) => {
     const prodObj = product.product_id || product;
-    if (!isInWishlist(prodObj._id || prodObj.id)) {
+    const id = prodObj._id || prodObj.id;
+    if (!isInWishlist(id)) {
       toggleWishlist(prodObj);
     }
-    removeFromCart(prodObj._id || prodObj.id);
-  };
+    removeFromCart(id);
+  }, [isInWishlist, toggleWishlist, removeFromCart]);
+
+  const freeShippingThreshold = 100;
+  const progressPercent = useMemo(
+    () => Math.min(100, (subtotal / freeShippingThreshold) * 100),
+    [subtotal]
+  );
+  const amountNeeded = useMemo(
+    () => Math.max(0, freeShippingThreshold - subtotal),
+    [subtotal]
+  );
+  const shipping = useMemo(
+    () => (subtotal >= freeShippingThreshold ? 0 : 15),
+    [subtotal]
+  );
+  const finalTotal = useMemo(
+    () => totalAmount + shipping,
+    [totalAmount, shipping]
+  );
 
   if (items.length === 0) {
     return (
@@ -78,12 +97,6 @@ const Cart = () => {
       </div>
     );
   }
-
-  const freeShippingThreshold = 100;
-  const progressPercent = Math.min(100, (subtotal / freeShippingThreshold) * 100);
-  const amountNeeded = Math.max(0, freeShippingThreshold - subtotal);
-  const shipping = subtotal >= freeShippingThreshold ? 0 : 15;
-  const finalTotal = totalAmount + shipping;
 
   return (
     <div className="cart-page page-enter">

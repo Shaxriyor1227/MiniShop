@@ -21,15 +21,17 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor: 401 kelsa foydalanuvchini /login'ga yo'naltirish
+// Response interceptor: 401 kelsa tokenlarni tozalash va faqat himoyalangan sahifada bo'lsa login'ga yo'naltirish
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('minishop_token');
       localStorage.removeItem('minishop_user');
-      if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
-        window.location.href = '/login';
+      const protectedPaths = ['/profile', '/checkout', '/orders', '/admin'];
+      const currentPath = window.location.pathname;
+      if (protectedPaths.some((p) => currentPath.startsWith(p))) {
+        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
       }
     }
     return Promise.reject(error);
