@@ -29,11 +29,7 @@ const register = async (req, res) => {
 
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: 'Ushbu email bilan foydalanuvchi allaqachon ro\'yxatdan o\'tgan',
-        innerData: null
-      });
+      return res.sendResponse(400, 'AUTH_USER_EXISTS');
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -55,27 +51,19 @@ const register = async (req, res) => {
 
     const token = generateToken(newUser);
 
-    return res.status(201).json({
-      success: true,
-      message: 'Muvaffaqiyatli ro\'yxatdan o\'tildi',
-      innerData: {
-        token,
-        user: {
-          id: newUser._id,
-          name: newUser.name,
-          email: newUser.email,
-          role: newUser.role,
-          phone_number: newUser.phone_number
-        }
+    return res.sendResponse(201, 'AUTH_REGISTER_SUCCESS', {
+      token,
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+        phone_number: newUser.phone_number
       }
     });
   } catch (error) {
     console.error('[Auth Register Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Serverda xatolik yuz berdi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -88,53 +76,33 @@ const login = async (req, res) => {
 
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email yoki parol noto\'g\'ri',
-        innerData: null
-      });
+      return res.sendResponse(400, 'AUTH_INVALID_CREDENTIALS');
     }
 
     if (user.isBlocked) {
-      return res.status(403).json({
-        success: false,
-        message: 'Profilingiz administrator tomonidan bloklangan. Qo\'llab-quvvatlash bilan bog\'laning.',
-        innerData: null
-      });
+      return res.sendResponse(403, 'FORBIDDEN_BLOCKED');
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email yoki parol noto\'g\'ri',
-        innerData: null
-      });
+      return res.sendResponse(400, 'AUTH_INVALID_CREDENTIALS');
     }
 
     const token = generateToken(user);
 
-    return res.status(200).json({
-      success: true,
-      message: 'Tizimga muvaffaqiyatli kirildi',
-      innerData: {
-        token,
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          phone_number: user.phone_number
-        }
+    return res.sendResponse(200, 'AUTH_LOGIN_SUCCESS', {
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        phone_number: user.phone_number
       }
     });
   } catch (error) {
     console.error('[Auth Login Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Serverda xatolik yuz berdi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -145,25 +113,13 @@ const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'Foydalanuvchi topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'USER_NOT_FOUND');
     }
 
-    return res.status(200).json({
-      success: true,
-      message: 'Foydalanuvchi ma\'lumotlari olindi',
-      innerData: user
-    });
+    return res.sendResponse(200, 'AUTH_PROFILE_SUCCESS', user);
   } catch (error) {
     console.error('[Auth GetMe Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Serverda xatolik yuz berdi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -172,3 +128,4 @@ module.exports = {
   login,
   getMe
 };
+

@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Layers, RefreshCw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../../api/axiosInstance';
 import DataTable from '../../../components/Admin/DataTable';
 import Modal from '../../../components/Admin/Modal';
 import ConfirmDialog from '../../../components/Admin/ConfirmDialog';
 import Toast from '../../../components/Admin/Toast';
+import { useFormatters } from '../../../utils/formatters';
+import { getApiErrorMessage } from '../../../utils/apiError';
 import './Categories.css';
 
 const Categories = () => {
+  const { t, i18n } = useTranslation();
+  const { formatDate } = useFormatters();
+
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -17,7 +23,12 @@ const Categories = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
-  const [name, setName] = useState('');
+  const [activeLangTab, setActiveLangTab] = useState('uz');
+  const [translations, setTranslations] = useState({
+    uz: { name: '' },
+    ru: { name: '' },
+    en: { name: '' }
+  });
   const [image, setImage] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -32,7 +43,7 @@ const Categories = () => {
       }
     } catch (err) {
       console.error('[Categories Fetch Error]:', err);
-      showToast('Kategoriyalarni yuklashda xatolik yuz berdi', 'error');
+      showToast(getApiErrorMessage(err, 'admin.categories.toast_error'), 'error');
     } finally {
       setLoading(false);
     }
@@ -44,45 +55,71 @@ const Categories = () => {
 
   const handleOpenCreate = () => {
     setEditingCategory(null);
-    setName('');
+    setTranslations({
+      uz: { name: '' },
+      ru: { name: '' },
+      en: { name: '' }
+    });
     setImage('');
+    setActiveLangTab(i18n.language || 'uz');
     setIsModalOpen(true);
   };
 
   const handleOpenEdit = (c) => {
     setEditingCategory(c);
-    setName(c.name || '');
+    setTranslations({
+      uz: { name: c.translations?.uz?.name || c.name || '' },
+      ru: { name: c.translations?.ru?.name || c.name || '' },
+      en: { name: c.translations?.en?.name || c.name || '' }
+    });
     setImage(c.image || '');
+    setActiveLangTab(i18n.language || 'uz');
     setIsModalOpen(true);
+  };
+
+  const handleTranslationChange = (field, val) => {
+    setTranslations((prev) => ({
+      ...prev,
+      [activeLangTab]: {
+        ...prev[activeLangTab],
+        [field]: val
+      }
+    }));
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
-    if (!name.trim()) {
-      showToast('Kategoriya nomini kiriting', 'error');
+    const primaryName = translations[activeLangTab]?.name || translations.uz?.name || translations.en?.name || '';
+    if (!primaryName.trim()) {
+      showToast(t('admin.common.error'), 'error');
       return;
     }
 
     try {
       setSubmitting(true);
-      const payload = { name: name.trim(), image: image.trim() };
+      const payload = {
+        name: primaryName.trim(),
+        image: image.trim(),
+        translations
+      };
+
       if (editingCategory) {
         const res = await axiosInstance.put(`/category/update/${editingCategory._id}`, payload);
         if (res.data.success) {
-          showToast('Kategoriya muvaffaqiyatli yangilandi');
+          showToast(t('admin.categories.toast_updated'));
           setIsModalOpen(false);
           fetchCategories();
         }
       } else {
         const res = await axiosInstance.post('/category/create', payload);
         if (res.data.success) {
-          showToast('Yangi kategoriya yaratildi');
+          showToast(t('admin.categories.toast_created'));
           setIsModalOpen(false);
           fetchCategories();
         }
       }
     } catch (err) {
-      showToast(err.response?.data?.message || 'Saqlashda xatolik', 'error');
+      showToast(getApiErrorMessage(err, 'admin.categories.toast_error'), 'error');
     } finally {
       setSubmitting(false);
     }
@@ -93,50 +130,52 @@ const Categories = () => {
     try {
       const res = await axiosInstance.delete(`/category/delete/${deleteConfirmId}`);
       if (res.data.success) {
-        showToast('Kategoriya o\'chirildi');
+        showToast(t('admin.categories.toast_deleted'));
         setDeleteConfirmId(null);
         fetchCategories();
       }
     } catch (err) {
-      showToast(err.response?.data?.message || 'O\'chirishda xatolik', 'error');
+      showToast(getApiErrorMessage(err, 'admin.categories.toast_error'), 'error');
     }
   };
 
-  const filteredCategories = categories.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredCategories = categories.filter((c) => {
+    const localizedName = c.translations?.[i18n.language]?.name || c.name || '';
+    return localizedName.toLowerCase().includes(search.toLowerCase()) || (c.slug && c.slug.toLowerCase().includes(search.toLowerCase()));
+  });
 
   const columns = [
     {
       key: 'name',
-      label: 'Kategoriya nomi',
-      render: (val, row) => (
-        <div className="cat-name-cell">
-          <div className="cat-icon-badge">
-            <Layers size={16} />
+      label: t('admin.categories.col_name'),
+      render: (val, row) => {
+        const localizedName = row.translations?.[i18n.language]?.name || val;
+        return (
+          <div className="cat-name-cell">
+            <div className="cat-icon-badge">
+              <Layers size={16} />
+            </div>
+            <div>
+              <span className="cat-title">{localizedName}</span>
+              <span className="cat-id">ID: #{row._id.slice(-6)}</span>
+            </div>
           </div>
-          <div>
-            <span className="cat-title">{val}</span>
-            <span className="cat-id">ID: #{row._id.slice(-6)}</span>
-          </div>
-        </div>
-      )
+        );
+      }
     },
     {
-      key: 'image',
-      label: 'Rasm / Ikonka',
-      render: (val) => val ? (
-        <span className="image-url-tag">{val.length > 30 ? val.slice(0, 30) + '...' : val}</span>
-      ) : '—'
+      key: 'slug',
+      label: t('admin.categories.col_slug'),
+      render: (val) => val || '—'
     },
     {
       key: 'createdAt',
-      label: 'Yaratilgan sana',
-      render: (val) => new Date(val).toLocaleDateString('uz-UZ')
+      label: t('admin.common.date'),
+      render: (val) => formatDate(val)
     },
     {
       key: 'actions',
-      label: 'Amallar',
+      label: t('admin.common.actions'),
       align: 'right',
       render: (_, row) => (
         <div className="table-actions-cell">
@@ -144,7 +183,7 @@ const Categories = () => {
             type="button"
             className="action-icon-btn edit"
             onClick={() => handleOpenEdit(row)}
-            title="Tahrirlash"
+            title={t('admin.common.edit')}
           >
             <Edit size={15} />
           </button>
@@ -152,7 +191,7 @@ const Categories = () => {
             type="button"
             className="action-icon-btn delete"
             onClick={() => setDeleteConfirmId(row._id)}
-            title="O'chirish"
+            title={t('admin.common.delete')}
           >
             <Trash2 size={15} />
           </button>
@@ -165,18 +204,18 @@ const Categories = () => {
     <div className="admin-categories-page">
       <div className="admin-page-hero">
         <div>
-          <h2 className="admin-hero-title">Kategoriyalar</h2>
-          <p className="admin-hero-subtitle">Mahsulot toifalari va guruhlarini boshqarish</p>
+          <h2 className="admin-hero-title">{t('admin.categories.title')}</h2>
+          <p className="admin-hero-subtitle">{t('admin.categories.subtitle')}</p>
         </div>
         <div className="hero-action-group">
           <button
             type="button"
             className="admin-btn admin-btn-secondary"
             onClick={fetchCategories}
-            title="Yangilash"
+            title={t('admin.common.refresh')}
           >
             <RefreshCw size={15} className={loading ? 'spinning' : ''} />
-            <span>Yangilash</span>
+            <span>{t('admin.common.refresh')}</span>
           </button>
           <button
             type="button"
@@ -184,7 +223,7 @@ const Categories = () => {
             onClick={handleOpenCreate}
           >
             <Plus size={16} />
-            <span>Yangi kategoriya</span>
+            <span>{t('admin.categories.add_btn')}</span>
           </button>
         </div>
       </div>
@@ -195,32 +234,56 @@ const Categories = () => {
         loading={loading}
         searchValue={search}
         onSearchChange={setSearch}
-        searchPlaceholder="Kategoriya qidirish..."
-        emptyMessage="Birorta ham kategoriya mavjud emas"
+        searchPlaceholder={t('admin.categories.search_placeholder')}
+        emptyMessage={t('admin.empty.desc')}
       />
 
       {/* Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => !submitting && setIsModalOpen(false)}
-        title={editingCategory ? 'Kategoriyani tahrirlash' : 'Yangi kategoriya yaratish'}
-        maxWidth="460px"
+        title={editingCategory ? t('admin.categories.edit_title') : t('admin.categories.new_title')}
+        maxWidth="500px"
       >
         <form onSubmit={handleSave} className="admin-form-vertical">
+          <div className="admin-lang-tabs">
+            <button
+              type="button"
+              className={`admin-lang-tab-btn ${activeLangTab === 'uz' ? 'active' : ''}`}
+              onClick={() => setActiveLangTab('uz')}
+            >
+              {t('admin.categories.tab_uz')}
+            </button>
+            <button
+              type="button"
+              className={`admin-lang-tab-btn ${activeLangTab === 'ru' ? 'active' : ''}`}
+              onClick={() => setActiveLangTab('ru')}
+            >
+              {t('admin.categories.tab_ru')}
+            </button>
+            <button
+              type="button"
+              className={`admin-lang-tab-btn ${activeLangTab === 'en' ? 'active' : ''}`}
+              onClick={() => setActiveLangTab('en')}
+            >
+              {t('admin.categories.tab_en')}
+            </button>
+          </div>
+
           <div className="form-group">
-            <label className="form-label">Kategoriya nomi *</label>
+            <label className="form-label">{t('admin.categories.label_name')} ({activeLangTab.toUpperCase()}) *</label>
             <input
               type="text"
               required
               className="admin-input"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Masalan: Wireless Audio"
+              value={translations[activeLangTab]?.name || ''}
+              onChange={(e) => handleTranslationChange('name', e.target.value)}
+              placeholder={t('admin.categories.placeholder_name')}
             />
           </div>
 
           <div className="form-group">
-            <label className="form-label">Rasm yoki Ikonka URL (ixtiyoriy)</label>
+            <label className="form-label">{t('admin.products.label_image_url')}</label>
             <input
               type="text"
               className="admin-input"
@@ -237,14 +300,14 @@ const Categories = () => {
               onClick={() => setIsModalOpen(false)}
               disabled={submitting}
             >
-              Bekor qilish
+              {t('admin.common.cancel')}
             </button>
             <button
               type="submit"
               className="admin-btn admin-btn-primary"
               disabled={submitting}
             >
-              {submitting ? 'Saqlanmoqda...' : editingCategory ? 'Yangilash' : 'Yaratish'}
+              {submitting ? t('admin.common.processing') : editingCategory ? t('admin.common.save') : t('admin.common.create')}
             </button>
           </div>
         </form>
@@ -255,8 +318,8 @@ const Categories = () => {
         isOpen={Boolean(deleteConfirmId)}
         onClose={() => setDeleteConfirmId(null)}
         onConfirm={handleDelete}
-        title="Kategoriyani o'chirish"
-        message="Haqiqatan ham bu kategoriyani o'chirmoqchimisiz? Ushbu toifadagi mahsulotlar ta'sirlanishi mumkin."
+        title={t('admin.dialog.confirm_title')}
+        message={t('admin.categories.delete_confirm')}
         type="danger"
       />
 

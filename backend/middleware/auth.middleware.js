@@ -7,27 +7,19 @@ const verifyToken = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization || req.headers.Authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        success: false,
-        message: 'Kirish uchun token taqdim etilmagan (Token is missing)',
-        innerData: null
-      });
+      return res.sendResponse(401, 'AUTH_TOKEN_MISSING');
     }
 
     const token = authHeader.split(' ')[1];
     if (!process.env.JWT_SECRET) {
-      throw new Error('JWT_SECRET muhit o\'zgaruvchisi o\'rnatilmagan');
+      throw new Error('JWT_SECRET environment variable is not defined');
     }
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded; // { id, email, role, ... }
     next();
   } catch (error) {
     console.error('[Auth Middleware Error]:', error.message);
-    return res.status(401).json({
-      success: false,
-      message: 'Yaroqsiz yoki muddati o\'tgan token (Invalid or expired token)',
-      innerData: null
-    });
+    return res.sendResponse(401, 'AUTH_TOKEN_INVALID');
   }
 };
 
@@ -36,11 +28,7 @@ const verifyToken = (req, res, next) => {
  */
 const isAdmin = (req, res, next) => {
   if (!req.user || req.user.role !== 'admin') {
-    return res.status(403).json({
-      success: false,
-      message: 'Ruxsat etilmagan amal: Faqat admin foydalanuvchilar uchun (Admin access required)',
-      innerData: null
-    });
+    return res.sendResponse(403, 'FORBIDDEN_ADMIN_ONLY');
   }
   next();
 };
@@ -49,3 +37,4 @@ module.exports = {
   verifyToken,
   isAdmin
 };
+

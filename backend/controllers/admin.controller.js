@@ -113,7 +113,7 @@ const getStats = async (req, res) => {
           _id: 1,
           soldCount: 1,
           totalSales: 1,
-          name: { $ifNull: ['$product.name', 'O\'chirilgan mahsulot'] },
+          name: { $ifNull: ['$product.name', 'Product'] },
           price: { $ifNull: ['$product.price', 0] },
           images: { $ifNull: ['$product.images', []] },
           stock: { $ifNull: ['$product.stock', 0] }
@@ -140,35 +140,27 @@ const getStats = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(5);
 
-    return res.status(200).json({
-      success: true,
-      message: 'Admin statistikasi muvaffaqiyatli olindi',
-      innerData: {
-        summary: {
-          totalRevenue,
-          totalOrders,
-          totalUsers,
-          totalProducts,
-          lowStockCount: lowStockProducts.length
-        },
-        ordersByStatus,
-        dailySales: {
-          last7Days: dailySales7,
-          last30Days: dailySales30
-        },
-        topSellingProducts,
-        lowStockProducts,
-        recentOrders,
-        recentUsers
-      }
+    return res.sendResponse(200, 'STATS_FETCHED', {
+      summary: {
+        totalRevenue,
+        totalOrders,
+        totalUsers,
+        totalProducts,
+        lowStockCount: lowStockProducts.length
+      },
+      ordersByStatus,
+      dailySales: {
+        last7Days: dailySales7,
+        last30Days: dailySales30
+      },
+      topSellingProducts,
+      lowStockProducts,
+      recentOrders,
+      recentUsers
     });
   } catch (error) {
     console.error('[Admin Stats Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 

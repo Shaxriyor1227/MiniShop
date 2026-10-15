@@ -12,14 +12,20 @@ import {
   Clock,
   CheckCircle2
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../../api/axiosInstance';
 import DataTable from '../../../components/Admin/DataTable';
 import Modal from '../../../components/Admin/Modal';
 import StatusBadge from '../../../components/Admin/StatusBadge';
 import Toast from '../../../components/Admin/Toast';
+import { useFormatters } from '../../../utils/formatters';
+import { getApiErrorMessage } from '../../../utils/apiError';
 import './Orders.css';
 
 const Orders = () => {
+  const { t, i18n } = useTranslation();
+  const { formatPrice, formatDate } = useFormatters();
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -61,7 +67,7 @@ const Orders = () => {
       }
     } catch (err) {
       console.error('[Orders Fetch Error]:', err);
-      showToast('Buyurtmalarni yuklashda xatolik yuz berdi', 'error');
+      showToast(getApiErrorMessage(err, 'admin.orders.toast_error'), 'error');
     } finally {
       setLoading(false);
     }
@@ -86,12 +92,12 @@ const Orders = () => {
         status: newStatus
       });
       if (res.data.success) {
-        showToast(`Buyurtma holati "${newStatus}" ga o'zgartirildi!`);
+        showToast(t('admin.orders.toast_status_updated'));
         setSelectedOrder((prev) => ({ ...prev, status: newStatus }));
         fetchOrders();
       }
     } catch (err) {
-      showToast(err.response?.data?.message || 'Holatni yangilashda xatolik', 'error');
+      showToast(getApiErrorMessage(err, 'admin.orders.toast_error'), 'error');
     } finally {
       setUpdatingStatus(false);
     }
@@ -100,65 +106,61 @@ const Orders = () => {
   const columns = [
     {
       key: '_id',
-      label: 'Buyurtma ID',
+      label: t('admin.orders.col_id'),
       width: '130px',
       render: (val) => <span className="order-code-badge">#{val.slice(-6)}</span>
     },
     {
       key: 'user_id',
-      label: 'Mijoz',
+      label: t('admin.orders.col_customer'),
       render: (user) => (
         <div className="order-user-cell">
-          <span className="user-name">{user?.name || 'Mijoz'}</span>
+          <span className="user-name">{user?.name || t('admin.status.customer')}</span>
           <span className="user-email">{user?.email || '—'}</span>
         </div>
       )
     },
     {
       key: 'createdAt',
-      label: 'Sana',
+      label: t('admin.orders.col_date'),
       render: (val) => (
         <span className="order-date-text">
-          {new Date(val).toLocaleDateString('uz-UZ', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-          })}
+          {formatDate(val)}
         </span>
       )
     },
     {
       key: 'items',
-      label: 'Mahsulotlar',
+      label: t('admin.orders.col_items'),
       render: (items) => (
         <span className="order-items-count">
-          {items?.reduce((sum, item) => sum + item.quantity, 0) || 0} ta dona
+          {items?.reduce((sum, item) => sum + item.quantity, 0) || 0}
         </span>
       )
     },
     {
       key: 'total',
-      label: 'Umumiy summa',
-      render: (val) => <strong className="order-total-price">${val}</strong>
+      label: t('admin.orders.col_total'),
+      render: (val) => <strong className="order-total-price">{formatPrice(val)}</strong>
     },
     {
       key: 'status',
-      label: 'Holat',
+      label: t('admin.orders.col_status'),
       render: (val) => <StatusBadge status={val} type="order" />
     },
     {
       key: 'actions',
-      label: 'Batafsil',
+      label: t('admin.orders.col_actions'),
       align: 'right',
       render: (_, row) => (
         <button
           type="button"
           className="order-detail-btn"
           onClick={() => handleOpenDetail(row)}
-          title="Batafsil ko'rish"
+          title={t('admin.common.view')}
         >
           <Eye size={15} />
-          <span>Ko'rish</span>
+          <span>{t('admin.common.view')}</span>
         </button>
       )
     }
@@ -168,10 +170,8 @@ const Orders = () => {
     <div className="admin-orders-page">
       <div className="admin-page-hero">
         <div>
-          <h2 className="admin-hero-title">Buyurtmalar boshqaruvi</h2>
-          <p className="admin-hero-subtitle">
-            Barcha mijoz buyurtmalari, yetkazib berish holatlari va to'lovlar
-          </p>
+          <h2 className="admin-hero-title">{t('admin.orders.title')}</h2>
+          <p className="admin-hero-subtitle">{t('admin.orders.subtitle')}</p>
         </div>
         <button
           type="button"
@@ -179,7 +179,7 @@ const Orders = () => {
           onClick={fetchOrders}
         >
           <RefreshCw size={15} className={loading ? 'spinning' : ''} />
-          <span>Yangilash</span>
+          <span>{t('admin.common.refresh')}</span>
         </button>
       </div>
 
@@ -192,12 +192,12 @@ const Orders = () => {
             value={statusFilter}
             onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
           >
-            <option value="all">Barcha holatlar</option>
-            <option value="pending">Kutilmoqda</option>
-            <option value="paid">To'langan</option>
-            <option value="shipped">Yo'lda (Yuborilgan)</option>
-            <option value="delivered">Yetkazib berildi</option>
-            <option value="cancelled">Bekor qilingan</option>
+            <option value="all">{t('admin.orders.filter_all')}</option>
+            <option value="pending">{t('admin.status.pending')}</option>
+            <option value="paid">{t('admin.status.paid')}</option>
+            <option value="shipped">{t('admin.status.shipped')}</option>
+            <option value="delivered">{t('admin.status.delivered')}</option>
+            <option value="cancelled">{t('admin.status.cancelled')}</option>
           </select>
         </div>
 
@@ -208,7 +208,7 @@ const Orders = () => {
             className="admin-date-input"
             value={startDate}
             onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
-            title="Boshlanish sanasi"
+            title={t('admin.orders.filter_start')}
           />
           <span className="date-sep">—</span>
           <input
@@ -216,7 +216,7 @@ const Orders = () => {
             className="admin-date-input"
             value={endDate}
             onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
-            title="Tugash sanasi"
+            title={t('admin.orders.filter_end')}
           />
           {(statusFilter !== 'all' || startDate || endDate) && (
             <button
@@ -229,7 +229,7 @@ const Orders = () => {
                 setPage(1);
               }}
             >
-              Filtrni tozalash
+              {t('admin.common.clear')}
             </button>
           )}
         </div>
@@ -242,14 +242,14 @@ const Orders = () => {
         loading={loading}
         searchValue={search}
         onSearchChange={(val) => { setSearch(val); setPage(1); }}
-        searchPlaceholder="ID yoki mijoz bo'yicha qidirish..."
+        searchPlaceholder={t('admin.orders.search_placeholder')}
         pagination={{
           page,
           totalPages,
           total,
           onPageChange: (p) => setPage(p)
         }}
-        emptyMessage="Buyurtmalar topilmadi"
+        emptyMessage={t('admin.empty.desc')}
       />
 
       {/* Order Detail Modal */}
@@ -257,15 +257,15 @@ const Orders = () => {
         <Modal
           isOpen={isDetailModalOpen}
           onClose={() => setIsDetailModalOpen(false)}
-          title={`Buyurtma #${selectedOrder._id.slice(-6)}`}
-          subtitle={`Sana: ${new Date(selectedOrder.createdAt).toLocaleString('uz-UZ')}`}
+          title={`${t('admin.orders.modal_title')} #${selectedOrder._id.slice(-6)}`}
+          subtitle={`${t('admin.common.date')}: ${formatDate(selectedOrder.createdAt)}`}
           maxWidth="680px"
         >
           <div className="order-modal-content">
             {/* Status change block */}
             <div className="order-status-change-card">
               <div className="status-change-label">
-                <span>Joriy holat:</span>
+                <span>{t('admin.orders.col_status')}:</span>
                 <StatusBadge status={selectedOrder.status} type="order" />
               </div>
 
@@ -275,11 +275,11 @@ const Orders = () => {
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value)}
                 >
-                  <option value="pending">Kutilmoqda</option>
-                  <option value="paid">To'langan</option>
-                  <option value="shipped">Yo'lda (Yuborilgan)</option>
-                  <option value="delivered">Yetkazib berildi</option>
-                  <option value="cancelled">Bekor qilindi (Stock qaytadi)</option>
+                  <option value="pending">{t('admin.status.pending')}</option>
+                  <option value="paid">{t('admin.status.paid')}</option>
+                  <option value="shipped">{t('admin.status.shipped')}</option>
+                  <option value="delivered">{t('admin.status.delivered')}</option>
+                  <option value="cancelled">{t('admin.status.cancelled')}</option>
                 </select>
 
                 <button
@@ -288,7 +288,7 @@ const Orders = () => {
                   onClick={handleUpdateStatus}
                   disabled={updatingStatus || newStatus === selectedOrder.status}
                 >
-                  {updatingStatus ? 'Yangilanmoqda...' : 'Holatni saqlash'}
+                  {updatingStatus ? t('admin.common.processing') : t('admin.orders.change_status')}
                 </button>
               </div>
             </div>
@@ -298,38 +298,38 @@ const Orders = () => {
               <div className="order-detail-card">
                 <div className="detail-card-head">
                   <User size={15} />
-                  <span>Mijoz ma'lumotlari</span>
+                  <span>{t('admin.orders.customer_info')}</span>
                 </div>
                 <div className="detail-card-row">
-                  <span className="row-key">Ism:</span>
-                  <span className="row-val">{selectedOrder.user_id?.name || 'Mijoz'}</span>
+                  <span className="row-key">{t('admin.users.col_name')}:</span>
+                  <span className="row-val">{selectedOrder.user_id?.name || t('admin.status.customer')}</span>
                 </div>
                 <div className="detail-card-row">
-                  <span className="row-key">Email:</span>
+                  <span className="row-key">{t('admin.users.col_email')}:</span>
                   <span className="row-val">{selectedOrder.user_id?.email || '—'}</span>
                 </div>
                 <div className="detail-card-row">
-                  <span className="row-key">Telefon:</span>
-                  <span className="row-val">{selectedOrder.user_id?.phone_number || 'Kiritilmagan'}</span>
+                  <span className="row-key">{t('admin.users.col_phone')}:</span>
+                  <span className="row-val">{selectedOrder.user_id?.phone_number || '—'}</span>
                 </div>
               </div>
 
               <div className="order-detail-card">
                 <div className="detail-card-head">
                   <MapPin size={15} />
-                  <span>Yetkazib berish manzili</span>
+                  <span>{t('admin.orders.delivery_address')}</span>
                 </div>
                 <div className="detail-card-row">
-                  <span className="row-key">Shahar/Viloyat:</span>
-                  <span className="row-val">{selectedOrder.address_id?.city || 'Toshkent'}</span>
+                  <span className="row-key">City:</span>
+                  <span className="row-val">{selectedOrder.address_id?.city || '—'}</span>
                 </div>
                 <div className="detail-card-row">
-                  <span className="row-key">Ko'cha/Uy:</span>
-                  <span className="row-val">{selectedOrder.address_id?.street || 'Asosiy manzil'}</span>
+                  <span className="row-key">Street:</span>
+                  <span className="row-val">{selectedOrder.address_id?.street || '—'}</span>
                 </div>
                 <div className="detail-card-row">
-                  <span className="row-key">Pochta indeksi:</span>
-                  <span className="row-val">{selectedOrder.address_id?.postal_code || '100000'}</span>
+                  <span className="row-key">Postal:</span>
+                  <span className="row-val">{selectedOrder.address_id?.postal_code || '—'}</span>
                 </div>
               </div>
             </div>
@@ -338,40 +338,43 @@ const Orders = () => {
             <div className="order-items-card">
               <div className="detail-card-head">
                 <Package size={15} />
-                <span>Buyurtma tarkibi ({selectedOrder.items?.length || 0} ta mahsulot)</span>
+                <span>{t('admin.orders.ordered_items')} ({selectedOrder.items?.length || 0})</span>
               </div>
 
               <div className="modal-items-list">
-                {selectedOrder.items?.map((item, idx) => (
-                  <div key={item._id || idx} className="modal-item-row">
-                    <img
-                      src={item.product_id?.images?.[0] || '/images/product_placeholder.png'}
-                      alt={item.product_id?.name || 'Mahsulot'}
-                      className="modal-item-thumb"
-                      onError={(e) => { e.target.src = '/images/product_placeholder.png'; }}
-                    />
-                    <div className="modal-item-name">
-                      <span>{item.product_id?.name || 'Mahsulot'}</span>
-                      <span className="modal-item-price-unit">${item.price} / dona</span>
+                {selectedOrder.items?.map((item, idx) => {
+                  const localizedItemName = item.product_id?.translations?.[i18n.language]?.name || item.product_id?.name || 'Item';
+                  return (
+                    <div key={item._id || idx} className="modal-item-row">
+                      <img
+                        src={item.product_id?.images?.[0] || '/images/product_placeholder.png'}
+                        alt={localizedItemName}
+                        className="modal-item-thumb"
+                        onError={(e) => { e.target.src = '/images/product_placeholder.png'; }}
+                      />
+                      <div className="modal-item-name">
+                        <span>{localizedItemName}</span>
+                        <span className="modal-item-price-unit">{formatPrice(item.price)}</span>
+                      </div>
+                      <div className="modal-item-qty">x {item.quantity}</div>
+                      <div className="modal-item-subtotal">
+                        {formatPrice(item.price * item.quantity)}
+                      </div>
                     </div>
-                    <div className="modal-item-qty">x {item.quantity}</div>
-                    <div className="modal-item-subtotal">
-                      ${(item.price * item.quantity).toFixed(2)}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <div className="order-modal-summary">
                 {selectedOrder.coupon_id && (
                   <div className="summary-line coupon">
-                    <span>Qo'llangan kupon ({selectedOrder.coupon_id?.code || 'KUPON'}):</span>
+                    <span>{selectedOrder.coupon_id?.code || 'COUPON'}:</span>
                     <span>-{selectedOrder.coupon_id?.discount}%</span>
                   </div>
                 )}
                 <div className="summary-line total">
-                  <span>Jami to'langan summa:</span>
-                  <span className="total-highlight">${selectedOrder.total}</span>
+                  <span>{t('admin.orders.col_total')}:</span>
+                  <span className="total-highlight">{formatPrice(selectedOrder.total)}</span>
                 </div>
               </div>
             </div>

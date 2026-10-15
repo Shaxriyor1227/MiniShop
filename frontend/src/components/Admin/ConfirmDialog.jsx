@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertTriangle, AlertCircle, Info } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Modal from './Modal';
 import './ConfirmDialog.css';
 
@@ -7,19 +8,26 @@ const ConfirmDialog = ({
   isOpen,
   onClose,
   onConfirm,
-  title = 'Tasdiqlash',
-  message = 'Haqiqatan ham bu amalni bajarmoqchimisiz?',
-  confirmText = 'Ha, davom etish',
-  cancelText = 'Bekor qilish',
+  title,
+  message,
+  confirmText,
+  cancelText,
   type = 'danger', // 'danger' | 'warning' | 'info'
   loading = false
 }) => {
+  const { t } = useTranslation();
+
+  const finalTitle = title || t('admin.dialog.confirm_title');
+  const finalMessage = message || t('admin.dialog.confirm_message');
+  const finalConfirmText = confirmText || t('admin.dialog.confirm_btn');
+  const finalCancelText = cancelText || t('admin.dialog.cancel_btn');
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={loading ? () => {} : onClose}
       maxWidth="420px"
-      title={title}
+      title={finalTitle}
     >
       <div className="admin-confirm-content">
         <div className={`admin-confirm-icon-wrap type-${type}`}>
@@ -27,7 +35,7 @@ const ConfirmDialog = ({
           {type === 'warning' && <AlertCircle size={24} />}
           {type === 'info' && <Info size={24} />}
         </div>
-        <p className="admin-confirm-message">{message}</p>
+        <p className="admin-confirm-message">{finalMessage}</p>
       </div>
 
       <div className="admin-confirm-actions">
@@ -37,7 +45,7 @@ const ConfirmDialog = ({
           onClick={onClose}
           disabled={loading}
         >
-          {cancelText}
+          {finalCancelText}
         </button>
         <button
           type="button"
@@ -45,7 +53,7 @@ const ConfirmDialog = ({
           onClick={onConfirm}
           disabled={loading}
         >
-          {loading ? 'Bajarilmoqda...' : confirmText}
+          {loading ? t('admin.dialog.loading') : finalConfirmText}
         </button>
       </div>
     </Modal>

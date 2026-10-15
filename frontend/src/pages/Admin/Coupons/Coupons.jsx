@@ -1,14 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Edit, Trash2, Tag, Calendar, RefreshCw, Percent } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../../api/axiosInstance';
 import DataTable from '../../../components/Admin/DataTable';
 import Modal from '../../../components/Admin/Modal';
 import ConfirmDialog from '../../../components/Admin/ConfirmDialog';
 import StatusBadge from '../../../components/Admin/StatusBadge';
 import Toast from '../../../components/Admin/Toast';
+import { useFormatters } from '../../../utils/formatters';
+import { getApiErrorMessage } from '../../../utils/apiError';
 import './Coupons.css';
 
 const Coupons = () => {
+  const { t } = useTranslation();
+  const { formatDate } = useFormatters();
+
   const [coupons, setCoupons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -48,7 +54,7 @@ const Coupons = () => {
       }
     } catch (err) {
       console.error('[Coupons Fetch Error]:', err);
-      showToast('Kuponlarni yuklashda xatolik', 'error');
+      showToast(getApiErrorMessage(err, 'admin.coupons.toast_error'), 'error');
     } finally {
       setLoading(false);
     }
@@ -85,7 +91,7 @@ const Coupons = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     if (!formData.code.trim() || formData.discount === '' || !formData.expires_at) {
-      showToast('Barcha majburiy maydonlarni to\'ldiring', 'error');
+      showToast(t('admin.common.error'), 'error');
       return;
     }
 
@@ -101,20 +107,20 @@ const Coupons = () => {
       if (editingCoupon) {
         const res = await axiosInstance.put(`/coupon/update/${editingCoupon._id}`, payload);
         if (res.data.success) {
-          showToast('Kupon yangilandi!');
+          showToast(t('admin.coupons.toast_updated'));
           setIsModalOpen(false);
           fetchCoupons();
         }
       } else {
         const res = await axiosInstance.post('/coupon/create', payload);
         if (res.data.success) {
-          showToast('Yangi kupon yaratildi!');
+          showToast(t('admin.coupons.toast_created'));
           setIsModalOpen(false);
           fetchCoupons();
         }
       }
     } catch (err) {
-      showToast(err.response?.data?.message || 'Saqlashda xatolik', 'error');
+      showToast(getApiErrorMessage(err, 'admin.coupons.toast_error'), 'error');
     } finally {
       setSubmitting(false);
     }
@@ -125,19 +131,19 @@ const Coupons = () => {
     try {
       const res = await axiosInstance.delete(`/coupon/delete/${deleteConfirmId}`);
       if (res.data.success) {
-        showToast('Kupon o\'chirildi');
+        showToast(t('admin.coupons.toast_deleted'));
         setDeleteConfirmId(null);
         fetchCoupons();
       }
     } catch (err) {
-      showToast(err.response?.data?.message || 'O\'chirishda xatolik', 'error');
+      showToast(getApiErrorMessage(err, 'admin.coupons.toast_error'), 'error');
     }
   };
 
   const columns = [
     {
       key: 'code',
-      label: 'Kupon kodi',
+      label: t('admin.coupons.col_code'),
       render: (val) => (
         <div className="coupon-code-cell">
           <Tag size={15} className="coupon-icon" />
@@ -147,7 +153,7 @@ const Coupons = () => {
     },
     {
       key: 'discount',
-      label: 'Chegirma',
+      label: t('admin.coupons.col_discount'),
       render: (val) => (
         <span className="discount-badge">
           <Percent size={12} />
@@ -157,20 +163,19 @@ const Coupons = () => {
     },
     {
       key: 'expires_at',
-      label: 'Amal qilish muddati',
+      label: t('admin.coupons.col_expires'),
       render: (val) => {
         const isExpired = new Date(val) < new Date();
         return (
           <span className={`expiry-date ${isExpired ? 'expired' : ''}`}>
-            {new Date(val).toLocaleDateString('uz-UZ')}
-            {isExpired && ' (muddati o\'tgan)'}
+            {formatDate(val)}
           </span>
         );
       }
     },
     {
       key: 'is_active',
-      label: 'Holat',
+      label: t('admin.coupons.col_status'),
       render: (val, row) => {
         const isExpired = new Date(row.expires_at) < new Date();
         const active = val && !isExpired;
@@ -179,7 +184,7 @@ const Coupons = () => {
     },
     {
       key: 'actions',
-      label: 'Amallar',
+      label: t('admin.common.actions'),
       align: 'right',
       render: (_, row) => (
         <div className="table-actions-cell">
@@ -187,7 +192,7 @@ const Coupons = () => {
             type="button"
             className="action-icon-btn edit"
             onClick={() => handleOpenEdit(row)}
-            title="Tahrirlash"
+            title={t('admin.common.edit')}
           >
             <Edit size={15} />
           </button>
@@ -195,7 +200,7 @@ const Coupons = () => {
             type="button"
             className="action-icon-btn delete"
             onClick={() => setDeleteConfirmId(row._id)}
-            title="O'chirish"
+            title={t('admin.common.delete')}
           >
             <Trash2 size={15} />
           </button>
@@ -208,19 +213,18 @@ const Coupons = () => {
     <div className="admin-coupons-page">
       <div className="admin-page-hero">
         <div>
-          <h2 className="admin-hero-title">Kuponlar va aksiyalar</h2>
-          <p className="admin-hero-subtitle">
-            Chegirma promo-kodlarini yaratish, muddat va faolligini boshqarish
-          </p>
+          <h2 className="admin-hero-title">{t('admin.coupons.title')}</h2>
+          <p className="admin-hero-subtitle">{t('admin.coupons.subtitle')}</p>
         </div>
         <div className="hero-action-group">
           <button
             type="button"
             className="admin-btn admin-btn-secondary"
             onClick={fetchCoupons}
+            title={t('admin.common.refresh')}
           >
             <RefreshCw size={15} className={loading ? 'spinning' : ''} />
-            <span>Yangilash</span>
+            <span>{t('admin.common.refresh')}</span>
           </button>
           <button
             type="button"
@@ -228,7 +232,7 @@ const Coupons = () => {
             onClick={handleOpenCreate}
           >
             <Plus size={16} />
-            <span>Yangi kupon</span>
+            <span>{t('admin.coupons.add_btn')}</span>
           </button>
         </div>
       </div>
@@ -239,38 +243,38 @@ const Coupons = () => {
         loading={loading}
         searchValue={search}
         onSearchChange={(val) => { setSearch(val); setPage(1); }}
-        searchPlaceholder="Kupon kodi bo'yicha qidirish..."
+        searchPlaceholder={t('admin.coupons.search_placeholder')}
         pagination={{
           page,
           totalPages,
           total,
           onPageChange: (p) => setPage(p)
         }}
-        emptyMessage="Kuponlar topilmadi"
+        emptyMessage={t('admin.empty.desc')}
       />
 
       {/* Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => !submitting && setIsModalOpen(false)}
-        title={editingCoupon ? 'Kuponni tahrirlash' : 'Yangi kupon yaratish'}
+        title={editingCoupon ? t('admin.coupons.edit_title') : t('admin.coupons.new_title')}
         maxWidth="500px"
       >
         <form onSubmit={handleSave} className="admin-form-vertical">
           <div className="form-group">
-            <label className="form-label">Kupon kodi (Promo-kod) *</label>
+            <label className="form-label">{t('admin.coupons.label_code')} *</label>
             <input
               type="text"
               required
               className="admin-input uppercase-input"
               value={formData.code}
               onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
-              placeholder="Masalan: SPRING2026"
+              placeholder="SPRING2026"
             />
           </div>
 
           <div className="form-group">
-            <label className="form-label">Chegirma foizi (1 - 100%) *</label>
+            <label className="form-label">{t('admin.coupons.label_discount')} *</label>
             <input
               type="number"
               min="1"
@@ -279,12 +283,12 @@ const Coupons = () => {
               className="admin-input"
               value={formData.discount}
               onChange={(e) => setFormData({ ...formData, discount: e.target.value })}
-              placeholder="Masalan: 15"
+              placeholder="15"
             />
           </div>
 
           <div className="form-group">
-            <label className="form-label">Amal qilish muddati (Tugash sanasi) *</label>
+            <label className="form-label">{t('admin.coupons.label_expires')} *</label>
             <input
               type="date"
               required
@@ -301,7 +305,7 @@ const Coupons = () => {
                 checked={formData.is_active}
                 onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
               />
-              <span>Kupon hozirda faol bo'lsin</span>
+              <span>{t('admin.coupons.label_status')}</span>
             </label>
           </div>
 
@@ -312,14 +316,14 @@ const Coupons = () => {
               onClick={() => setIsModalOpen(false)}
               disabled={submitting}
             >
-              Bekor qilish
+              {t('admin.common.cancel')}
             </button>
             <button
               type="submit"
               className="admin-btn admin-btn-primary"
               disabled={submitting}
             >
-              {submitting ? 'Saqlanmoqda...' : editingCoupon ? 'Yangilash' : 'Yaratish'}
+              {submitting ? t('admin.common.processing') : editingCoupon ? t('admin.common.save') : t('admin.common.create')}
             </button>
           </div>
         </form>
@@ -330,8 +334,8 @@ const Coupons = () => {
         isOpen={Boolean(deleteConfirmId)}
         onClose={() => setDeleteConfirmId(null)}
         onConfirm={handleDelete}
-        title="Kuponni o'chirish"
-        message="Ushbu kuponni o'chirmoqchimisiz? Mijozlar endi bu koddan foydalana olmaydilar."
+        title={t('admin.dialog.confirm_title')}
+        message={t('admin.coupons.delete_confirm')}
         type="danger"
       />
 

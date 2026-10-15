@@ -1,13 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Bell, Send, Users, User, Trash2, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../../api/axiosInstance';
 import DataTable from '../../../components/Admin/DataTable';
 import Modal from '../../../components/Admin/Modal';
 import ConfirmDialog from '../../../components/Admin/ConfirmDialog';
 import Toast from '../../../components/Admin/Toast';
+import { useFormatters } from '../../../utils/formatters';
+import { getApiErrorMessage } from '../../../utils/apiError';
 import './Notifications.css';
 
 const Notifications = () => {
+  const { t } = useTranslation();
+  const { formatDate } = useFormatters();
+
   const [notifications, setNotifications] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -56,7 +62,7 @@ const Notifications = () => {
       }
     } catch (err) {
       console.error('[Notifications Fetch Error]:', err);
-      showToast('Bildirishnomalarni yuklashda xatolik', 'error');
+      showToast(getApiErrorMessage(err, 'admin.notifications.toast_error'), 'error');
     } finally {
       setLoading(false);
     }
@@ -69,11 +75,11 @@ const Notifications = () => {
   const handleSendNotification = async (e) => {
     e.preventDefault();
     if (!message.trim()) {
-      showToast('Xabar matnini kiriting', 'error');
+      showToast(t('admin.common.error'), 'error');
       return;
     }
     if (targetType === 'single' && !targetUserId) {
-      showToast('Qabul qiluvchi foydalanuvchini tanlang', 'error');
+      showToast(t('admin.common.select'), 'error');
       return;
     }
 
@@ -86,13 +92,13 @@ const Notifications = () => {
 
       const res = await axiosInstance.post('/notification/create', payload);
       if (res.data.success) {
-        showToast(res.data.message || 'Xabar muvaffaqiyatli yuborildi!');
+        showToast(t('admin.notifications.toast_sent'));
         setIsModalOpen(false);
         setMessage('');
         fetchNotifications();
       }
     } catch (err) {
-      showToast(err.response?.data?.message || 'Xabar yuborishda xatolik', 'error');
+      showToast(getApiErrorMessage(err, 'admin.notifications.toast_error'), 'error');
     } finally {
       setSending(false);
     }
@@ -102,19 +108,19 @@ const Notifications = () => {
     try {
       const res = await axiosInstance.delete('/notification/clear');
       if (res.data.success) {
-        showToast('Barcha bildirishnomalar tozalandi');
+        showToast(t('admin.notifications.toast_deleted_all'));
         setIsClearConfirmOpen(false);
         fetchNotifications();
       }
     } catch (err) {
-      showToast(err.response?.data?.message || 'Tozalashda xatolik', 'error');
+      showToast(getApiErrorMessage(err, 'admin.notifications.toast_error'), 'error');
     }
   };
 
   const columns = [
     {
       key: 'message',
-      label: 'Xabar mazmuni',
+      label: t('admin.notifications.col_message'),
       render: (val) => (
         <div className="notif-message-cell">
           <div className="notif-icon-circle">
@@ -126,31 +132,26 @@ const Notifications = () => {
     },
     {
       key: 'user_id',
-      label: 'Qabul qiluvchi',
+      label: t('admin.notifications.col_user'),
       render: (u) => (
         <span className="notif-user-tag">
-          {u?.name || u?.email || 'Mijoz'}
+          {u?.name || u?.email || t('admin.status.customer')}
         </span>
       )
     },
     {
       key: 'isRead',
-      label: 'O\'qilganligi',
+      label: t('admin.notifications.col_status'),
       render: (val) => (
         <span className={`read-status-badge ${val ? 'read' : 'unread'}`}>
-          {val ? 'O\'qilgan' : 'Yangi'}
+          {val ? t('admin.status.completed') : t('admin.status.active')}
         </span>
       )
     },
     {
       key: 'createdAt',
-      label: 'Yuborilgan sana',
-      render: (val) => new Date(val).toLocaleString('uz-UZ', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      })
+      label: t('admin.notifications.col_date'),
+      render: (val) => formatDate(val)
     }
   ];
 
@@ -158,19 +159,18 @@ const Notifications = () => {
     <div className="admin-notifications-page">
       <div className="admin-page-hero">
         <div>
-          <h2 className="admin-hero-title">Bildirishnomalar markazi</h2>
-          <p className="admin-hero-subtitle">
-            Mijozlarga individual yoki umumiy (broadcast) xabarnomalar yuborish
-          </p>
+          <h2 className="admin-hero-title">{t('admin.notifications.title')}</h2>
+          <p className="admin-hero-subtitle">{t('admin.notifications.subtitle')}</p>
         </div>
         <div className="hero-action-group">
           <button
             type="button"
             className="admin-btn admin-btn-secondary"
             onClick={fetchNotifications}
+            title={t('admin.common.refresh')}
           >
             <RefreshCw size={15} className={loading ? 'spinning' : ''} />
-            <span>Yangilash</span>
+            <span>{t('admin.common.refresh')}</span>
           </button>
           <button
             type="button"
@@ -178,7 +178,7 @@ const Notifications = () => {
             onClick={() => setIsModalOpen(true)}
           >
             <Send size={15} />
-            <span>Xabar yuborish</span>
+            <span>{t('admin.notifications.send_btn')}</span>
           </button>
         </div>
       </div>
@@ -193,20 +193,19 @@ const Notifications = () => {
           total,
           onPageChange: (p) => setPage(p)
         }}
-        emptyMessage="Hozircha bildirishnomalar mavjud emas"
+        emptyMessage={t('admin.empty.desc')}
       />
 
       {/* Send Notification Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => !sending && setIsModalOpen(false)}
-        title="Yangi bildirishnoma yuborish"
-        subtitle="Mijozga yoki barchaga tizim xabarnomasi"
+        title={t('admin.notifications.send_btn')}
         maxWidth="520px"
       >
         <form onSubmit={handleSendNotification} className="admin-form-vertical">
           <div className="form-group">
-            <label className="form-label">Qabul qiluvchi guruhi</label>
+            <label className="form-label">{t('admin.notifications.label_recipient')}</label>
             <div className="target-type-toggle">
               <button
                 type="button"
@@ -214,7 +213,7 @@ const Notifications = () => {
                 onClick={() => setTargetType('all')}
               >
                 <Users size={16} />
-                <span>Barcha foydalanuvchilarga</span>
+                <span>{t('admin.notifications.label_all_users')}</span>
               </button>
               <button
                 type="button"
@@ -222,21 +221,21 @@ const Notifications = () => {
                 onClick={() => setTargetType('single')}
               >
                 <User size={16} />
-                <span>Bitta mijozga</span>
+                <span>{t('admin.notifications.col_user')}</span>
               </button>
             </div>
           </div>
 
           {targetType === 'single' && (
             <div className="form-group">
-              <label className="form-label">Foydalanuvchini tanlang *</label>
+              <label className="form-label">{t('admin.notifications.label_recipient')} *</label>
               <select
                 required
                 className="admin-select"
                 value={targetUserId}
                 onChange={(e) => setTargetUserId(e.target.value)}
               >
-                <option value="">Foydalanuvchini tanlang</option>
+                <option value="">{t('admin.common.select')}</option>
                 {users.map((u) => (
                   <option key={u._id} value={u._id}>
                     {u.name} ({u.email})
@@ -247,14 +246,14 @@ const Notifications = () => {
           )}
 
           <div className="form-group">
-            <label className="form-label">Xabar matni *</label>
+            <label className="form-label">{t('admin.notifications.label_message')} *</label>
             <textarea
               required
               rows={4}
               className="admin-input admin-textarea"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Masalan: Hurmatli mijoz, MiniShop do'konida yangi flagman mahsulotlar chegirma bilan taqdim etilmoqda!"
+              placeholder={t('admin.notifications.placeholder_message')}
             />
           </div>
 
@@ -265,14 +264,14 @@ const Notifications = () => {
               onClick={() => setIsModalOpen(false)}
               disabled={sending}
             >
-              Bekor qilish
+              {t('admin.common.cancel')}
             </button>
             <button
               type="submit"
               className="admin-btn admin-btn-primary"
               disabled={sending}
             >
-              {sending ? 'Yuborilmoqda...' : 'Xabarni yuborish'}
+              {sending ? t('admin.common.processing') : t('admin.notifications.send_btn')}
             </button>
           </div>
         </form>
@@ -283,8 +282,8 @@ const Notifications = () => {
         isOpen={isClearConfirmOpen}
         onClose={() => setIsClearConfirmOpen(false)}
         onConfirm={handleClearAll}
-        title="Bildirishnomalarni tozalash"
-        message="Barcha shaxsiy bildirishnomalaringizni o'chirmoqchimisiz?"
+        title={t('admin.dialog.confirm_title')}
+        message={t('admin.notifications.delete_all_confirm')}
         type="danger"
       />
 

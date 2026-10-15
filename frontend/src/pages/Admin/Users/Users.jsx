@@ -10,16 +10,22 @@ import {
   UserX,
   AlertTriangle
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../../api/axiosInstance';
 import { useAuth } from '../../../context/AuthContext';
 import DataTable from '../../../components/Admin/DataTable';
 import ConfirmDialog from '../../../components/Admin/ConfirmDialog';
 import StatusBadge from '../../../components/Admin/StatusBadge';
 import Toast from '../../../components/Admin/Toast';
+import { useFormatters } from '../../../utils/formatters';
+import { getApiErrorMessage } from '../../../utils/apiError';
 import './Users.css';
 
 const Users = () => {
+  const { t } = useTranslation();
+  const { formatDate } = useFormatters();
   const { user: currentUser } = useAuth();
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -57,7 +63,7 @@ const Users = () => {
       }
     } catch (err) {
       console.error('[Users Fetch Error]:', err);
-      showToast('Foydalanuvchilarni yuklashda xatolik', 'error');
+      showToast(getApiErrorMessage(err, 'admin.users.toast_error'), 'error');
     } finally {
       setLoading(false);
     }
@@ -76,16 +82,12 @@ const Users = () => {
         isBlocked: !blockConfirmUser.isBlocked
       });
       if (res.data.success) {
-        showToast(
-          blockConfirmUser.isBlocked
-            ? 'Foydalanuvchi blokdan chiqarildi'
-            : 'Foydalanuvchi bloklandi!'
-        );
+        showToast(t('admin.users.toast_status_toggled'));
         setBlockConfirmUser(null);
         fetchUsers();
       }
     } catch (err) {
-      showToast(err.response?.data?.message || 'Bloklashda xatolik yuz berdi', 'error');
+      showToast(getApiErrorMessage(err, 'admin.users.toast_error'), 'error');
     } finally {
       setActionLoading(false);
     }
@@ -101,12 +103,12 @@ const Users = () => {
         role: nextRole
       });
       if (res.data.success) {
-        showToast(`Foydalanuvchi roli "${nextRole}" ga o'zgartirildi!`);
+        showToast(t('admin.users.toast_updated'));
         setRoleConfirmUser(null);
         fetchUsers();
       }
     } catch (err) {
-      showToast(err.response?.data?.message || 'Rolni o\'zgartirishda xatolik', 'error');
+      showToast(getApiErrorMessage(err, 'admin.users.toast_error'), 'error');
     } finally {
       setActionLoading(false);
     }
@@ -119,12 +121,12 @@ const Users = () => {
       setActionLoading(true);
       const res = await axiosInstance.delete(`/user/delete/${deleteConfirmId}`);
       if (res.data.success) {
-        showToast('Foydalanuvchi o\'chirildi');
+        showToast(t('admin.users.toast_deleted'));
         setDeleteConfirmId(null);
         fetchUsers();
       }
     } catch (err) {
-      showToast(err.response?.data?.message || 'O\'chirishda xatolik yuz berdi', 'error');
+      showToast(getApiErrorMessage(err, 'admin.users.toast_error'), 'error');
     } finally {
       setActionLoading(false);
     }
@@ -133,7 +135,7 @@ const Users = () => {
   const columns = [
     {
       key: 'name',
-      label: 'Foydalanuvchi',
+      label: t('admin.users.col_name'),
       render: (val, row) => (
         <div className="user-profile-cell">
           <div className="user-avatar-circle">
@@ -148,27 +150,27 @@ const Users = () => {
     },
     {
       key: 'phone_number',
-      label: 'Telefon',
+      label: t('admin.users.col_phone'),
       render: (val) => val || '—'
     },
     {
       key: 'role',
-      label: 'Roli',
+      label: t('admin.users.col_role'),
       render: (val) => <StatusBadge status={val} type="user_role" />
     },
     {
       key: 'isBlocked',
-      label: 'Holat',
+      label: t('admin.users.col_status'),
       render: (val) => <StatusBadge status={val} type="user_status" />
     },
     {
       key: 'createdAt',
-      label: 'Ro\'yxatdan o\'tgan',
-      render: (val) => new Date(val).toLocaleDateString('uz-UZ')
+      label: t('admin.common.date'),
+      render: (val) => formatDate(val)
     },
     {
       key: 'actions',
-      label: 'Amallar',
+      label: t('admin.common.actions'),
       align: 'right',
       render: (_, row) => {
         const isSelf = currentUser && (row._id === currentUser.id || row.email === currentUser.email);
@@ -181,10 +183,10 @@ const Users = () => {
               className={`action-btn role ${row.role === 'admin' ? 'is-admin' : ''}`}
               onClick={() => setRoleConfirmUser(row)}
               disabled={isSelf}
-              title={isSelf ? 'O\'zingizning rolingizni o\'zgartira olmaysiz' : `Rolni o'zgartirish (${row.role === 'admin' ? 'Mijoz qilish' : 'Admin qilish'})`}
+              title={isSelf ? '' : (row.role === 'admin' ? t('admin.users.action_make_customer') : t('admin.users.action_make_admin'))}
             >
               <Shield size={14} />
-              <span>{row.role === 'admin' ? 'Demote' : 'Make Admin'}</span>
+              <span>{row.role === 'admin' ? t('admin.users.action_make_customer') : t('admin.users.action_make_admin')}</span>
             </button>
 
             {/* Block Button */}
@@ -193,10 +195,10 @@ const Users = () => {
               className={`action-btn block ${row.isBlocked ? 'unblock' : ''}`}
               onClick={() => setBlockConfirmUser(row)}
               disabled={isSelf}
-              title={isSelf ? 'O\'zingizni bloklay olmaysiz' : row.isBlocked ? 'Blokdan chiqarish' : 'Bloklash'}
+              title={isSelf ? '' : (row.isBlocked ? t('admin.users.action_unblock') : t('admin.users.action_block'))}
             >
               {row.isBlocked ? <UserCheck size={14} /> : <UserX size={14} />}
-              <span>{row.isBlocked ? 'Ochish' : 'Bloklash'}</span>
+              <span>{row.isBlocked ? t('admin.users.action_unblock') : t('admin.users.action_block')}</span>
             </button>
 
             {/* Delete Button */}
@@ -205,7 +207,7 @@ const Users = () => {
               className="action-icon-btn delete"
               onClick={() => setDeleteConfirmId(row._id)}
               disabled={isSelf}
-              title={isSelf ? 'O\'zingizni o\'chira olmaysiz' : 'O\'chirish'}
+              title={t('admin.common.delete')}
             >
               <Trash2 size={14} />
             </button>
@@ -219,10 +221,8 @@ const Users = () => {
     <div className="admin-users-page">
       <div className="admin-page-hero">
         <div>
-          <h2 className="admin-hero-title">Foydalanuvchilar boshqaruvi</h2>
-          <p className="admin-hero-subtitle">
-            Mijozlar hisoblari, rollar va xavfsizlik (bloklash) sozlamalari
-          </p>
+          <h2 className="admin-hero-title">{t('admin.users.title')}</h2>
+          <p className="admin-hero-subtitle">{t('admin.users.subtitle')}</p>
         </div>
         <div className="hero-action-group">
           <select
@@ -230,17 +230,18 @@ const Users = () => {
             value={roleFilter}
             onChange={(e) => { setRoleFilter(e.target.value); setPage(1); }}
           >
-            <option value="">Barcha rollar</option>
-            <option value="customer">Faqat mijozlar</option>
-            <option value="admin">Faqat adminlar</option>
+            <option value="">{t('admin.common.all')}</option>
+            <option value="customer">{t('admin.status.customer')}</option>
+            <option value="admin">{t('admin.status.admin')}</option>
           </select>
           <button
             type="button"
             className="admin-btn admin-btn-secondary"
             onClick={fetchUsers}
+            title={t('admin.common.refresh')}
           >
             <RefreshCw size={15} className={loading ? 'spinning' : ''} />
-            <span>Yangilash</span>
+            <span>{t('admin.common.refresh')}</span>
           </button>
         </div>
       </div>
@@ -251,14 +252,14 @@ const Users = () => {
         loading={loading}
         searchValue={search}
         onSearchChange={(val) => { setSearch(val); setPage(1); }}
-        searchPlaceholder="Ism, email yoki telefon..."
+        searchPlaceholder={t('admin.users.search_placeholder')}
         pagination={{
           page,
           totalPages,
           total,
           onPageChange: (p) => setPage(p)
         }}
-        emptyMessage="Foydalanuvchilar topilmadi"
+        emptyMessage={t('admin.empty.desc')}
       />
 
       {/* Block Confirm Dialog */}
@@ -266,13 +267,10 @@ const Users = () => {
         isOpen={Boolean(blockConfirmUser)}
         onClose={() => setBlockConfirmUser(null)}
         onConfirm={handleToggleBlock}
-        title={blockConfirmUser?.isBlocked ? 'Blokdan chiqarish' : 'Foydalanuvchini bloklash'}
-        message={
-          blockConfirmUser?.isBlocked
-            ? `"${blockConfirmUser?.name}" hisobini blokdan chiqarmoqchimisiz? U yana tizimga kirish imkoniyatiga ega bo'ladi.`
-            : `"${blockConfirmUser?.name}" hisobini bloklamoqchimisiz? Bloklangan foydalanuvchi tizimga kira olmaydi.`
-        }
-        confirmText={blockConfirmUser?.isBlocked ? 'Ha, ochilsin' : 'Ha, bloklansin'}
+        title={blockConfirmUser?.isBlocked ? t('admin.users.action_unblock') : t('admin.users.action_block')}
+        message={blockConfirmUser?.isBlocked ? `${t('admin.users.action_unblock')}?` : `${t('admin.users.action_block')}?`}
+        confirmText={t('admin.dialog.confirm_btn')}
+        cancelText={t('admin.dialog.cancel_btn')}
         type={blockConfirmUser?.isBlocked ? 'info' : 'danger'}
         loading={actionLoading}
       />
@@ -282,11 +280,10 @@ const Users = () => {
         isOpen={Boolean(roleConfirmUser)}
         onClose={() => setRoleConfirmUser(null)}
         onConfirm={handleUpdateRole}
-        title="Foydalanuvchi rolini o'zgartirish"
-        message={`"${roleConfirmUser?.name}" foydalanuvchisiga ${
-          roleConfirmUser?.role === 'admin' ? '"customer" (oddiy mijoz)' : '"admin" (boshqaruvchi)'
-        } rolini berishni tasdiqlaysizmi?`}
-        confirmText="Tasdiqlash"
+        title={t('admin.dialog.confirm_title')}
+        message={t('admin.dialog.confirm_message')}
+        confirmText={t('admin.dialog.confirm_btn')}
+        cancelText={t('admin.dialog.cancel_btn')}
         type="warning"
         loading={actionLoading}
       />
@@ -296,9 +293,10 @@ const Users = () => {
         isOpen={Boolean(deleteConfirmId)}
         onClose={() => setDeleteConfirmId(null)}
         onConfirm={handleDeleteUser}
-        title="Foydalanuvchini o'chirish"
-        message="Haqiqatan ham ushbu foydalanuvchi hisobini butunlay o'chirmoqchimisiz? Bu amalni qaytarib bo'lmaydi."
-        confirmText="Ha, o'chirilsin"
+        title={t('admin.dialog.confirm_title')}
+        message={t('admin.users.delete_confirm')}
+        confirmText={t('admin.dialog.confirm_btn')}
+        cancelText={t('admin.dialog.cancel_btn')}
         type="danger"
         loading={actionLoading}
       />

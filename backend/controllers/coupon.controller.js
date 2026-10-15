@@ -5,11 +5,7 @@ const create = async (req, res) => {
     const { code, discount, is_active, expires_at } = req.body;
     const existing = await Coupon.findOne({ code: code.toUpperCase() });
     if (existing) {
-      return res.status(400).json({
-        success: false,
-        message: 'Ushbu kupon kodi allaqachon mavjud',
-        innerData: null
-      });
+      return res.sendResponse(400, 'COUPON_NOT_FOUND', null, 'Coupon code already exists');
     }
 
     const coupon = await Coupon.create({
@@ -19,18 +15,10 @@ const create = async (req, res) => {
       expires_at
     });
 
-    return res.status(201).json({
-      success: true,
-      message: 'Kupon muvaffaqiyatli yaratildi',
-      innerData: coupon
-    });
+    return res.sendResponse(201, 'COUPON_CREATED', coupon);
   } catch (error) {
     console.error('[Coupon Create Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -61,21 +49,14 @@ const getAll = async (req, res) => {
     const limitNum = limit ? parseInt(limit, 10) : total;
     const totalPages = limitNum > 0 ? Math.ceil(total / limitNum) : 1;
 
-    return res.status(200).json({
-      success: true,
-      message: 'Barcha kuponlar olindi',
-      innerData: coupons,
+    return res.sendResponse(200, 'COUPONS_FETCHED', coupons, null, {
       total,
       totalPages: totalPages || 1,
       page: page ? parseInt(page, 10) : 1
     });
   } catch (error) {
     console.error('[Coupon GetAll Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -83,24 +64,12 @@ const getById = async (req, res) => {
   try {
     const coupon = await Coupon.findById(req.params.id);
     if (!coupon) {
-      return res.status(404).json({
-        success: false,
-        message: 'Kupon topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'COUPON_NOT_FOUND');
     }
-    return res.status(200).json({
-      success: true,
-      message: 'Kupon topildi',
-      innerData: coupon
-    });
+    return res.sendResponse(200, 'SUCCESS', coupon);
   } catch (error) {
     console.error('[Coupon GetById Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -111,25 +80,13 @@ const update = async (req, res) => {
 
     const coupon = await Coupon.findByIdAndUpdate(req.params.id, updates, { new: true });
     if (!coupon) {
-      return res.status(404).json({
-        success: false,
-        message: 'Kupon topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'COUPON_NOT_FOUND');
     }
 
-    return res.status(200).json({
-      success: true,
-      message: 'Kupon yangilandi',
-      innerData: coupon
-    });
+    return res.sendResponse(200, 'COUPON_UPDATED', coupon);
   } catch (error) {
     console.error('[Coupon Update Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -137,25 +94,13 @@ const deleteCoupon = async (req, res) => {
   try {
     const coupon = await Coupon.findByIdAndDelete(req.params.id);
     if (!coupon) {
-      return res.status(404).json({
-        success: false,
-        message: 'Kupon topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'COUPON_NOT_FOUND');
     }
 
-    return res.status(200).json({
-      success: true,
-      message: 'Kupon o\'chirildi',
-      innerData: null
-    });
+    return res.sendResponse(200, 'COUPON_DELETED', null);
   } catch (error) {
     console.error('[Coupon Delete Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -163,31 +108,19 @@ const applyCoupon = async (req, res) => {
   try {
     const { code } = req.body;
     const coupon = await Coupon.findOne({
-      code: code.toUpperCase(),
+      code: (code || '').toUpperCase(),
       is_active: true,
       expires_at: { $gt: new Date() }
     });
 
     if (!coupon) {
-      return res.status(400).json({
-        success: false,
-        message: 'Kupon topilmadi, nofaol yoki muddati o\'tgan',
-        innerData: null
-      });
+      return res.sendResponse(400, 'COUPON_NOT_FOUND');
     }
 
-    return res.status(200).json({
-      success: true,
-      message: `Kupon muvaffaqiyatli qo'llanildi: ${coupon.discount}% chegirma`,
-      innerData: coupon
-    });
+    return res.sendResponse(200, 'COUPON_APPLIED', coupon);
   } catch (error) {
     console.error('[Coupon Apply Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 

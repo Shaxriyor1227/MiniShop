@@ -31,29 +31,17 @@ const create = async (req, res) => {
     const userId = req.user.id;
 
     if (!items || !items.length) {
-      return res.status(400).json({
-        success: false,
-        message: 'Buyurtmada mahsulotlar mavjud emas',
-        innerData: null
-      });
+      return res.sendResponse(400, 'CART_EMPTY');
     }
 
     // Verify stock availability for each item
     for (const item of items) {
       const prod = await Product.findById(item.product_id);
       if (!prod) {
-        return res.status(404).json({
-          success: false,
-          message: `Mahsulot topilmadi (ID: ${item.product_id})`,
-          innerData: null
-        });
+        return res.sendResponse(404, 'PRODUCT_NOT_FOUND');
       }
       if (prod.stock < item.quantity) {
-        return res.status(400).json({
-          success: false,
-          message: `"${prod.name}" mahsulotidan yetarli zaxira yo'q (Mavjud: ${prod.stock}, so'ralgan: ${item.quantity})`,
-          innerData: null
-        });
+        return res.sendResponse(400, 'ORDER_OUT_OF_STOCK');
       }
     }
 
@@ -128,18 +116,10 @@ const create = async (req, res) => {
       console.error('[Email notification error]:', err.message)
     );
 
-    return res.status(201).json({
-      success: true,
-      message: 'Buyurtma muvaffaqiyatli rasmiylashtirildi',
-      innerData: populatedOrder
-    });
+    return res.sendResponse(201, 'ORDER_CREATED', populatedOrder);
   } catch (error) {
     console.error('[Order Create Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -166,10 +146,8 @@ const getAll = async (req, res) => {
       }
     }
 
-    // If search is given and user is admin, search by order ID or user
     if (search && search.trim()) {
       const s = search.trim();
-      // If it looks like an ObjectId or suffix
       if (/^[0-9a-fA-F]{24}$/.test(s)) {
         filter._id = s;
       }
@@ -193,7 +171,6 @@ const getAll = async (req, res) => {
 
     let orders = await query;
 
-    // In-memory search if searching by user name/email and not ObjectId
     if (search && search.trim() && !/^[0-9a-fA-F]{24}$/.test(search.trim())) {
       const term = search.trim().toLowerCase();
       orders = orders.filter(
@@ -207,21 +184,14 @@ const getAll = async (req, res) => {
     const limitNum = limit ? parseInt(limit, 10) : total;
     const totalPages = limitNum > 0 ? Math.ceil(total / limitNum) : 1;
 
-    return res.status(200).json({
-      success: true,
-      message: 'Buyurtmalar olindi',
-      innerData: orders,
+    return res.sendResponse(200, 'ORDERS_FETCHED', orders, null, {
       total,
       totalPages: totalPages || 1,
       page: page ? parseInt(page, 10) : 1
     });
   } catch (error) {
     console.error('[Order GetAll Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -241,25 +211,13 @@ const getById = async (req, res) => {
       .populate('items.product_id', 'name images price');
 
     if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: 'Buyurtma topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'ORDER_NOT_FOUND');
     }
 
-    return res.status(200).json({
-      success: true,
-      message: 'Buyurtma ma\'lumotlari olindi',
-      innerData: order
-    });
+    return res.sendResponse(200, 'SUCCESS', order);
   } catch (error) {
     console.error('[Order GetById Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -272,11 +230,7 @@ const updateStatus = async (req, res) => {
 
     const existingOrder = await Order.findById(req.params.id);
     if (!existingOrder) {
-      return res.status(404).json({
-        success: false,
-        message: 'Buyurtma topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'ORDER_NOT_FOUND');
     }
 
     const prevStatus = existingOrder.status;
@@ -306,33 +260,15 @@ const updateStatus = async (req, res) => {
       .populate('address_id')
       .populate('items.product_id', 'name images price');
 
-    // Send notification to user about status change
-    const statusLabels = {
-      pending: 'kutilmoqda',
-      paid: 'to\'landi',
-      shipped: 'yo\'lda (yuborildi)',
-      delivered: 'yetkazib berildi',
-      cancelled: 'bekor qilindi'
-    };
-    const humanStatus = statusLabels[status] || status;
-
     await Notification.create({
       user_id: order.user_id?._id || order.user_id,
-      message: `Sizning #${order._id.toString().slice(-6)} raqamli buyurtmangiz holati yangilandi: ${humanStatus}.`
+      message: `Sizning #${order._id.toString().slice(-6)} raqamli buyurtmangiz holati yangilandi: ${status}.`
     });
 
-    return res.status(200).json({
-      success: true,
-      message: 'Buyurtma holati yangilandi',
-      innerData: order
-    });
+    return res.sendResponse(200, 'ORDER_UPDATED', order);
   } catch (error) {
     console.error('[Order UpdateStatus Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -343,27 +279,15 @@ const cancelOrder = async (req, res) => {
   try {
     const order = await Order.findOne({ _id: req.params.id, user_id: req.user.id });
     if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: 'Buyurtma topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'ORDER_NOT_FOUND');
     }
 
     if (['shipped', 'delivered'].includes(order.status)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Yuborilgan yoki yetkazilgan buyurtmani bekor qilib bo\'lmaydi',
-        innerData: null
-      });
+      return res.sendResponse(400, 'ORDER_UPDATED', null, 'Cannot cancel shipped or delivered order');
     }
 
     if (order.status === 'cancelled') {
-      return res.status(400).json({
-        success: false,
-        message: 'Buyurtma allaqachon bekor qilingan',
-        innerData: order
-      });
+      return res.sendResponse(400, 'ORDER_CANCELLED', order);
     }
 
     // Restore stock
@@ -374,21 +298,13 @@ const cancelOrder = async (req, res) => {
 
     await Notification.create({
       user_id: req.user.id,
-      message: `Sizning #${order._id.toString().slice(-6)} raqamli buyurtmangiz muvaffaqiyatli bekor qilindi va tovar zaxirasi tiklandi.`
+      message: `Sizning #${order._id.toString().slice(-6)} raqamli buyurtmangiz bekor qilindi.`
     });
 
-    return res.status(200).json({
-      success: true,
-      message: 'Buyurtma bekor qilindi',
-      innerData: order
-    });
+    return res.sendResponse(200, 'ORDER_CANCELLED', order);
   } catch (error) {
     console.error('[Order Cancel Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 

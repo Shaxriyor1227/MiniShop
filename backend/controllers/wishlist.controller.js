@@ -12,18 +12,10 @@ const getWishlist = async (req, res) => {
       wishlist = await Wishlist.create({ user_id: req.user.id, products: [] });
     }
 
-    return res.status(200).json({
-      success: true,
-      message: 'Sevimlilar ro\'yxati olindi',
-      innerData: wishlist
-    });
+    return res.sendResponse(200, 'WISHLIST_FETCHED', wishlist);
   } catch (error) {
     console.error('[Wishlist GetWishlist Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -32,11 +24,7 @@ const toggleWishlist = async (req, res) => {
     const { product_id } = req.body;
     const product = await Product.findById(product_id);
     if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Mahsulot topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'PRODUCT_NOT_FOUND');
     }
 
     let wishlist = await Wishlist.findOne({ user_id: req.user.id });
@@ -64,21 +52,13 @@ const toggleWishlist = async (req, res) => {
       populate: [{ path: 'category_id', select: 'name' }, { path: 'brand_id', select: 'name' }]
     });
 
-    return res.status(200).json({
-      success: true,
-      message: isAdded ? 'Mahsulot sevimlilarga qo\'shildi' : 'Mahsulot sevimlilardan olib tashlandi',
-      innerData: {
-        isAdded,
-        wishlist: populatedWishlist
-      }
+    return res.sendResponse(200, 'WISHLIST_TOGGLED', {
+      isAdded,
+      wishlist: populatedWishlist
     });
   } catch (error) {
     console.error('[Wishlist ToggleWishlist Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -90,18 +70,10 @@ const clearWishlist = async (req, res) => {
       { new: true }
     );
 
-    return res.status(200).json({
-      success: true,
-      message: 'Sevimlilar ro\'yxati tozalandi',
-      innerData: wishlist
-    });
+    return res.sendResponse(200, 'WISHLIST_FETCHED', wishlist);
   } catch (error) {
     console.error('[Wishlist ClearWishlist Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 

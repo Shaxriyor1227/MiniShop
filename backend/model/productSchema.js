@@ -28,6 +28,24 @@ const productSchema = new mongoose.Schema(
       ref: 'Brand',
       required: [true, 'Brend ID si shart']
     },
+    description: {
+      type: String,
+      default: ''
+    },
+    translations: {
+      uz: {
+        name: { type: String, default: '' },
+        description: { type: String, default: '' }
+      },
+      ru: {
+        name: { type: String, default: '' },
+        description: { type: String, default: '' }
+      },
+      en: {
+        name: { type: String, default: '' },
+        description: { type: String, default: '' }
+      }
+    },
     images: {
       type: [String],
       default: []

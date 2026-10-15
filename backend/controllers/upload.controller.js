@@ -30,7 +30,7 @@ const fileFilter = (req, file, cb) => {
   if (isExtValid && isMimeValid) {
     cb(null, true);
   } else {
-    cb(new Error('Faqat rasm fayllari (JPG, PNG, WEBP, SVG) qabul qilinadi!'), false);
+    cb(new Error('Only image files (JPG, PNG, WEBP, SVG) are allowed!'), false);
   }
 };
 
@@ -42,25 +42,17 @@ const upload = multer({
 
 const uploadSingleImage = (req, res) => {
   if (!req.file) {
-    return res.status(400).json({
-      success: false,
-      message: 'Fayl yuklanmadi. Iltimos, rasm tanlang.',
-      innerData: null
-    });
+    return res.sendResponse(400, 'FILE_UPLOAD_ERROR');
   }
 
   // Generate accessible URL
   const baseUrl = process.env.BASE_URL || `${req.protocol}://${req.get('host')}`;
   const fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
 
-  return res.status(200).json({
-    success: true,
-    message: 'Rasm muvaffaqiyatli yuklandi',
-    innerData: {
-      url: fileUrl,
-      filename: req.file.filename,
-      size: req.file.size
-    }
+  return res.sendResponse(200, 'FILE_UPLOADED', {
+    url: fileUrl,
+    filename: req.file.filename,
+    size: req.file.size
   });
 };
 

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import './Modal.css';
 
 const Modal = ({
@@ -11,6 +12,8 @@ const Modal = ({
   maxWidth = '560px',
   footer
 }) => {
+  const { t } = useTranslation();
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && isOpen) {
@@ -45,11 +48,12 @@ const Modal = ({
             type="button"
             className="admin-modal-close"
             onClick={onClose}
-            aria-label="Yopish"
+            aria-label={t('admin.common.close')}
           >
             <X size={18} />
           </button>
         </div>
+
 
         <div className="admin-modal-body">{children}</div>
 

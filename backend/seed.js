@@ -70,21 +70,25 @@ const seedData = async () => {
       message: 'Welcome to MiniShop! Enjoy 10% off your first order with coupon code WELCOME10.'
     });
 
+    const { productTranslationsMap, categoryTranslationsMap, brandTranslationsMap } = require('./scripts/migrateTranslations');
+
     // 2. Create Categories
-    const categories = await Category.insertMany([
+    const categoriesData = [
       { name: 'Audio', slug: 'audio' },
       { name: 'Wearables', slug: 'wearables' },
       { name: 'Workspace', slug: 'workspace' },
       { name: 'Accessories', slug: 'accessories' },
       { name: 'Smart Home', slug: 'smart-home' },
       { name: 'Laptops & PCs', slug: 'laptops-pcs' }
-    ]);
+    ].map((c) => ({ ...c, translations: categoryTranslationsMap[c.name] || {} }));
+
+    const categories = await Category.insertMany(categoriesData);
 
     const catMap = {};
     categories.forEach(c => { catMap[c.name] = c._id; });
 
     // 3. Create Brands
-    const brands = await Brand.insertMany([
+    const brandsData = [
       { name: 'Apple', slug: 'apple' },
       { name: 'Sony', slug: 'sony' },
       { name: 'Keychron', slug: 'keychron' },
@@ -94,7 +98,9 @@ const seedData = async () => {
       { name: 'Dell', slug: 'dell' },
       { name: 'Samsung', slug: 'samsung' },
       { name: 'Bose', slug: 'bose' }
-    ]);
+    ].map((b) => ({ ...b, translations: brandTranslationsMap[b.name] || {} }));
+
+    const brands = await Brand.insertMany(brandsData);
 
     const brandMap = {};
     brands.forEach(b => { brandMap[b.name] = b._id; });
@@ -296,7 +302,13 @@ const seedData = async () => {
       }
     ];
 
-    const createdProducts = await Product.insertMany(productsData);
+    const enrichedProducts = productsData.map((p) => ({
+      ...p,
+      description: productTranslationsMap[p.name]?.en?.description || '',
+      translations: productTranslationsMap[p.name] || {}
+    }));
+
+    const createdProducts = await Product.insertMany(enrichedProducts);
     console.log(`[Seed] Successfully seeded ${createdProducts.length} products, ${categories.length} categories, ${brands.length} brands, 3 coupons, 2 users`);
 
     // 6. Seed Sample Reviews

@@ -569,3 +569,35 @@
 .modal-form-actions.full-width {
   grid-column: 1 / -1;
 }
+
+/* Universal Language Tabs in Admin Modals */
+.admin-lang-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+}
+
+.admin-lang-tab-btn {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface-hover);
+  color: var(--ink-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.admin-lang-tab-btn:hover {
+  color: var(--ink-primary);
+  background: var(--bg-surface);
+}
+
+.admin-lang-tab-btn.active {
+  background: var(--accent-blue);
+  color: #ffffff;
+  border-color: var(--accent-blue);
+}

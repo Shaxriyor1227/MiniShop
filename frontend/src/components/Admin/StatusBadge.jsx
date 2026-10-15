@@ -11,10 +11,11 @@ import {
   CheckCircle,
   Tag
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import './StatusBadge.css';
 
 const StatusBadge = ({ status, type = 'order' }) => {
-  // Normalize string
+  const { t } = useTranslation();
   const s = String(status || '').toLowerCase();
 
   let label = status;
@@ -24,71 +25,71 @@ const StatusBadge = ({ status, type = 'order' }) => {
   if (type === 'order') {
     switch (s) {
       case 'paid':
-        label = "To'langan";
+        label = t('admin.status.paid');
         icon = <Check size={12} />;
         styleClass = 'badge-success';
         break;
       case 'shipped':
-        label = "Yo'lda";
+        label = t('admin.status.shipped');
         icon = <Truck size={12} />;
         styleClass = 'badge-info';
         break;
       case 'delivered':
-        label = 'Yetkazildi';
+        label = t('admin.status.delivered');
         icon = <CheckCircle2 size={12} />;
         styleClass = 'badge-success';
         break;
       case 'cancelled':
-        label = 'Bekor qilindi';
+        label = t('admin.status.cancelled');
         icon = <XCircle size={12} />;
         styleClass = 'badge-danger';
         break;
       default:
-        label = 'Kutilmoqda';
+        label = t('admin.status.pending');
         icon = <Clock size={12} />;
         styleClass = 'badge-warning';
     }
   } else if (type === 'user_role') {
     if (s === 'admin') {
-      label = 'Admin';
+      label = t('admin.status.admin');
       icon = <Shield size={12} />;
       styleClass = 'badge-purple';
     } else {
-      label = 'Mijoz';
+      label = t('admin.status.customer');
       icon = <User size={12} />;
       styleClass = 'badge-neutral';
     }
   } else if (type === 'user_status') {
     if (s === 'blocked' || status === true) {
-      label = 'Bloklangan';
+      label = t('admin.status.blocked');
       icon = <Ban size={12} />;
       styleClass = 'badge-danger';
     } else {
-      label = 'Faol';
+      label = t('admin.status.active');
       icon = <CheckCircle size={12} />;
       styleClass = 'badge-success';
     }
   } else if (type === 'coupon') {
     if (status === true || s === 'active') {
-      label = 'Faol';
+      label = t('admin.status.active');
       icon = <Tag size={12} />;
       styleClass = 'badge-success';
     } else {
-      label = 'Nofaol';
+      label = t('admin.status.inactive');
       icon = <XCircle size={12} />;
       styleClass = 'badge-neutral';
     }
   } else if (type === 'payment') {
     if (s === 'completed') {
-      label = 'Muvaffaqiyatli';
+      label = t('admin.status.completed');
       icon = <Check size={12} />;
       styleClass = 'badge-success';
     } else if (s === 'failed') {
-      label = 'Xatolik';
+      label = t('admin.status.failed');
       icon = <XCircle size={12} />;
       styleClass = 'badge-danger';
     } else {
-      label = 'Kutilmoqda';
+      label = t('admin.status.pending');
       icon = <Clock size={12} />;
       styleClass = 'badge-warning';
     }

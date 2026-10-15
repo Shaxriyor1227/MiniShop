@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Award, RefreshCw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../../api/axiosInstance';
 import DataTable from '../../../components/Admin/DataTable';
 import Modal from '../../../components/Admin/Modal';
 import ConfirmDialog from '../../../components/Admin/ConfirmDialog';
 import Toast from '../../../components/Admin/Toast';
+import { useFormatters } from '../../../utils/formatters';
+import { getApiErrorMessage } from '../../../utils/apiError';
 import './Brands.css';
 
 const Brands = () => {
+  const { t, i18n } = useTranslation();
+  const { formatDate } = useFormatters();
+
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -17,7 +23,12 @@ const Brands = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBrand, setEditingBrand] = useState(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
-  const [name, setName] = useState('');
+  const [activeLangTab, setActiveLangTab] = useState('uz');
+  const [translations, setTranslations] = useState({
+    uz: { name: '' },
+    ru: { name: '' },
+    en: { name: '' }
+  });
   const [logo, setLogo] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -32,7 +43,7 @@ const Brands = () => {
       }
     } catch (err) {
       console.error('[Brands Fetch Error]:', err);
-      showToast('Brendlarni yuklashda xatolik yuz berdi', 'error');
+      showToast(getApiErrorMessage(err, 'admin.brands.toast_error'), 'error');
     } finally {
       setLoading(false);
     }
@@ -44,45 +55,71 @@ const Brands = () => {
 
   const handleOpenCreate = () => {
     setEditingBrand(null);
-    setName('');
+    setTranslations({
+      uz: { name: '' },
+      ru: { name: '' },
+      en: { name: '' }
+    });
     setLogo('');
+    setActiveLangTab(i18n.language || 'uz');
     setIsModalOpen(true);
   };
 
   const handleOpenEdit = (b) => {
     setEditingBrand(b);
-    setName(b.name || '');
+    setTranslations({
+      uz: { name: b.translations?.uz?.name || b.name || '' },
+      ru: { name: b.translations?.ru?.name || b.name || '' },
+      en: { name: b.translations?.en?.name || b.name || '' }
+    });
     setLogo(b.logo || '');
+    setActiveLangTab(i18n.language || 'uz');
     setIsModalOpen(true);
+  };
+
+  const handleTranslationChange = (field, val) => {
+    setTranslations((prev) => ({
+      ...prev,
+      [activeLangTab]: {
+        ...prev[activeLangTab],
+        [field]: val
+      }
+    }));
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
-    if (!name.trim()) {
-      showToast('Brend nomini kiriting', 'error');
+    const primaryName = translations[activeLangTab]?.name || translations.uz?.name || translations.en?.name || '';
+    if (!primaryName.trim()) {
+      showToast(t('admin.common.error'), 'error');
       return;
     }
 
     try {
       setSubmitting(true);
-      const payload = { name: name.trim(), logo: logo.trim() };
+      const payload = {
+        name: primaryName.trim(),
+        logo: logo.trim(),
+        translations
+      };
+
       if (editingBrand) {
         const res = await axiosInstance.put(`/brand/update/${editingBrand._id}`, payload);
         if (res.data.success) {
-          showToast('Brend muvaffaqiyatli yangilandi');
+          showToast(t('admin.brands.toast_updated'));
           setIsModalOpen(false);
           fetchBrands();
         }
       } else {
         const res = await axiosInstance.post('/brand/create', payload);
         if (res.data.success) {
-          showToast('Yangi brend yaratildi');
+          showToast(t('admin.brands.toast_created'));
           setIsModalOpen(false);
           fetchBrands();
         }
       }
     } catch (err) {
-      showToast(err.response?.data?.message || 'Saqlashda xatolik', 'error');
+      showToast(getApiErrorMessage(err, 'admin.brands.toast_error'), 'error');
     } finally {
       setSubmitting(false);
     }
@@ -93,50 +130,52 @@ const Brands = () => {
     try {
       const res = await axiosInstance.delete(`/brand/delete/${deleteConfirmId}`);
       if (res.data.success) {
-        showToast('Brend o\'chirildi');
+        showToast(t('admin.brands.toast_deleted'));
         setDeleteConfirmId(null);
         fetchBrands();
       }
     } catch (err) {
-      showToast(err.response?.data?.message || 'O\'chirishda xatolik', 'error');
+      showToast(getApiErrorMessage(err, 'admin.brands.toast_error'), 'error');
     }
   };
 
-  const filteredBrands = brands.filter((b) =>
-    b.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredBrands = brands.filter((b) => {
+    const localizedName = b.translations?.[i18n.language]?.name || b.name || '';
+    return localizedName.toLowerCase().includes(search.toLowerCase()) || (b.slug && b.slug.toLowerCase().includes(search.toLowerCase()));
+  });
 
   const columns = [
     {
       key: 'name',
-      label: 'Brend nomi',
-      render: (val, row) => (
-        <div className="brand-name-cell">
-          <div className="brand-icon-badge">
-            <Award size={16} />
+      label: t('admin.brands.col_name'),
+      render: (val, row) => {
+        const localizedName = row.translations?.[i18n.language]?.name || val;
+        return (
+          <div className="brand-name-cell">
+            <div className="brand-icon-badge">
+              <Award size={16} />
+            </div>
+            <div>
+              <span className="brand-title">{localizedName}</span>
+              <span className="brand-id">ID: #{row._id.slice(-6)}</span>
+            </div>
           </div>
-          <div>
-            <span className="brand-title">{val}</span>
-            <span className="brand-id">ID: #{row._id.slice(-6)}</span>
-          </div>
-        </div>
-      )
+        );
+      }
     },
     {
-      key: 'logo',
-      label: 'Logo URL',
-      render: (val) => val ? (
-        <span className="image-url-tag">{val.length > 30 ? val.slice(0, 30) + '...' : val}</span>
-      ) : '—'
+      key: 'slug',
+      label: t('admin.brands.col_slug'),
+      render: (val) => val || '—'
     },
     {
       key: 'createdAt',
-      label: 'Yaratilgan sana',
-      render: (val) => new Date(val).toLocaleDateString('uz-UZ')
+      label: t('admin.common.date'),
+      render: (val) => formatDate(val)
     },
     {
       key: 'actions',
-      label: 'Amallar',
+      label: t('admin.common.actions'),
       align: 'right',
       render: (_, row) => (
         <div className="table-actions-cell">
@@ -144,7 +183,7 @@ const Brands = () => {
             type="button"
             className="action-icon-btn edit"
             onClick={() => handleOpenEdit(row)}
-            title="Tahrirlash"
+            title={t('admin.common.edit')}
           >
             <Edit size={15} />
           </button>
@@ -152,7 +191,7 @@ const Brands = () => {
             type="button"
             className="action-icon-btn delete"
             onClick={() => setDeleteConfirmId(row._id)}
-            title="O'chirish"
+            title={t('admin.common.delete')}
           >
             <Trash2 size={15} />
           </button>
@@ -165,18 +204,18 @@ const Brands = () => {
     <div className="admin-brands-page">
       <div className="admin-page-hero">
         <div>
-          <h2 className="admin-hero-title">Brendlar</h2>
-          <p className="admin-hero-subtitle">Do'kondagi rasmiy brendlar va ishlab chiqaruvchilar ro'yxati</p>
+          <h2 className="admin-hero-title">{t('admin.brands.title')}</h2>
+          <p className="admin-hero-subtitle">{t('admin.brands.subtitle')}</p>
         </div>
         <div className="hero-action-group">
           <button
             type="button"
             className="admin-btn admin-btn-secondary"
             onClick={fetchBrands}
-            title="Yangilash"
+            title={t('admin.common.refresh')}
           >
             <RefreshCw size={15} className={loading ? 'spinning' : ''} />
-            <span>Yangilash</span>
+            <span>{t('admin.common.refresh')}</span>
           </button>
           <button
             type="button"
@@ -184,7 +223,7 @@ const Brands = () => {
             onClick={handleOpenCreate}
           >
             <Plus size={16} />
-            <span>Yangi brend</span>
+            <span>{t('admin.brands.add_btn')}</span>
           </button>
         </div>
       </div>
@@ -195,32 +234,56 @@ const Brands = () => {
         loading={loading}
         searchValue={search}
         onSearchChange={setSearch}
-        searchPlaceholder="Brend qidirish..."
-        emptyMessage="Birorta ham brend mavjud emas"
+        searchPlaceholder={t('admin.brands.search_placeholder')}
+        emptyMessage={t('admin.empty.desc')}
       />
 
       {/* Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => !submitting && setIsModalOpen(false)}
-        title={editingBrand ? 'Brendni tahrirlash' : 'Yangi brend yaratish'}
-        maxWidth="460px"
+        title={editingBrand ? t('admin.brands.edit_title') : t('admin.brands.new_title')}
+        maxWidth="500px"
       >
         <form onSubmit={handleSave} className="admin-form-vertical">
+          <div className="admin-lang-tabs">
+            <button
+              type="button"
+              className={`admin-lang-tab-btn ${activeLangTab === 'uz' ? 'active' : ''}`}
+              onClick={() => setActiveLangTab('uz')}
+            >
+              {t('admin.brands.tab_uz')}
+            </button>
+            <button
+              type="button"
+              className={`admin-lang-tab-btn ${activeLangTab === 'ru' ? 'active' : ''}`}
+              onClick={() => setActiveLangTab('ru')}
+            >
+              {t('admin.brands.tab_ru')}
+            </button>
+            <button
+              type="button"
+              className={`admin-lang-tab-btn ${activeLangTab === 'en' ? 'active' : ''}`}
+              onClick={() => setActiveLangTab('en')}
+            >
+              {t('admin.brands.tab_en')}
+            </button>
+          </div>
+
           <div className="form-group">
-            <label className="form-label">Brend nomi *</label>
+            <label className="form-label">{t('admin.brands.label_name')} ({activeLangTab.toUpperCase()}) *</label>
             <input
               type="text"
               required
               className="admin-input"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Masalan: Apple, Sony, Bose"
+              value={translations[activeLangTab]?.name || ''}
+              onChange={(e) => handleTranslationChange('name', e.target.value)}
+              placeholder={t('admin.brands.placeholder_name')}
             />
           </div>
 
           <div className="form-group">
-            <label className="form-label">Logo URL (ixtiyoriy)</label>
+            <label className="form-label">{t('admin.products.label_image_url')}</label>
             <input
               type="text"
               className="admin-input"
@@ -237,14 +300,14 @@ const Brands = () => {
               onClick={() => setIsModalOpen(false)}
               disabled={submitting}
             >
-              Bekor qilish
+              {t('admin.common.cancel')}
             </button>
             <button
               type="submit"
               className="admin-btn admin-btn-primary"
               disabled={submitting}
             >
-              {submitting ? 'Saqlanmoqda...' : editingBrand ? 'Yangilash' : 'Yaratish'}
+              {submitting ? t('admin.common.processing') : editingBrand ? t('admin.common.save') : t('admin.common.create')}
             </button>
           </div>
         </form>
@@ -255,8 +318,8 @@ const Brands = () => {
         isOpen={Boolean(deleteConfirmId)}
         onClose={() => setDeleteConfirmId(null)}
         onConfirm={handleDelete}
-        title="Brendni o'chirish"
-        message="Haqiqatan ham bu brendni o'chirmoqchimisiz? Ushbu brendga biriktirilgan mahsulotlar ta'sirlanishi mumkin."
+        title={t('admin.dialog.confirm_title')}
+        message={t('admin.brands.delete_confirm')}
         type="danger"
       />
 

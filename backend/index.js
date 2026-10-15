@@ -33,16 +33,18 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const i18nMiddleware = require('./middleware/i18n.middleware');
+app.use(i18nMiddleware);
+
 // Serve static uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'MiniShop API is running smoothly',
+  return res.sendResponse(200, 'SUCCESS', {
+    status: 'ok',
     timestamp: new Date().toISOString()
-  });
+  }, 'MiniShop API is running smoothly');
 });
 
 // Mount Routes
@@ -67,22 +69,15 @@ setupSwagger(app);
 
 // Global 404 Route Handler
 app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: `Marshrut topilmadi (Route not found): ${req.method} ${req.originalUrl}`,
-    innerData: null
-  });
+  return res.sendResponse(404, 'ROUTE_NOT_FOUND', null, `${req.t('ROUTE_NOT_FOUND')}: ${req.method} ${req.originalUrl}`);
 });
 
 // Global Error Handler Middleware
 app.use((err, req, res, next) => {
   console.error('[Global Error]:', err.stack || err.message);
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || 'Server ichki xatosi (Internal Server Error)',
-    innerData: null
-  });
+  return res.sendResponse(err.status || 500, 'INTERNAL_SERVER_ERROR', null, err.message || req.t('INTERNAL_SERVER_ERROR'));
 });
+
 
 // Start Server
 app.listen(PORT, () => {

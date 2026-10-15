@@ -16,18 +16,10 @@ const create = async (req, res) => {
       is_default: !!is_default
     });
 
-    return res.status(201).json({
-      success: true,
-      message: 'Manzil muvaffaqiyatli saqlandi',
-      innerData: address
-    });
+    return res.sendResponse(201, 'ADDRESS_CREATED', address);
   } catch (error) {
     console.error('[Address Create Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -35,18 +27,10 @@ const getAll = async (req, res) => {
   try {
     const userId = req.user.id;
     const addresses = await Address.find({ user_id: userId }).sort({ is_default: -1, createdAt: -1 });
-    return res.status(200).json({
-      success: true,
-      message: 'Manzillar olindi',
-      innerData: addresses
-    });
+    return res.sendResponse(200, 'ADDRESSES_FETCHED', addresses);
   } catch (error) {
     console.error('[Address GetAll Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -54,24 +38,12 @@ const getById = async (req, res) => {
   try {
     const address = await Address.findOne({ _id: req.params.id, user_id: req.user.id });
     if (!address) {
-      return res.status(404).json({
-        success: false,
-        message: 'Manzil topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'ADDRESS_NOT_FOUND');
     }
-    return res.status(200).json({
-      success: true,
-      message: 'Manzil topildi',
-      innerData: address
-    });
+    return res.sendResponse(200, 'SUCCESS', address);
   } catch (error) {
     console.error('[Address GetById Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -89,25 +61,13 @@ const update = async (req, res) => {
     );
 
     if (!address) {
-      return res.status(404).json({
-        success: false,
-        message: 'Manzil topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'ADDRESS_NOT_FOUND');
     }
 
-    return res.status(200).json({
-      success: true,
-      message: 'Manzil muvaffaqiyatli yangilandi',
-      innerData: address
-    });
+    return res.sendResponse(200, 'ADDRESS_UPDATED', address);
   } catch (error) {
     console.error('[Address Update Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -115,24 +75,12 @@ const deleteAddress = async (req, res) => {
   try {
     const address = await Address.findOneAndDelete({ _id: req.params.id, user_id: req.user.id });
     if (!address) {
-      return res.status(404).json({
-        success: false,
-        message: 'Manzil topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'ADDRESS_NOT_FOUND');
     }
-    return res.status(200).json({
-      success: true,
-      message: 'Manzil o\'chirildi',
-      innerData: null
-    });
+    return res.sendResponse(200, 'ADDRESS_DELETED', null);
   } catch (error) {
     console.error('[Address Delete Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 

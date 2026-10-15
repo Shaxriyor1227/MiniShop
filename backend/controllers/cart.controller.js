@@ -12,18 +12,10 @@ const getCart = async (req, res) => {
       cart = await Cart.create({ user_id: req.user.id, items: [] });
     }
 
-    return res.status(200).json({
-      success: true,
-      message: 'Savatcha ma\'lumotlari olindi',
-      innerData: cart
-    });
+    return res.sendResponse(200, 'CART_FETCHED', cart);
   } catch (error) {
     console.error('[Cart GetCart Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -32,11 +24,7 @@ const addToCart = async (req, res) => {
     const { product_id, quantity = 1 } = req.body;
     const product = await Product.findById(product_id);
     if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Mahsulot topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'PRODUCT_NOT_FOUND');
     }
 
     let cart = await Cart.findOne({ user_id: req.user.id });
@@ -63,18 +51,10 @@ const addToCart = async (req, res) => {
       populate: [{ path: 'category_id', select: 'name' }, { path: 'brand_id', select: 'name' }]
     });
 
-    return res.status(200).json({
-      success: true,
-      message: 'Mahsulot savatchaga qo\'shildi',
-      innerData: populatedCart
-    });
+    return res.sendResponse(200, 'CART_ITEM_ADDED', populatedCart);
   } catch (error) {
     console.error('[Cart AddToCart Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -83,11 +63,7 @@ const updateCartItem = async (req, res) => {
     const { product_id, quantity } = req.body;
     let cart = await Cart.findOne({ user_id: req.user.id });
     if (!cart) {
-      return res.status(404).json({
-        success: false,
-        message: 'Savatcha topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'CART_EMPTY');
     }
 
     const getPid = (it) => (it.product_id?._id || it.product_id || '').toString();
@@ -114,18 +90,10 @@ const updateCartItem = async (req, res) => {
       populate: [{ path: 'category_id', select: 'name' }, { path: 'brand_id', select: 'name' }]
     });
 
-    return res.status(200).json({
-      success: true,
-      message: 'Savatcha yangilandi',
-      innerData: populatedCart
-    });
+    return res.sendResponse(200, 'CART_ITEM_UPDATED', populatedCart);
   } catch (error) {
     console.error('[Cart UpdateCartItem Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -134,11 +102,7 @@ const removeFromCart = async (req, res) => {
     const { productId } = req.params;
     let cart = await Cart.findOne({ user_id: req.user.id });
     if (!cart) {
-      return res.status(404).json({
-        success: false,
-        message: 'Savatcha topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'CART_EMPTY');
     }
 
     const getPid = (it) => (it.product_id?._id || it.product_id || '').toString();
@@ -153,18 +117,10 @@ const removeFromCart = async (req, res) => {
       populate: [{ path: 'category_id', select: 'name' }, { path: 'brand_id', select: 'name' }]
     });
 
-    return res.status(200).json({
-      success: true,
-      message: 'Mahsulot savatchadan olib tashlandi',
-      innerData: populatedCart
-    });
+    return res.sendResponse(200, 'CART_ITEM_REMOVED', populatedCart);
   } catch (error) {
     console.error('[Cart RemoveFromCart Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -176,18 +132,10 @@ const clearCart = async (req, res) => {
       { new: true }
     );
 
-    return res.status(200).json({
-      success: true,
-      message: 'Savatcha tozalandi',
-      innerData: cart
-    });
+    return res.sendResponse(200, 'CART_CLEARED', cart);
   } catch (error) {
     console.error('[Cart ClearCart Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 

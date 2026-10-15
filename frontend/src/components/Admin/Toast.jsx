@@ -20,7 +20,7 @@ const Toast = ({ notification, onClose }) => {
           type="button"
           className="toast-close"
           onClick={onClose}
-          aria-label="Yopish"
+          aria-label="Close"
         >
           <X size={14} />
         </button>

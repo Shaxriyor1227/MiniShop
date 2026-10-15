@@ -6,11 +6,7 @@ const create = async (req, res) => {
     const { order_id, amount, method, status } = req.body;
     const existing = await Payment.findOne({ order_id });
     if (existing) {
-      return res.status(400).json({
-        success: false,
-        message: 'Ushbu buyurtma uchun to\'lov allaqachon mavjud',
-        innerData: null
-      });
+      return res.sendResponse(400, 'VALIDATION_ERROR', null, 'Payment for this order already exists');
     }
 
     const payment = await Payment.create({
@@ -20,18 +16,10 @@ const create = async (req, res) => {
       status: status || 'pending'
     });
 
-    return res.status(201).json({
-      success: true,
-      message: 'To\'lov yozuvi yaratildi',
-      innerData: payment
-    });
+    return res.sendResponse(201, 'PAYMENT_SUCCESS', payment);
   } catch (error) {
     console.error('[Payment Create Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -63,21 +51,14 @@ const getAll = async (req, res) => {
     const limitNum = limit ? parseInt(limit, 10) : total;
     const totalPages = limitNum > 0 ? Math.ceil(total / limitNum) : 1;
 
-    return res.status(200).json({
-      success: true,
-      message: 'Barcha to\'lovlar olindi',
-      innerData: payments,
+    return res.sendResponse(200, 'PAYMENTS_FETCHED', payments, null, {
       total,
       totalPages: totalPages || 1,
       page: page ? parseInt(page, 10) : 1
     });
   } catch (error) {
     console.error('[Payment GetAll Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -89,24 +70,12 @@ const getById = async (req, res) => {
     });
 
     if (!payment) {
-      return res.status(404).json({
-        success: false,
-        message: 'To\'lov topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'PAYMENT_NOT_FOUND');
     }
-    return res.status(200).json({
-      success: true,
-      message: 'To\'lov topildi',
-      innerData: payment
-    });
+    return res.sendResponse(200, 'SUCCESS', payment);
   } catch (error) {
     console.error('[Payment GetById Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -120,29 +89,17 @@ const updateStatus = async (req, res) => {
     );
 
     if (!payment) {
-      return res.status(404).json({
-        success: false,
-        message: 'To\'lov topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'PAYMENT_NOT_FOUND');
     }
 
     if (status === 'completed') {
       await Order.findByIdAndUpdate(payment.order_id, { status: 'paid' });
     }
 
-    return res.status(200).json({
-      success: true,
-      message: 'To\'lov holati yangilandi',
-      innerData: payment
-    });
+    return res.sendResponse(200, 'SUCCESS', payment);
   } catch (error) {
     console.error('[Payment UpdateStatus Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 

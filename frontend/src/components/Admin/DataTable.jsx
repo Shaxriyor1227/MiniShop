@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search, ChevronLeft, ChevronRight, ArrowUpDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import './DataTable.css';
 
 const DataTable = ({
@@ -8,14 +9,19 @@ const DataTable = ({
   loading = false,
   searchValue = '',
   onSearchChange,
-  searchPlaceholder = 'Qidirish...',
+  searchPlaceholder,
   actions,
   pagination,
-  emptyMessage = 'Hech qanday ma\'lumot topilmadi',
+  emptyMessage,
   onSort,
   sortField,
   sortOrder
 }) => {
+  const { t } = useTranslation();
+
+  const finalPlaceholder = searchPlaceholder || t('admin.table.search_placeholder');
+  const finalEmptyMessage = emptyMessage || t('admin.table.empty_message');
+
   return (
     <div className="admin-datatable-wrapper">
       {(onSearchChange || actions) && (
@@ -27,7 +33,7 @@ const DataTable = ({
                 type="text"
                 value={searchValue}
                 onChange={(e) => onSearchChange(e.target.value)}
-                placeholder={searchPlaceholder}
+                placeholder={finalPlaceholder}
                 className="admin-search-input"
               />
               {searchValue && (
@@ -84,7 +90,7 @@ const DataTable = ({
             ) : data.length === 0 ? (
               <tr>
                 <td colSpan={columns.length} className="empty-table-cell">
-                  {emptyMessage}
+                  {finalEmptyMessage}
                 </td>
               </tr>
             ) : (
@@ -108,9 +114,9 @@ const DataTable = ({
       {pagination && (
         <div className="admin-pagination">
           <div className="pagination-info">
-            Jami: <strong>{pagination.total || data.length}</strong> ta yozuv
+            {t('admin.table.total_records')} <strong>{pagination.total || data.length}</strong> {t('admin.table.records_suffix')}
             {pagination.totalPages > 1 && (
-              <span> • Sahifa {pagination.page} / {pagination.totalPages}</span>
+              <span> • {t('admin.table.page_prefix')} {pagination.page} {t('admin.table.page_of')} {pagination.totalPages}</span>
             )}
           </div>
           {pagination.totalPages > 1 && (
@@ -121,7 +127,7 @@ const DataTable = ({
                 onClick={() => pagination.onPageChange(pagination.page - 1)}
               >
                 <ChevronLeft size={16} />
-                <span>Oldingi</span>
+                <span>{t('admin.table.prev')}</span>
               </button>
               <span className="page-indicator">{pagination.page}</span>
               <button
@@ -129,7 +135,7 @@ const DataTable = ({
                 disabled={pagination.page >= pagination.totalPages || loading}
                 onClick={() => pagination.onPageChange(pagination.page + 1)}
               >
-                <span>Keyingi</span>
+                <span>{t('admin.table.next')}</span>
                 <ChevronRight size={16} />
               </button>
             </div>

@@ -26,30 +26,31 @@ import { useTranslation } from 'react-i18next';
 import './AdminLayout.css';
 
 const navItems = [
-  { to: '/admin', label: 'Boshqaruv paneli', icon: LayoutDashboard, exact: true },
-  { to: '/admin/products', label: 'Mahsulotlar', icon: Package },
-  { to: '/admin/categories', label: 'Kategoriyalar', icon: Layers },
-  { to: '/admin/brands', label: 'Brendlar', icon: Award },
-  { to: '/admin/orders', label: 'Buyurtmalar', icon: ShoppingBag },
-  { to: '/admin/users', label: 'Foydalanuvchilar', icon: Users },
-  { to: '/admin/coupons', label: 'Kuponlar', icon: Tag },
-  { to: '/admin/reviews', label: 'Sharhlar', icon: MessageSquare },
-  { to: '/admin/payments', label: 'To\'lovlar', icon: CreditCard },
-  { to: '/admin/notifications', label: 'Bildirishnomalar', icon: Bell }
+  { to: '/admin', labelKey: 'admin.nav.dashboard', icon: LayoutDashboard, exact: true },
+  { to: '/admin/products', labelKey: 'admin.nav.products', icon: Package },
+  { to: '/admin/categories', labelKey: 'admin.nav.categories', icon: Layers },
+  { to: '/admin/brands', labelKey: 'admin.nav.brands', icon: Award },
+  { to: '/admin/orders', labelKey: 'admin.nav.orders', icon: ShoppingBag },
+  { to: '/admin/users', labelKey: 'admin.nav.users', icon: Users },
+  { to: '/admin/coupons', labelKey: 'admin.nav.coupons', icon: Tag },
+  { to: '/admin/reviews', labelKey: 'admin.nav.reviews', icon: MessageSquare },
+  { to: '/admin/payments', labelKey: 'admin.nav.payments', icon: CreditCard },
+  { to: '/admin/notifications', labelKey: 'admin.nav.notifications', icon: Bell }
 ];
 
 const AdminLayout = () => {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const currentTitle = navItems.find((item) =>
+  const matchedItem = navItems.find((item) =>
     item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to)
-  )?.label || 'Admin Panel';
+  );
+  const currentTitle = matchedItem ? t(matchedItem.labelKey) : t('admin.nav.admin');
 
   const handleLanguageChange = (lng) => {
     i18n.changeLanguage(lng);
@@ -79,21 +80,21 @@ const AdminLayout = () => {
             </div>
             <div className="admin-logo-text">
               <span className="logo-brand">MiniShop</span>
-              <span className="logo-sub">Pro Admin</span>
+              <span className="logo-sub">{t('admin.nav.super_admin')}</span>
             </div>
           </div>
           <button
             type="button"
             className="admin-sidebar-close-btn"
             onClick={() => setIsMobileMenuOpen(false)}
-            aria-label="Yopish"
+            aria-label={t('admin.common.close')}
           >
             <X size={18} />
           </button>
         </div>
 
         <nav className="admin-sidebar-nav">
-          <div className="nav-group-label">Asosiy Menyular</div>
+          <div className="nav-group-label">{t('admin.nav.main_menu')}</div>
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -107,7 +108,7 @@ const AdminLayout = () => {
                 }
               >
                 <Icon size={18} className="nav-icon" />
-                <span className="nav-text">{item.label}</span>
+                <span className="nav-text">{t(item.labelKey)}</span>
                 <ChevronRight size={14} className="nav-arrow" />
               </NavLink>
             );
@@ -117,7 +118,7 @@ const AdminLayout = () => {
         <div className="admin-sidebar-footer">
           <NavLink to="/" className="admin-store-link">
             <ExternalLink size={16} />
-            <span>Do'konga qaytish</span>
+            <span>{t('admin.nav.back_to_store')}</span>
           </NavLink>
 
           <div className="admin-user-profile-widget">
@@ -125,14 +126,14 @@ const AdminLayout = () => {
               {user?.name ? user.name[0].toUpperCase() : 'A'}
             </div>
             <div className="user-details">
-              <div className="user-name">{user?.name || 'Administrator'}</div>
-              <div className="user-role-badge">Super Admin</div>
+              <div className="user-name">{user?.name || t('admin.nav.admin')}</div>
+              <div className="user-role-badge">{t('admin.nav.super_admin')}</div>
             </div>
             <button
               type="button"
               className="user-logout-btn"
               onClick={handleLogout}
-              title="Chiqish"
+              title={t('admin.nav.logout')}
             >
               <LogOut size={16} />
             </button>
@@ -149,12 +150,12 @@ const AdminLayout = () => {
               type="button"
               className="admin-hamburger-btn"
               onClick={() => setIsMobileMenuOpen(true)}
-              aria-label="Menyu"
+              aria-label={t('nav.menu')}
             >
               <Menu size={20} />
             </button>
             <div className="admin-page-breadcrumbs">
-              <span className="crumb-root">Admin</span>
+              <span className="crumb-root">{t('admin.nav.admin')}</span>
               <span className="crumb-separator">/</span>
               <h1 className="crumb-current">{currentTitle}</h1>
             </div>
@@ -180,7 +181,7 @@ const AdminLayout = () => {
               type="button"
               className="admin-theme-toggle"
               onClick={toggleTheme}
-              title={theme === 'dark' ? 'Yorug\' rejim' : 'Qorong\'i rejim'}
+              title={theme === 'dark' ? t('nav.theme_light') : t('nav.theme_dark')}
             >
               {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>

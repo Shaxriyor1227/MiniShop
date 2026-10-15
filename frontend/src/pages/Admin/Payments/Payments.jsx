@@ -1,13 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { CreditCard, DollarSign, RefreshCw, Filter, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../../api/axiosInstance';
 import DataTable from '../../../components/Admin/DataTable';
 import Modal from '../../../components/Admin/Modal';
 import StatusBadge from '../../../components/Admin/StatusBadge';
 import Toast from '../../../components/Admin/Toast';
+import { useFormatters } from '../../../utils/formatters';
+import { getApiErrorMessage } from '../../../utils/apiError';
 import './Payments.css';
 
 const Payments = () => {
+  const { t } = useTranslation();
+  const { formatPrice, formatDate } = useFormatters();
+
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -40,7 +46,7 @@ const Payments = () => {
       }
     } catch (err) {
       console.error('[Payments Fetch Error]:', err);
-      showToast('To\'lovlarni yuklashda xatolik', 'error');
+      showToast(getApiErrorMessage(err, 'admin.payments.toast_error'), 'error');
     } finally {
       setLoading(false);
     }
@@ -64,12 +70,12 @@ const Payments = () => {
         status: newStatus
       });
       if (res.data.success) {
-        showToast('To\'lov holati yangilandi!');
+        showToast(t('admin.payments.toast_updated'));
         setSelectedPayment(null);
         fetchPayments();
       }
     } catch (err) {
-      showToast(err.response?.data?.message || 'Holatni yangilashda xatolik', 'error');
+      showToast(getApiErrorMessage(err, 'admin.payments.toast_error'), 'error');
     } finally {
       setUpdating(false);
     }
@@ -78,53 +84,48 @@ const Payments = () => {
   const columns = [
     {
       key: '_id',
-      label: 'To\'lov ID',
+      label: t('admin.payments.col_id'),
       width: '130px',
       render: (val) => <span className="payment-code-badge">#{val.slice(-6)}</span>
     },
     {
       key: 'order_id',
-      label: 'Buyurtma & Mijoz',
+      label: t('admin.payments.col_order'),
       render: (order) => (
         <div className="payment-order-cell">
-          <span className="order-link-text">Buyurtma #{order?._id ? order._id.slice(-6) : '—'}</span>
-          <span className="order-customer-sub">{order?.user_id?.name || 'Mijoz'}</span>
+          <span className="order-link-text">#{order?._id ? order._id.slice(-6) : '—'}</span>
+          <span className="order-customer-sub">{order?.user_id?.name || t('admin.status.customer')}</span>
         </div>
       )
     },
     {
       key: 'amount',
-      label: 'Summa',
-      render: (val) => <strong className="payment-amount">${val}</strong>
+      label: t('admin.payments.col_amount'),
+      render: (val) => <strong className="payment-amount">{formatPrice(val)}</strong>
     },
     {
       key: 'method',
-      label: 'To\'lov usuli',
+      label: t('admin.payments.col_method'),
       render: (val) => (
         <span className="payment-method-badge">
           <CreditCard size={13} />
-          {val || 'Karta'}
+          {val || 'Card'}
         </span>
       )
     },
     {
       key: 'status',
-      label: 'Holat',
+      label: t('admin.payments.col_status'),
       render: (val) => <StatusBadge status={val} type="payment" />
     },
     {
       key: 'createdAt',
-      label: 'Vaqt',
-      render: (val) => new Date(val).toLocaleString('uz-UZ', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      })
+      label: t('admin.payments.col_date'),
+      render: (val) => formatDate(val)
     },
     {
       key: 'actions',
-      label: 'Amal',
+      label: t('admin.common.actions'),
       align: 'right',
       render: (_, row) => (
         <button
@@ -133,7 +134,7 @@ const Payments = () => {
           style={{ padding: '5px 10px', fontSize: '12px' }}
           onClick={() => handleOpenEdit(row)}
         >
-          Holatni o'zgartirish
+          {t('admin.payments.change_status')}
         </button>
       )
     }
@@ -143,18 +144,17 @@ const Payments = () => {
     <div className="admin-payments-page">
       <div className="admin-page-hero">
         <div>
-          <h2 className="admin-hero-title">To'lovlar tranzaksiyalari</h2>
-          <p className="admin-hero-subtitle">
-            Mijozlar buyurtmalari bo'yicha to'lov amaliyotlari va hisoblar
-          </p>
+          <h2 className="admin-hero-title">{t('admin.payments.title')}</h2>
+          <p className="admin-hero-subtitle">{t('admin.payments.subtitle')}</p>
         </div>
         <button
           type="button"
           className="admin-btn admin-btn-secondary"
           onClick={fetchPayments}
+          title={t('admin.common.refresh')}
         >
           <RefreshCw size={15} className={loading ? 'spinning' : ''} />
-          <span>Yangilash</span>
+          <span>{t('admin.common.refresh')}</span>
         </button>
       </div>
 
@@ -167,10 +167,10 @@ const Payments = () => {
             value={statusFilter}
             onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
           >
-            <option value="all">Barcha holatlar</option>
-            <option value="completed">Muvaffaqiyatli (completed)</option>
-            <option value="pending">Kutilmoqda (pending)</option>
-            <option value="failed">Xatolik (failed)</option>
+            <option value="all">{t('admin.common.all')}</option>
+            <option value="completed">{t('admin.status.completed')}</option>
+            <option value="pending">{t('admin.status.pending')}</option>
+            <option value="failed">{t('admin.status.failed')}</option>
           </select>
 
           <select
@@ -178,11 +178,11 @@ const Payments = () => {
             value={methodFilter}
             onChange={(e) => { setMethodFilter(e.target.value); setPage(1); }}
           >
-            <option value="all">Barcha to'lov usullari</option>
-            <option value="Credit Card">Kredit karta</option>
+            <option value="all">{t('admin.payments.filter_method')}</option>
+            <option value="Credit Card">Credit Card</option>
             <option value="Payme">Payme</option>
             <option value="Click">Click</option>
-            <option value="Cash">Naqd pul</option>
+            <option value="Cash">Cash</option>
           </select>
         </div>
       </div>
@@ -197,7 +197,7 @@ const Payments = () => {
           total,
           onPageChange: (p) => setPage(p)
         }}
-        emptyMessage="To'lov yozuvlari topilmadi"
+        emptyMessage={t('admin.empty.desc')}
       />
 
       {/* Status Modal */}
@@ -205,29 +205,29 @@ const Payments = () => {
         <Modal
           isOpen={Boolean(selectedPayment)}
           onClose={() => setSelectedPayment(null)}
-          title={`To'lov #${selectedPayment._id.slice(-6)}`}
+          title={`${t('admin.payments.title')} #${selectedPayment._id.slice(-6)}`}
           maxWidth="440px"
         >
           <div className="admin-form-vertical">
             <div className="detail-card-row">
-              <span className="row-key">Summa:</span>
-              <span className="row-val font-bold">${selectedPayment.amount}</span>
+              <span className="row-key">{t('admin.payments.col_amount')}:</span>
+              <span className="row-val font-bold">{formatPrice(selectedPayment.amount)}</span>
             </div>
             <div className="detail-card-row">
-              <span className="row-key">Usul:</span>
+              <span className="row-key">{t('admin.payments.col_method')}:</span>
               <span className="row-val">{selectedPayment.method}</span>
             </div>
 
             <div className="form-group" style={{ marginTop: '12px' }}>
-              <label className="form-label">Yangi holatni tanlang</label>
+              <label className="form-label">{t('admin.payments.change_status')}</label>
               <select
                 className="admin-select"
                 value={newStatus}
                 onChange={(e) => setNewStatus(e.target.value)}
               >
-                <option value="pending">Kutilmoqda (pending)</option>
-                <option value="completed">Muvaffaqiyatli (completed)</option>
-                <option value="failed">Bekor qilingan / Xato (failed)</option>
+                <option value="pending">{t('admin.status.pending')}</option>
+                <option value="completed">{t('admin.status.completed')}</option>
+                <option value="failed">{t('admin.status.failed')}</option>
               </select>
             </div>
 
@@ -238,7 +238,7 @@ const Payments = () => {
                 onClick={() => setSelectedPayment(null)}
                 disabled={updating}
               >
-                Bekor qilish
+                {t('admin.common.cancel')}
               </button>
               <button
                 type="button"
@@ -246,7 +246,7 @@ const Payments = () => {
                 onClick={handleSaveStatus}
                 disabled={updating || newStatus === selectedPayment.status}
               >
-                {updating ? 'Saqlanmoqda...' : 'Holatni saqlash'}
+                {updating ? t('admin.common.processing') : t('admin.common.save')}
               </button>
             </div>
           </div>

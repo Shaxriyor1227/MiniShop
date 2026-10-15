@@ -9,11 +9,7 @@ const create = async (req, res) => {
     const { name, email, password, role, phone_number, isBlocked } = req.body;
     const existing = await User.findOne({ email: email.toLowerCase() });
     if (existing) {
-      return res.status(400).json({
-        success: false,
-        message: 'Ushbu email allaqachon mavjud',
-        innerData: null
-      });
+      return res.sendResponse(400, 'AUTH_USER_EXISTS');
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -31,18 +27,10 @@ const create = async (req, res) => {
     const data = user.toObject();
     delete data.password;
 
-    return res.status(201).json({
-      success: true,
-      message: 'Foydalanuvchi muvaffaqiyatli yaratildi',
-      innerData: data
-    });
+    return res.sendResponse(201, 'SUCCESS', data);
   } catch (error) {
     console.error('[User Create Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -84,21 +72,14 @@ const getAll = async (req, res) => {
     const limitNum = limit ? parseInt(limit, 10) : total;
     const totalPages = limitNum > 0 ? Math.ceil(total / limitNum) : 1;
 
-    return res.status(200).json({
-      success: true,
-      message: 'Barcha foydalanuvchilar olindi',
-      innerData: users,
+    return res.sendResponse(200, 'USERS_FETCHED', users, null, {
       total,
       totalPages: totalPages || 1,
       page: page ? parseInt(page, 10) : 1
     });
   } catch (error) {
     console.error('[User GetAll Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -109,33 +90,17 @@ const getById = async (req, res) => {
   try {
     const requestedId = req.params.id;
     if (req.user.role !== 'admin' && req.user.id !== requestedId) {
-      return res.status(403).json({
-        success: false,
-        message: 'Ruxsat etilmagan: Faqat o\'z hisobingiz ma\'lumotlarini ko\'rishingiz mumkin',
-        innerData: null
-      });
+      return res.sendResponse(403, 'FORBIDDEN_ADMIN_ONLY');
     }
 
     const user = await User.findById(requestedId).select('-password');
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'Foydalanuvchi topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'USER_NOT_FOUND');
     }
-    return res.status(200).json({
-      success: true,
-      message: 'Foydalanuvchi topildi',
-      innerData: user
-    });
+    return res.sendResponse(200, 'SUCCESS', user);
   } catch (error) {
     console.error('[User GetById Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -149,11 +114,7 @@ const update = async (req, res) => {
     const isAdminUser = req.user.role === 'admin';
 
     if (!isSelf && !isAdminUser) {
-      return res.status(403).json({
-        success: false,
-        message: 'Ruxsat etilmagan: Faqat o\'z hisobingizni tahrirlashingiz mumkin',
-        innerData: null
-      });
+      return res.sendResponse(403, 'FORBIDDEN_ADMIN_ONLY');
     }
 
     const updates = {};
@@ -169,23 +130,14 @@ const update = async (req, res) => {
     // Role and isBlocked can ONLY be changed by an Admin
     if (isAdminUser) {
       if (req.body.role) {
-        // Prevent admin demoting themselves via generic update
         if (isSelf && req.body.role !== 'admin') {
-          return res.status(400).json({
-            success: false,
-            message: 'Admin o\'zining administratorlik huquqini pasaytira olmaydi',
-            innerData: null
-          });
+          return res.sendResponse(400, 'VALIDATION_ERROR', null, 'Admin cannot demote own role');
         }
         updates.role = req.body.role;
       }
       if (req.body.isBlocked !== undefined) {
         if (isSelf && req.body.isBlocked) {
-          return res.status(400).json({
-            success: false,
-            message: 'Admin o\'zini o\'zi bloklay olmaydi',
-            innerData: null
-          });
+          return res.sendResponse(400, 'VALIDATION_ERROR', null, 'Admin cannot block own account');
         }
         updates.isBlocked = req.body.isBlocked;
       }
@@ -193,24 +145,12 @@ const update = async (req, res) => {
 
     const user = await User.findByIdAndUpdate(requestedId, updates, { new: true }).select('-password');
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'Foydalanuvchi topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'USER_NOT_FOUND');
     }
-    return res.status(200).json({
-      success: true,
-      message: 'Foydalanuvchi yangilandi',
-      innerData: user
-    });
+    return res.sendResponse(200, 'USER_UPDATED', user);
   } catch (error) {
     console.error('[User Update Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -222,23 +162,14 @@ const toggleBlock = async (req, res) => {
     const targetId = req.params.id;
 
     if (req.user.id === targetId) {
-      return res.status(400).json({
-        success: false,
-        message: 'Admin o\'zini o\'zi bloklay olmaydi',
-        innerData: null
-      });
+      return res.sendResponse(400, 'VALIDATION_ERROR', null, 'Admin cannot block own account');
     }
 
     const user = await User.findById(targetId);
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'Foydalanuvchi topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'USER_NOT_FOUND');
     }
 
-    // Explicit boolean or toggle
     const newStatus = typeof req.body.isBlocked === 'boolean' ? req.body.isBlocked : !user.isBlocked;
     user.isBlocked = newStatus;
     await user.save();
@@ -246,18 +177,10 @@ const toggleBlock = async (req, res) => {
     const data = user.toObject();
     delete data.password;
 
-    return res.status(200).json({
-      success: true,
-      message: newStatus ? 'Foydalanuvchi muvaffaqiyatli bloklandi' : 'Foydalanuvchi blokdan chiqarildi',
-      innerData: data
-    });
+    return res.sendResponse(200, 'USER_UPDATED', data);
   } catch (error) {
     console.error('[User ToggleBlock Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -270,42 +193,22 @@ const updateRole = async (req, res) => {
     const { role } = req.body;
 
     if (!['customer', 'admin'].includes(role)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Noto\'g\'ri role: faqat "customer" yoki "admin" bo\'lishi mumkin',
-        innerData: null
-      });
+      return res.sendResponse(400, 'VALIDATION_ERROR', null, 'Invalid role');
     }
 
     if (req.user.id === targetId && role !== 'admin') {
-      return res.status(400).json({
-        success: false,
-        message: 'Admin o\'z rolini pasaytira olmaydi',
-        innerData: null
-      });
+      return res.sendResponse(400, 'VALIDATION_ERROR', null, 'Admin cannot demote own role');
     }
 
     const user = await User.findByIdAndUpdate(targetId, { role }, { new: true }).select('-password');
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'Foydalanuvchi topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'USER_NOT_FOUND');
     }
 
-    return res.status(200).json({
-      success: true,
-      message: `Foydalanuvchi roli "${role}" ga o'zgartirildi`,
-      innerData: user
-    });
+    return res.sendResponse(200, 'USER_UPDATED', user);
   } catch (error) {
     console.error('[User UpdateRole Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -317,33 +220,17 @@ const deleteUser = async (req, res) => {
     const targetId = req.params.id;
 
     if (req.user.id === targetId) {
-      return res.status(400).json({
-        success: false,
-        message: 'Admin o\'z akkauntini o\'chira olmaydi',
-        innerData: null
-      });
+      return res.sendResponse(400, 'VALIDATION_ERROR', null, 'Admin cannot delete own account');
     }
 
     const user = await User.findByIdAndDelete(targetId);
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'Foydalanuvchi topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'USER_NOT_FOUND');
     }
-    return res.status(200).json({
-      success: true,
-      message: 'Foydalanuvchi o\'chirildi',
-      innerData: null
-    });
+    return res.sendResponse(200, 'USER_DELETED', null);
   } catch (error) {
     console.error('[User Delete Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 

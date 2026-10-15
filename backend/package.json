@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "seed": "node seed.js"
+    "seed": "node seed.js",
+    "migrate:translations": "node scripts/migrateTranslations.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

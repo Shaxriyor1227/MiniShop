@@ -16,18 +16,10 @@ const create = async (req, res) => {
       .populate('user_id', 'name email')
       .populate('product_id', 'name');
 
-    return res.status(201).json({
-      success: true,
-      message: 'Sharh muvaffaqiyatli qoldirildi',
-      innerData: populated
-    });
+    return res.sendResponse(201, 'REVIEW_CREATED', populated);
   } catch (error) {
     console.error('[Review Create Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -56,21 +48,14 @@ const getAll = async (req, res) => {
     const limitNum = limit ? parseInt(limit, 10) : total;
     const totalPages = limitNum > 0 ? Math.ceil(total / limitNum) : 1;
 
-    return res.status(200).json({
-      success: true,
-      message: 'Sharhlar olindi',
-      innerData: reviews,
+    return res.sendResponse(200, 'REVIEWS_FETCHED', reviews, null, {
       total,
       totalPages: totalPages || 1,
       page: page ? parseInt(page, 10) : 1
     });
   } catch (error) {
     console.error('[Review GetAll Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -81,25 +66,13 @@ const getById = async (req, res) => {
       .populate('product_id', 'name images');
 
     if (!review) {
-      return res.status(404).json({
-        success: false,
-        message: 'Sharh topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'REVIEW_NOT_FOUND');
     }
 
-    return res.status(200).json({
-      success: true,
-      message: 'Sharh topildi',
-      innerData: review
-    });
+    return res.sendResponse(200, 'SUCCESS', review);
   } catch (error) {
     console.error('[Review GetById Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -122,25 +95,13 @@ const update = async (req, res) => {
       .populate('product_id', 'name');
 
     if (!review) {
-      return res.status(404).json({
-        success: false,
-        message: 'Sharh topilmadi yoki uni tahrirlash huquqingiz yo\'q',
-        innerData: null
-      });
+      return res.sendResponse(404, 'REVIEW_NOT_FOUND');
     }
 
-    return res.status(200).json({
-      success: true,
-      message: 'Sharh yangilandi',
-      innerData: review
-    });
+    return res.sendResponse(200, 'SUCCESS', review);
   } catch (error) {
     console.error('[Review Update Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -152,25 +113,13 @@ const deleteReview = async (req, res) => {
 
     const review = await Review.findOneAndDelete(filter);
     if (!review) {
-      return res.status(404).json({
-        success: false,
-        message: 'Sharh topilmadi yoki uni o\'chirish huquqingiz yo\'q',
-        innerData: null
-      });
+      return res.sendResponse(404, 'REVIEW_NOT_FOUND');
     }
 
-    return res.status(200).json({
-      success: true,
-      message: 'Sharh o\'chirildi',
-      innerData: null
-    });
+    return res.sendResponse(200, 'REVIEW_DELETED', null);
   } catch (error) {
     console.error('[Review Delete Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 

@@ -1,49 +1,39 @@
 const Brand = require('../model/brandSchema');
 
+const formatBrand = (doc, lang = 'en') => {
+  if (!doc) return null;
+  const b = doc.toObject ? doc.toObject() : { ...doc };
+  if (b.translations && b.translations[lang]?.name) {
+    b.name = b.translations[lang].name;
+  }
+  return b;
+};
+
 const create = async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, translations } = req.body;
     const existing = await Brand.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } });
     if (existing) {
-      return res.status(400).json({
-        success: false,
-        message: 'Ushbu brend allaqachon mavjud',
-        innerData: null
-      });
+      return res.sendResponse(400, 'BRAND_EXISTS');
     }
 
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    const brand = await Brand.create({ name, slug });
-    return res.status(201).json({
-      success: true,
-      message: 'Brend muvaffaqiyatli yaratildi',
-      innerData: brand
-    });
+    const brand = await Brand.create({ name, slug, translations: translations || {} });
+    return res.sendResponse(201, 'BRAND_CREATED', formatBrand(brand, req.lang));
   } catch (error) {
     console.error('[Brand Create Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
 const getAll = async (req, res) => {
   try {
     const brands = await Brand.find().sort({ name: 1 });
-    return res.status(200).json({
-      success: true,
-      message: 'Barcha brendlar olindi',
-      innerData: brands
-    });
+    const formatted = brands.map((b) => formatBrand(b, req.lang));
+    return res.sendResponse(200, 'BRANDS_FETCHED', formatted);
   } catch (error) {
     console.error('[Brand GetAll Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -51,49 +41,29 @@ const getById = async (req, res) => {
   try {
     const brand = await Brand.findById(req.params.id);
     if (!brand) {
-      return res.status(404).json({
-        success: false,
-        message: 'Brend topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'BRAND_NOT_FOUND');
     }
-    return res.status(200).json({
-      success: true,
-      message: 'Brend topildi',
-      innerData: brand
-    });
+    return res.sendResponse(200, 'SUCCESS', formatBrand(brand, req.lang));
   } catch (error) {
     console.error('[Brand GetById Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
 const update = async (req, res) => {
   try {
-    const brand = await Brand.findByIdAndUpdate(req.params.id, { name: req.body.name }, { new: true });
+    const updateData = {};
+    if (req.body.name !== undefined) updateData.name = req.body.name;
+    if (req.body.translations !== undefined) updateData.translations = req.body.translations;
+
+    const brand = await Brand.findByIdAndUpdate(req.params.id, updateData, { new: true });
     if (!brand) {
-      return res.status(404).json({
-        success: false,
-        message: 'Brend topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'BRAND_NOT_FOUND');
     }
-    return res.status(200).json({
-      success: true,
-      message: 'Brend yangilandi',
-      innerData: brand
-    });
+    return res.sendResponse(200, 'BRAND_UPDATED', formatBrand(brand, req.lang));
   } catch (error) {
     console.error('[Brand Update Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
@@ -101,24 +71,12 @@ const deleteBrand = async (req, res) => {
   try {
     const brand = await Brand.findByIdAndDelete(req.params.id);
     if (!brand) {
-      return res.status(404).json({
-        success: false,
-        message: 'Brend topilmadi',
-        innerData: null
-      });
+      return res.sendResponse(404, 'BRAND_NOT_FOUND');
     }
-    return res.status(200).json({
-      success: true,
-      message: 'Brend o\'chirildi',
-      innerData: null
-    });
+    return res.sendResponse(200, 'BRAND_DELETED', null);
   } catch (error) {
     console.error('[Brand Delete Error]:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server xatosi: ' + error.message,
-      innerData: null
-    });
+    return res.sendResponse(500, 'INTERNAL_SERVER_ERROR', null, error.message);
   }
 };
 
