@@ -19,6 +19,7 @@ const paymentRoute = require('./routes/paymentRoute');
 const couponRoute = require('./routes/couponRoute');
 const notificationRoute = require('./routes/notificationRoute');
 const uploadRoute = require('./routes/uploadRoute');
+const adminRoute = require('./routes/adminRoute');
 const path = require('path');
 
 const app = express();
@@ -59,6 +60,7 @@ app.use('/payment', paymentRoute);
 app.use('/coupon', couponRoute);
 app.use('/notification', notificationRoute);
 app.use('/upload', uploadRoute);
+app.use('/admin', adminRoute);
 
 // Swagger Documentation
 setupSwagger(app);

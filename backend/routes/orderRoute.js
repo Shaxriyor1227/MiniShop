@@ -62,13 +62,41 @@ router.post('/create', verifyToken, validateSchema(orderCreateValidation), order
  * @swagger
  * /order/getAll:
  *   get:
- *     summary: Get all orders (Customer gets own, Admin gets all)
+ *     summary: Get all orders (Customer gets own, Admin gets all) with pagination & filters
  *     tags: [Order]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [all, pending, paid, shipped, delivered, cancelled]
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date
  *     responses:
  *       200:
- *         description: List of orders
+ *         description: List of orders with pagination details
  */
 router.get('/getAll', verifyToken, orderController.getAll);
 

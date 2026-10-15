@@ -5,6 +5,9 @@ const Cart = require('../model/cartSchema');
 const Wishlist = require('../model/wishlistSchema');
 
 const generateToken = (user) => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET muhit o\'zgaruvchisi o\'rnatilmagan');
+  }
   return jwt.sign(
     {
       id: user._id,
@@ -12,7 +15,7 @@ const generateToken = (user) => {
       email: user.email,
       role: user.role
     },
-    process.env.JWT_SECRET || 'minishop_super_secret_jwt_key_2026_experience',
+    process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
 };
@@ -22,7 +25,7 @@ const generateToken = (user) => {
  */
 const register = async (req, res) => {
   try {
-    const { name, email, password, role, phone_number } = req.body;
+    const { name, email, password, phone_number } = req.body;
 
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
@@ -36,12 +39,14 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Register is exclusively for customers. Admins can only be created via admin user create endpoint.
     const newUser = await User.create({
       name,
       email: email.toLowerCase(),
       password: hashedPassword,
-      role: role || 'customer',
-      phone_number: phone_number || ''
+      role: 'customer',
+      phone_number: phone_number || '',
+      isBlocked: false
     });
 
     // Initialize user's Cart and Wishlist
@@ -86,6 +91,14 @@ const login = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Email yoki parol noto\'g\'ri',
+        innerData: null
+      });
+    }
+
+    if (user.isBlocked) {
+      return res.status(403).json({
+        success: false,
+        message: 'Profilingiz administrator tomonidan bloklangan. Qo\'llab-quvvatlash bilan bog\'laning.',
         innerData: null
       });
     }

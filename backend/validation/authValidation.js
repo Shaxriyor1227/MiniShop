@@ -13,7 +13,6 @@ const registerValidation = Joi.object({
     'string.empty': 'Parol kiritilishi shart',
     'string.min': 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak'
   }),
-  role: Joi.string().valid('customer', 'admin').default('customer'),
   phone_number: Joi.string().allow('', null)
 });
 

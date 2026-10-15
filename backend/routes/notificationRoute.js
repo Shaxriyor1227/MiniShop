@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const notificationController = require('../controllers/notification.controller');
 const validateSchema = require('../middleware/validateSchema');
-const { notificationCreateValidation, notificationUpdateValidation } = require('../validation/notificationValidation');
-const { verifyToken } = require('../middleware/auth.middleware');
+const { notificationCreateValidation } = require('../validation/notificationValidation');
+const { verifyToken, isAdmin } = require('../middleware/auth.middleware');
 
 /**
  * @swagger
@@ -16,7 +16,7 @@ const { verifyToken } = require('../middleware/auth.middleware');
  * @swagger
  * /notification/create:
  *   post:
- *     summary: Create new notification
+ *     summary: Create new notification (Admin only - user_id or all)
  *     tags: [Notification]
  *     security:
  *       - bearerAuth: []
@@ -31,22 +31,36 @@ const { verifyToken } = require('../middleware/auth.middleware');
  *             properties:
  *               user_id:
  *                 type: string
+ *                 description: User ID or "all" to broadcast to everyone
  *               message:
  *                 type: string
  *     responses:
  *       201:
  *         description: Notification created
  */
-router.post('/create', verifyToken, validateSchema(notificationCreateValidation), notificationController.create);
+router.post('/create', verifyToken, isAdmin, validateSchema(notificationCreateValidation), notificationController.create);
 
 /**
  * @swagger
  * /notification/getAll:
  *   get:
- *     summary: Get all notifications of current user
+ *     summary: Get all notifications of current user (or all if admin)
  *     tags: [Notification]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: all
+ *         schema:
+ *           type: boolean
  *     responses:
  *       200:
  *         description: List of notifications

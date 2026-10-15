@@ -48,7 +48,7 @@ router.post('/create', verifyToken, validateSchema(reviewCreateValidation), revi
  * @swagger
  * /review/getAll:
  *   get:
- *     summary: Get all reviews (or by product_id)
+ *     summary: Get all reviews (or by product_id, with pagination)
  *     tags: [Review]
  *     security: []
  *     parameters:
@@ -56,6 +56,18 @@ router.post('/create', verifyToken, validateSchema(reviewCreateValidation), revi
  *         name: product_id
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: rating
+ *         schema:
+ *           type: number
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
  *     responses:
  *       200:
  *         description: List of reviews
@@ -85,7 +97,7 @@ router.get('/getById/:id', reviewController.getById);
  * @swagger
  * /review/update/{id}:
  *   put:
- *     summary: Update review by ID
+ *     summary: Update review by ID (Owner or Admin)
  *     tags: [Review]
  *     security:
  *       - bearerAuth: []
@@ -116,7 +128,7 @@ router.put('/update/:id', verifyToken, validateSchema(reviewUpdateValidation), r
  * @swagger
  * /review/delete/{id}:
  *   delete:
- *     summary: Delete review by ID
+ *     summary: Delete review by ID (Owner or Admin)
  *     tags: [Review]
  *     security:
  *       - bearerAuth: []

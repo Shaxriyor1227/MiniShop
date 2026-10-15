@@ -36,11 +36,38 @@ const create = async (req, res) => {
 
 const getAll = async (req, res) => {
   try {
-    const coupons = await Coupon.find().sort({ createdAt: -1 });
+    const { page, limit, search, is_active } = req.query;
+
+    const filter = {};
+    if (search && search.trim()) {
+      filter.code = { $regex: search.trim().toUpperCase(), $options: 'i' };
+    }
+    if (is_active !== undefined && is_active !== '') {
+      filter.is_active = is_active === 'true' || is_active === true;
+    }
+
+    const total = await Coupon.countDocuments(filter);
+
+    let query = Coupon.find(filter).sort({ createdAt: -1 });
+
+    if (page || limit) {
+      const pageNum = Math.max(1, parseInt(page, 10) || 1);
+      const limitNum = Math.max(1, parseInt(limit, 10) || 10);
+      const skip = (pageNum - 1) * limitNum;
+      query = query.skip(skip).limit(limitNum);
+    }
+
+    const coupons = await query;
+    const limitNum = limit ? parseInt(limit, 10) : total;
+    const totalPages = limitNum > 0 ? Math.ceil(total / limitNum) : 1;
+
     return res.status(200).json({
       success: true,
       message: 'Barcha kuponlar olindi',
-      innerData: coupons
+      innerData: coupons,
+      total,
+      totalPages: totalPages || 1,
+      page: page ? parseInt(page, 10) : 1
     });
   } catch (error) {
     console.error('[Coupon GetAll Error]:', error);

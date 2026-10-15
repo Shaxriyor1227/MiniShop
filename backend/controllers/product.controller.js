@@ -6,7 +6,7 @@ const create = async (req, res) => {
     const product = await Product.create({
       name,
       price,
-      stock: stock || 0,
+      stock: stock !== undefined ? Number(stock) : 0,
       category_id,
       brand_id,
       images: images || []
@@ -31,32 +31,73 @@ const create = async (req, res) => {
 
 const getAll = async (req, res) => {
   try {
-    const { category, brand, search, minPrice, maxPrice, sort } = req.query;
+    const {
+      category,
+      category_id,
+      brand,
+      brand_id,
+      search,
+      minPrice,
+      maxPrice,
+      sort,
+      page,
+      limit,
+      inStockOnly
+    } = req.query;
+
     const filter = {};
 
-    if (category) filter.category_id = category;
-    if (brand) filter.brand_id = brand;
-    if (search) filter.name = { $regex: search, $options: 'i' };
+    const cat = category_id || category;
+    if (cat) filter.category_id = cat;
+
+    const br = brand_id || brand;
+    if (br) filter.brand_id = br;
+
+    if (search && search.trim()) {
+      filter.name = { $regex: search.trim(), $options: 'i' };
+    }
+
     if (minPrice || maxPrice) {
       filter.price = {};
       if (minPrice) filter.price.$gte = Number(minPrice);
       if (maxPrice) filter.price.$lte = Number(maxPrice);
     }
 
+    if (inStockOnly === 'true' || inStockOnly === true) {
+      filter.stock = { $gt: 0 };
+    }
+
     let sortOption = { createdAt: -1 };
     if (sort === 'price_asc') sortOption = { price: 1 };
     if (sort === 'price_desc') sortOption = { price: -1 };
     if (sort === 'name_asc') sortOption = { name: 1 };
+    if (sort === 'name_desc') sortOption = { name: -1 };
 
-    const products = await Product.find(filter)
+    const total = await Product.countDocuments(filter);
+
+    let query = Product.find(filter)
       .populate('category_id', 'name')
       .populate('brand_id', 'name')
       .sort(sortOption);
 
+    if (page || limit) {
+      const pageNum = Math.max(1, parseInt(page, 10) || 1);
+      const limitNum = Math.max(1, parseInt(limit, 10) || 10);
+      const skip = (pageNum - 1) * limitNum;
+      query = query.skip(skip).limit(limitNum);
+    }
+
+    const products = await query;
+    const limitNum = limit ? parseInt(limit, 10) : total;
+    const totalPages = limitNum > 0 ? Math.ceil(total / limitNum) : 1;
+
     return res.status(200).json({
       success: true,
       message: 'Mahsulotlar olindi',
-      innerData: products
+      innerData: products,
+      total,
+      totalPages: totalPages || 1,
+      page: page ? parseInt(page, 10) : 1
     });
   } catch (error) {
     console.error('[Product GetAll Error]:', error);
@@ -99,7 +140,11 @@ const getById = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    const updateData = { ...req.body };
+    if (updateData.price !== undefined) updateData.price = Number(updateData.price);
+    if (updateData.stock !== undefined) updateData.stock = Number(updateData.stock);
+
+    const product = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true })
       .populate('category_id', 'name')
       .populate('brand_id', 'name');
 

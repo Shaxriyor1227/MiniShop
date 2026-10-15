@@ -37,11 +37,39 @@ const create = async (req, res) => {
 
 const getAll = async (req, res) => {
   try {
-    const payments = await Payment.find().populate('order_id').sort({ createdAt: -1 });
+    const { page, limit, status, method } = req.query;
+
+    const filter = {};
+    if (status && status !== 'all') filter.status = status;
+    if (method && method !== 'all') filter.method = method;
+
+    const total = await Payment.countDocuments(filter);
+
+    let query = Payment.find(filter)
+      .populate({
+        path: 'order_id',
+        populate: { path: 'user_id', select: 'name email phone_number' }
+      })
+      .sort({ createdAt: -1 });
+
+    if (page || limit) {
+      const pageNum = Math.max(1, parseInt(page, 10) || 1);
+      const limitNum = Math.max(1, parseInt(limit, 10) || 10);
+      const skip = (pageNum - 1) * limitNum;
+      query = query.skip(skip).limit(limitNum);
+    }
+
+    const payments = await query;
+    const limitNum = limit ? parseInt(limit, 10) : total;
+    const totalPages = limitNum > 0 ? Math.ceil(total / limitNum) : 1;
+
     return res.status(200).json({
       success: true,
       message: 'Barcha to\'lovlar olindi',
-      innerData: payments
+      innerData: payments,
+      total,
+      totalPages: totalPages || 1,
+      page: page ? parseInt(page, 10) : 1
     });
   } catch (error) {
     console.error('[Payment GetAll Error]:', error);
@@ -55,7 +83,11 @@ const getAll = async (req, res) => {
 
 const getById = async (req, res) => {
   try {
-    const payment = await Payment.findById(req.params.id).populate('order_id');
+    const payment = await Payment.findById(req.params.id).populate({
+      path: 'order_id',
+      populate: { path: 'user_id', select: 'name email phone_number' }
+    });
+
     if (!payment) {
       return res.status(404).json({
         success: false,

@@ -12,7 +12,9 @@ const create = async (req, res) => {
       comment: comment || ''
     });
 
-    const populated = await Review.findById(review._id).populate('user_id', 'name email');
+    const populated = await Review.findById(review._id)
+      .populate('user_id', 'name email')
+      .populate('product_id', 'name');
 
     return res.status(201).json({
       success: true,
@@ -31,18 +33,36 @@ const create = async (req, res) => {
 
 const getAll = async (req, res) => {
   try {
-    const { product_id } = req.query;
-    const filter = product_id ? { product_id } : {};
+    const { product_id, rating, page, limit } = req.query;
+    const filter = {};
+    if (product_id) filter.product_id = product_id;
+    if (rating) filter.rating = Number(rating);
 
-    const reviews = await Review.find(filter)
-      .populate('user_id', 'name')
-      .populate('product_id', 'name')
+    const total = await Review.countDocuments(filter);
+
+    let query = Review.find(filter)
+      .populate('user_id', 'name email')
+      .populate('product_id', 'name images')
       .sort({ createdAt: -1 });
+
+    if (page || limit) {
+      const pageNum = Math.max(1, parseInt(page, 10) || 1);
+      const limitNum = Math.max(1, parseInt(limit, 10) || 10);
+      const skip = (pageNum - 1) * limitNum;
+      query = query.skip(skip).limit(limitNum);
+    }
+
+    const reviews = await query;
+    const limitNum = limit ? parseInt(limit, 10) : total;
+    const totalPages = limitNum > 0 ? Math.ceil(total / limitNum) : 1;
 
     return res.status(200).json({
       success: true,
       message: 'Sharhlar olindi',
-      innerData: reviews
+      innerData: reviews,
+      total,
+      totalPages: totalPages || 1,
+      page: page ? parseInt(page, 10) : 1
     });
   } catch (error) {
     console.error('[Review GetAll Error]:', error);
@@ -57,8 +77,8 @@ const getAll = async (req, res) => {
 const getById = async (req, res) => {
   try {
     const review = await Review.findById(req.params.id)
-      .populate('user_id', 'name')
-      .populate('product_id', 'name');
+      .populate('user_id', 'name email')
+      .populate('product_id', 'name images');
 
     if (!review) {
       return res.status(404).json({
@@ -85,11 +105,21 @@ const getById = async (req, res) => {
 
 const update = async (req, res) => {
   try {
+    const filter = req.user.role === 'admin'
+      ? { _id: req.params.id }
+      : { _id: req.params.id, user_id: req.user.id };
+
+    const updateFields = {};
+    if (req.body.rating !== undefined) updateFields.rating = req.body.rating;
+    if (req.body.comment !== undefined) updateFields.comment = req.body.comment;
+
     const review = await Review.findOneAndUpdate(
-      { _id: req.params.id, user_id: req.user.id },
-      { rating: req.body.rating, comment: req.body.comment },
+      filter,
+      updateFields,
       { new: true }
-    ).populate('user_id', 'name');
+    )
+      .populate('user_id', 'name email')
+      .populate('product_id', 'name');
 
     if (!review) {
       return res.status(404).json({
@@ -116,7 +146,7 @@ const update = async (req, res) => {
 
 const deleteReview = async (req, res) => {
   try {
-    const filter = req.user.role === 'admin' 
+    const filter = req.user.role === 'admin'
       ? { _id: req.params.id }
       : { _id: req.params.id, user_id: req.user.id };
 
@@ -124,7 +154,7 @@ const deleteReview = async (req, res) => {
     if (!review) {
       return res.status(404).json({
         success: false,
-        message: 'Sharh topilmadi',
+        message: 'Sharh topilmadi yoki uni o\'chirish huquqingiz yo\'q',
         innerData: null
       });
     }
