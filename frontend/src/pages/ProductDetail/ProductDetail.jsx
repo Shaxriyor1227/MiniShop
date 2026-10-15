@@ -5,6 +5,8 @@ import axiosInstance from '../../api/axiosInstance';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useFormatters } from '../../utils/formatters';
 import {
   Heart,
   ShoppingBag,
@@ -37,6 +39,8 @@ const ProductDetail = () => {
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { isAuthenticated } = useAuth();
+  const { showToast } = useToast();
+  const { formatPrice, formatDate } = useFormatters();
 
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -83,10 +87,28 @@ const ProductDetail = () => {
 
   const handleAddToCart = useCallback(async () => {
     if (!product) return;
-    await addToCart(product, quantity);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
-  }, [product, addToCart, quantity]);
+    const res = await addToCart(product, quantity);
+    if (res?.success) {
+      setAdded(true);
+      showToast(`${quantity}x ${product.name} savatga qo'shildi!`, 'success');
+      setTimeout(() => setAdded(false), 2000);
+    } else {
+      showToast(res?.message || 'Savatga qo\'shishda xatolik', 'error');
+    }
+  }, [product, addToCart, quantity, showToast]);
+
+  const handleToggleWishlist = useCallback(async () => {
+    if (!product) return;
+    const res = await toggleWishlist(product);
+    if (res?.success) {
+      showToast(
+        res.isAdded
+          ? `${product.name} istaklar ro'yxatiga qo'shildi`
+          : `${product.name} istaklar ro'yxatidan o'chirildi`,
+        'info'
+      );
+    }
+  }, [product, toggleWishlist, showToast]);
 
   const handleReviewSubmit = useCallback(async (e) => {
     e.preventDefault();
@@ -103,13 +125,16 @@ const ProductDetail = () => {
         setReviews((prev) => [res.data.innerData, ...prev]);
         setComment('');
         setRating(5);
+        showToast("Sharhingiz muvaffaqiyatli qoldirildi!", 'success');
       }
     } catch (err) {
-      setReviewError(err.response?.data?.message || 'Failed to post review');
+      const msg = err.response?.data?.message || 'Sharh qoldirishda xatolik yuz berdi';
+      setReviewError(msg);
+      showToast(msg, 'error');
     } finally {
       setReviewSubmitting(false);
     }
-  }, [isAuthenticated, id, rating, comment]);
+  }, [isAuthenticated, id, rating, comment, showToast]);
 
   const averageRating = useMemo(() => {
     if (!reviews.length) return '5.0';
@@ -193,7 +218,7 @@ const ProductDetail = () => {
             </div>
 
             <div className="detail-price-box">
-              <span className="detail-price">${Number(product.price).toFixed(2)}</span>
+              <span className="detail-price">{formatPrice(product.price)}</span>
               <span className={`detail-stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
                 {product.stock > 0 ? `Stock: ${product.stock}` : t('product.out_of_stock')}
               </span>
@@ -265,7 +290,7 @@ const ProductDetail = () => {
 
               <button
                 className={`btn-secondary detail-wish-btn ${isLiked ? 'liked' : ''}`}
-                onClick={() => toggleWishlist(product)}
+                onClick={handleToggleWishlist}
                 title={isLiked ? "Wishlist" : "Wishlist"}
               >
                 <Heart size={20} fill={isLiked ? '#FF3B30' : 'none'} color={isLiked ? '#FF3B30' : '#1D1D1F'} />
@@ -422,7 +447,7 @@ const ProductDetail = () => {
                     <div className="rev-avatar">{rev.user_id?.name?.charAt(0) || 'U'}</div>
                     <div>
                       <h5 className="rev-username">{rev.user_id?.name || t('product.verified_buyer')}</h5>
-                      <span className="rev-date">{new Date(rev.createdAt).toLocaleDateString()}</span>
+                      <span className="rev-date">{formatDate(rev.createdAt)}</span>
                     </div>
                     <div className="rev-stars">
                       {[1, 2, 3, 4, 5].map((s) => (

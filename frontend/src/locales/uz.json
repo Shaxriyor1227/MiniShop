@@ -80,10 +80,12 @@
     "sort_price_desc": "Narx: Qimmatroqdan",
     "sort_rating": "Eng yuqori reyting",
     "active_filters": "Faol:",
-    "clear_all": "Barchasini tozalash",
-    "empty_title": "Hech qanday mahsulot topilmadi",
-    "empty_desc": "Filtr parametrlarini o'zgartirib ko'ring yoki boshqa so'rov kiriting.",
-    "apply_filters": "Filtrlarni qo'llash"
+    "clear_all": "Filtrlarni tozalash",
+    "reset_all": "Filtrlarni tozalash",
+    "empty_title": "Hech narsa topilmadi",
+    "empty_desc": "Qidiruv mezonlariga mos keladigan mahsulot topilmadi. Filtrlarni tozalab ko'ring.",
+    "apply_filters": "Natijalarni ko'rsat",
+    "show_results": "Natijalarni ko'rsat ({{count}} ta)"
   },
   "product": {
     "add_to_cart": "Savatga qo'shish",

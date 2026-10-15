@@ -4,12 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { Heart, ShoppingBag, Check } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useToast } from '../../context/ToastContext';
+import { useFormatters } from '../../utils/formatters';
 import './ProductCard.css';
 
 const ProductCard = ({ product }) => {
   const { t } = useTranslation();
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
+  const { showToast } = useToast();
+  const { formatPrice } = useFormatters();
   const [addedAnimation, setAddedAnimation] = useState(false);
 
   const isLiked = isInWishlist(product?._id);
@@ -19,20 +23,34 @@ const ProductCard = ({ product }) => {
     async (e) => {
       e.preventDefault();
       e.stopPropagation();
-      await addToCart(product, 1);
-      setAddedAnimation(true);
-      setTimeout(() => setAddedAnimation(false), 1500);
+      const res = await addToCart(product, 1);
+      if (res?.success) {
+        setAddedAnimation(true);
+        showToast(`${product.name} savatga qo'shildi!`, 'success');
+        setTimeout(() => setAddedAnimation(false), 1500);
+      } else {
+        showToast(res?.message || 'Savatga qo\'shishda xatolik', 'error');
+      }
     },
-    [addToCart, product]
+    [addToCart, product, showToast]
   );
 
   const handleToggleWishlist = useCallback(
     async (e) => {
       e.preventDefault();
       e.stopPropagation();
-      await toggleWishlist(product);
+      const res = await toggleWishlist(product);
+      if (res?.success) {
+        if (res.isAdded) {
+          showToast(`${product.name} istaklar ro'yxatiga qo'shildi`, 'info');
+        } else {
+          showToast(`${product.name} istaklar ro'yxatidan o'chirildi`, 'info');
+        }
+      } else {
+        showToast(res?.message || 'Xatolik yuz berdi', 'error');
+      }
     },
-    [toggleWishlist, product]
+    [toggleWishlist, product, showToast]
   );
 
   if (!product) return null;
@@ -80,7 +98,7 @@ const ProductCard = ({ product }) => {
 
         <div className="product-bottom-row">
           <div className="product-pricing">
-            <span className="product-price">${Number(product.price || 0).toFixed(2)}</span>
+            <span className="product-price">{formatPrice(product.price)}</span>
           </div>
 
           <button

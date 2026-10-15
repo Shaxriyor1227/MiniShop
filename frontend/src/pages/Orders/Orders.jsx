@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useToast } from '../../context/ToastContext';
+import { useFormatters } from '../../utils/formatters';
 import axiosInstance from '../../api/axiosInstance';
 import { Package, Clock, CheckCircle2, Truck, XCircle, ArrowRight } from 'lucide-react';
 import './Orders.css';
@@ -15,6 +17,8 @@ const statusConfig = {
 
 const Orders = () => {
   const { t } = useTranslation();
+  const { showToast } = useToast();
+  const { formatPrice, formatDateTime } = useFormatters();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,16 +41,17 @@ const Orders = () => {
   }, []);
 
   const handleCancelOrder = async (orderId) => {
-    if (!window.confirm('Are you sure you want to cancel this order?')) return;
+    if (!window.confirm('Haqiqatan ham bu buyurtmani bekor qilmoqchimisiz?')) return;
     try {
       const res = await axiosInstance.put(`/order/cancel/${orderId}`);
       if (res.data.success) {
         setOrders((prev) =>
           prev.map((o) => (o._id === orderId ? { ...o, status: 'cancelled' } : o))
         );
+        showToast("Buyurtma muvaffaqiyatli bekor qilindi", 'info');
       }
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to cancel order');
+      showToast(err.response?.data?.message || 'Buyurtmani bekor qilishda xatolik yuz berdi', 'error');
     }
   };
 
@@ -91,7 +96,7 @@ const Orders = () => {
                     <div>
                       <span className="order-id-label">{t('orders.order_no', { id: order._id.slice(-8) })}</span>
                       <span className="order-date">
-                        {new Date(order.createdAt).toLocaleDateString()} at {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {formatDateTime(order.createdAt)}
                       </span>
                     </div>
 
@@ -120,11 +125,11 @@ const Orders = () => {
                             <div className="order-prod-info">
                               <h5>{prod.name || 'Product'}</h5>
                               <span className="order-prod-meta">
-                                {item.quantity} x ${Number(item.price).toFixed(2)}
+                                {item.quantity} x {formatPrice(item.price)}
                               </span>
                             </div>
                             <span className="order-prod-total">
-                              ${(item.quantity * item.price).toFixed(2)}
+                              {formatPrice(item.quantity * item.price)}
                             </span>
                           </div>
                         );
@@ -142,7 +147,7 @@ const Orders = () => {
 
                       <div className="order-total-box">
                         <span>Total Paid:</span>
-                        <h4>${Number(order.total).toFixed(2)}</h4>
+                        <h4>{formatPrice(order.total)}</h4>
                       </div>
                     </div>
                   </div>

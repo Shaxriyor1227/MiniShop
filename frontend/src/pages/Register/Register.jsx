@@ -28,29 +28,56 @@ const Register = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
+    const errors = {};
 
-    if (password.length < 6) {
-      setErrorMsg('Parol kamida 6 ta belgidan iborat bo\'lishi shart');
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPhone = phoneNumber.trim();
+
+    if (!trimmedName) {
+      errors.name = "Ismingizni to'liq kiriting";
+    }
+
+    if (!trimmedEmail) {
+      errors.email = 'Email manzilini kiriting';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      errors.email = 'Yaroqli email manzilini kiriting';
+    }
+
+    if (!password) {
+      errors.password = 'Parolni kiriting';
+    } else if (password.length < 6) {
+      errors.password = "Parol kamida 6 ta belgidan iborat bo'lishi shart";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
 
+    setFieldErrors({});
     setLoading(true);
+
     const res = await register({
-      name: name.trim(),
-      email: email.trim(),
+      name: trimmedName,
+      email: trimmedEmail,
       password,
-      phone_number: phoneNumber.trim()
+      phone_number: trimmedPhone
     });
 
     if (res.success) {
       navigate('/');
     } else {
-      setErrorMsg(res.message || 'Ro\'yxatdan o\'tishda xatolik yuz berdi');
+      setErrorMsg(res.message || "Ro'yxatdan o'tishda xatolik yuz berdi");
+      if (res.message?.toLowerCase().includes('email')) {
+        setFieldErrors({ email: res.message });
+      }
     }
     setLoading(false);
   };
@@ -98,13 +125,21 @@ const Register = () => {
                 <input
                   type="text"
                   placeholder="Alex Johnson"
-                  className="luxury-input"
+                  className={`luxury-input ${fieldErrors.name ? 'error' : ''}`}
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (fieldErrors.name) setFieldErrors((prev) => ({ ...prev, name: '' }));
+                  }}
                   autoComplete="name"
                 />
               </div>
+              {fieldErrors.name && (
+                <div className="input-error-msg">
+                  <AlertCircle size={13} />
+                  <span>{fieldErrors.name}</span>
+                </div>
+              )}
             </div>
 
             {/* Email */}
@@ -115,13 +150,21 @@ const Register = () => {
                 <input
                   type="email"
                   placeholder="name@example.com"
-                  className="luxury-input"
+                  className={`luxury-input ${fieldErrors.email ? 'error' : ''}`}
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: '' }));
+                  }}
                   autoComplete="email"
                 />
               </div>
+              {fieldErrors.email && (
+                <div className="input-error-msg">
+                  <AlertCircle size={13} />
+                  <span>{fieldErrors.email}</span>
+                </div>
+              )}
             </div>
 
             {/* Phone Number */}
@@ -153,10 +196,12 @@ const Register = () => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
-                  className="luxury-input with-toggle"
+                  className={`luxury-input with-toggle ${fieldErrors.password ? 'error' : ''}`}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: '' }));
+                  }}
                   autoComplete="new-password"
                 />
                 <button
@@ -169,6 +214,12 @@ const Register = () => {
                   {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                 </button>
               </div>
+              {fieldErrors.password && (
+                <div className="input-error-msg">
+                  <AlertCircle size={13} />
+                  <span>{fieldErrors.password}</span>
+                </div>
+              )}
             </div>
 
             {/* Submit */}

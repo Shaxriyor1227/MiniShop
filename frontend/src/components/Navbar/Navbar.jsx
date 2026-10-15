@@ -170,8 +170,8 @@ const Navbar = () => {
               <span className="trigger-shortcut">{t('nav.search_shortcut')}</span>
             </button>
 
-            {/* Language Switcher for Guest Users */}
-            {!isAuthenticated && <LanguageSwitcher variant="dropdown" />}
+            {/* Unified Language Switcher for all users */}
+            <LanguageSwitcher variant="dropdown" />
 
             {/* Dark/Light Theme Toggle */}
             <button
@@ -228,13 +228,6 @@ const Navbar = () => {
                     <div className="flyout-user-meta">
                       <p className="flyout-user-name">{user?.name}</p>
                       <p className="flyout-user-email">{user?.email}</p>
-                    </div>
-                    <div className="flyout-divider"></div>
-
-                    {/* Integrated Language Switcher inside Profile Flyout */}
-                    <div className="flyout-lang-picker">
-                      <span className="flyout-lang-label">Til / Language</span>
-                      <LanguageSwitcher variant="pills" />
                     </div>
                     <div className="flyout-divider"></div>
 

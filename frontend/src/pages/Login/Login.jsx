@@ -29,19 +29,42 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [selectedDemo, setSelectedDemo] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
+    const errors = {};
+
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      errors.email = 'Email manzilini kiriting';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      errors.email = 'Yaroqli email manzilini kiriting';
+    }
+
+    if (!password) {
+      errors.password = 'Parolni kiriting';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
+    setFieldErrors({});
     setLoading(true);
 
-    const res = await login(email.trim(), password);
+    const res = await login(trimmedEmail, password);
     if (res.success) {
       navigate(redirectPath, { replace: true });
     } else {
       setErrorMsg(res.message || 'Email yoki parol noto\'g\'ri kiritildi');
+      setFieldErrors({
+        password: res.message || 'Email yoki parol noto\'g\'ri'
+      });
     }
     setLoading(false);
   };
@@ -52,6 +75,7 @@ const Login = () => {
     setPassword(demoPwd);
     setSelectedDemo(type);
     setErrorMsg('');
+    setFieldErrors({});
   };
 
   return (
@@ -97,16 +121,22 @@ const Login = () => {
                 <input
                   type="email"
                   placeholder="name@example.com"
-                  className="luxury-input"
+                  className={`luxury-input ${fieldErrors.email ? 'error' : ''}`}
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
+                    if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: '' }));
                     setSelectedDemo(null);
                   }}
-                  required
                   autoComplete="email"
                 />
               </div>
+              {fieldErrors.email && (
+                <div className="input-error-msg">
+                  <AlertCircle size={13} />
+                  <span>{fieldErrors.email}</span>
+                </div>
+              )}
             </div>
 
             {/* Password Field */}
@@ -122,13 +152,13 @@ const Login = () => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
-                  className="luxury-input with-toggle"
+                  className={`luxury-input with-toggle ${fieldErrors.password ? 'error' : ''}`}
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);
+                    if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: '' }));
                     setSelectedDemo(null);
                   }}
-                  required
                   autoComplete="current-password"
                 />
                 <button
@@ -141,6 +171,12 @@ const Login = () => {
                   {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                 </button>
               </div>
+              {fieldErrors.password && (
+                <div className="input-error-msg">
+                  <AlertCircle size={13} />
+                  <span>{fieldErrors.password}</span>
+                </div>
+              )}
             </div>
 
             {/* Submit Button */}
@@ -163,46 +199,48 @@ const Login = () => {
             </button>
           </form>
 
-          {/* Quick Demo Logins Capsule */}
-          <div className="demo-capsule-box">
-            <div className="demo-header-row">
-              <Sparkles size={14} className="sparkle-icon" />
-              <span>{t('auth.quick_demo') || 'Tezkor demo hisoblar:'}</span>
-            </div>
+          {/* Quick Demo Logins Capsule - Strictly visible in DEV mode only */}
+          {import.meta.env.DEV && (
+            <div className="demo-capsule-box">
+              <div className="demo-header-row">
+                <Sparkles size={14} className="sparkle-icon" />
+                <span>{t('auth.quick_demo') || 'Tezkor demo hisoblar (Faqat DEV):'}</span>
+              </div>
 
-            <div className="demo-cards-row">
-              <button
-                type="button"
-                className={`demo-card-btn ${selectedDemo === 'customer' ? 'selected' : ''}`}
-                onClick={() => handleQuickLogin('customer@minishop.com', 'customer123', 'customer')}
-              >
-                <div className="demo-avatar-icon user-icon">
-                  <User size={15} />
-                </div>
-                <div className="demo-card-texts">
-                  <span className="demo-role-name">Customer</span>
-                  <span className="demo-email-hint">customer@minishop.com</span>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                className={`demo-card-btn ${selectedDemo === 'admin' ? 'selected' : ''}`}
-                onClick={() => handleQuickLogin('admin@minishop.com', 'admin123', 'admin')}
-              >
-                <div className="demo-avatar-icon admin-icon">
-                  <Shield size={15} />
-                </div>
-                <div className="demo-card-texts">
-                  <div className="demo-admin-badge-row">
-                    <span className="demo-role-name">Super Admin</span>
-                    <span className="admin-chip">PRO</span>
+              <div className="demo-cards-row">
+                <button
+                  type="button"
+                  className={`demo-card-btn ${selectedDemo === 'customer' ? 'selected' : ''}`}
+                  onClick={() => handleQuickLogin('customer@minishop.com', 'customer123', 'customer')}
+                >
+                  <div className="demo-avatar-icon user-icon">
+                    <User size={15} />
                   </div>
-                  <span className="demo-email-hint">admin@minishop.com</span>
-                </div>
-              </button>
+                  <div className="demo-card-texts">
+                    <span className="demo-role-name">Customer</span>
+                    <span className="demo-email-hint">customer@minishop.com</span>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  className={`demo-card-btn ${selectedDemo === 'admin' ? 'selected' : ''}`}
+                  onClick={() => handleQuickLogin('admin@minishop.com', 'admin123', 'admin')}
+                >
+                  <div className="demo-avatar-icon admin-icon">
+                    <Shield size={15} />
+                  </div>
+                  <div className="demo-card-texts">
+                    <div className="demo-admin-badge-row">
+                      <span className="demo-role-name">Super Admin</span>
+                      <span className="admin-chip">PRO</span>
+                    </div>
+                    <span className="demo-email-hint">admin@minishop.com</span>
+                  </div>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Footer Link */}
           <div className="auth-footer-luxury">

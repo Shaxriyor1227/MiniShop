@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useToast } from '../../context/ToastContext';
+import { useFormatters } from '../../utils/formatters';
 import {
   Trash2,
   ArrowRight,
@@ -19,6 +21,8 @@ import './Cart.css';
 
 const Cart = () => {
   const { t } = useTranslation();
+  const { showToast } = useToast();
+  const { formatPrice } = useFormatters();
   const {
     items,
     subtotal,
@@ -46,13 +50,16 @@ const Cart = () => {
 
     const result = await applyCoupon(couponCode.trim());
     if (result.success) {
-      setCouponMsg({ text: `Coupon applied! -${result.coupon.discount}%`, isError: false });
+      setCouponMsg({ text: `Kupon qo'llandi! -${result.coupon.discount}%`, isError: false });
+      showToast(`Kupon qo'llandi! -${result.coupon.discount}%`, 'success');
       setCouponCode('');
     } else {
-      setCouponMsg({ text: result.message || 'Invalid coupon code', isError: true });
+      const err = result.message || 'Yaroqsiz kupon kodi';
+      setCouponMsg({ text: err, isError: true });
+      showToast(err, 'error');
     }
     setApplying(false);
-  }, [applyCoupon, couponCode]);
+  }, [applyCoupon, couponCode, showToast]);
 
   const handleMoveToWishlist = useCallback((product) => {
     const prodObj = product.product_id || product;
@@ -108,7 +115,7 @@ const Cart = () => {
             {progressPercent >= 100 ? (
               <span>{t('cart.free_shipping_active')}</span>
             ) : (
-              <span>{t('cart.free_shipping_unlock', { amount: `$${amountNeeded.toFixed(2)}` })}</span>
+              <span>{t('cart.free_shipping_unlock', { amount: formatPrice(amountNeeded) })}</span>
             )}
           </div>
           <div className="progress-bar-track">
@@ -179,9 +186,9 @@ const Cart = () => {
                       </div>
 
                       <div className="item-price-col">
-                        <span className="unit-price">${Number(prod.price || 0).toFixed(2)}</span>
+                        <span className="unit-price">{formatPrice(prod.price || 0)}</span>
                         <span className="total-item-price">
-                          ${(Number(prod.price || 0) * item.quantity).toFixed(2)}
+                          {formatPrice((prod.price || 0) * item.quantity)}
                         </span>
                       </div>
                     </div>
@@ -231,26 +238,26 @@ const Cart = () => {
 
               <div className="summary-row">
                 <span>{t('cart.subtotal')}</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>{formatPrice(subtotal)}</span>
               </div>
 
               {discountAmount > 0 && (
                 <div className="summary-row discount-row">
                   <span>{t('cart.discount')} ({appliedCoupon?.code})</span>
-                  <span>-${discountAmount.toFixed(2)}</span>
+                  <span>-{formatPrice(discountAmount)}</span>
                 </div>
               )}
 
               <div className="summary-row">
                 <span>{t('cart.shipping')}</span>
-                <span>{shipping === 0 ? <strong className="free-ship">{t('cart.free')}</strong> : `$${shipping.toFixed(2)}`}</span>
+                <span>{shipping === 0 ? <strong className="free-ship">{t('cart.free')}</strong> : formatPrice(shipping)}</span>
               </div>
 
               <div className="summary-divider"></div>
 
               <div className="summary-row total-row">
                 <span>{t('cart.total')}</span>
-                <span>${finalTotal.toFixed(2)}</span>
+                <span>{formatPrice(finalTotal)}</span>
               </div>
 
               <button

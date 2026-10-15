@@ -80,10 +80,12 @@
     "sort_price_desc": "Price: High to Low",
     "sort_rating": "Highest Rated",
     "active_filters": "Active:",
-    "clear_all": "Clear All",
-    "empty_title": "No Products Found",
+    "clear_all": "Clear Filters",
+    "reset_all": "Clear Filters",
+    "empty_title": "Nothing Found",
     "empty_desc": "Try resetting your active filters or searching for something else.",
-    "apply_filters": "Apply Filters"
+    "apply_filters": "Show Results",
+    "show_results": "Show Results ({{count}})"
   },
   "product": {
     "add_to_cart": "Add to Cart",

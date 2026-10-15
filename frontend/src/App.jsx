@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { ToastProvider } from './context/ToastContext';
 
 // Components
 import Navbar from './components/Navbar/Navbar';
@@ -57,7 +58,8 @@ const App = () => {
       <AuthProvider>
         <CartProvider>
           <WishlistProvider>
-            <Router>
+            <ToastProvider>
+              <Router>
               <Routes>
                 {/* Public & Customer Routes (Includes Public Navbar & Footer) */}
                 <Route element={<PublicLayout />}>
@@ -117,7 +119,8 @@ const App = () => {
                 </Route>
               </Routes>
             </Router>
-          </WishlistProvider>
+          </ToastProvider>
+        </WishlistProvider>
         </CartProvider>
       </AuthProvider>
     </ThemeProvider>

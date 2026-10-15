@@ -3,12 +3,16 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useFormatters } from '../../utils/formatters';
 import axiosInstance from '../../api/axiosInstance';
-import { MapPin, CreditCard, ShieldCheck, CheckCircle2, Plus, ArrowLeft } from 'lucide-react';
+import { MapPin, CreditCard, ShieldCheck, CheckCircle2, Plus, ArrowLeft, AlertCircle } from 'lucide-react';
 import './Checkout.css';
 
 const Checkout = () => {
   const { t } = useTranslation();
+  const { formatPrice } = useFormatters();
+  const { showToast } = useToast();
   const { items, subtotal, discountAmount, totalAmount, appliedCoupon, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -20,10 +24,12 @@ const Checkout = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [orderSuccess, setOrderSuccess] = useState(null);
 
-  // New address form modal state
+  // New address form state & field errors
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [city, setCity] = useState('');
   const [street, setStreet] = useState('');
+  const [addressErrors, setAddressErrors] = useState({});
+  const [addressSelectionError, setAddressSelectionError] = useState('');
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -49,7 +55,18 @@ const Checkout = () => {
 
   const handleAddNewAddress = async (e) => {
     e.preventDefault();
-    if (!city.trim() || !street.trim()) return;
+    const errors = {};
+    if (!city.trim()) {
+      errors.city = "Shahar yoki viloyat nomini kiriting";
+    }
+    if (!street.trim()) {
+      errors.street = "Ko'cha va uy raqamini kiriting";
+    }
+    if (Object.keys(errors).length > 0) {
+      setAddressErrors(errors);
+      return;
+    }
+    setAddressErrors({});
 
     try {
       const res = await axiosInstance.post('/address/create', {
@@ -61,20 +78,25 @@ const Checkout = () => {
         const newAddr = res.data.innerData;
         setAddresses([newAddr, ...addresses]);
         setSelectedAddressId(newAddr._id);
+        setAddressSelectionError('');
         setShowAddressForm(false);
         setCity('');
         setStreet('');
+        showToast("Yangi manzil muvaffaqiyatli saqlandi", 'success');
       }
     } catch (err) {
       console.error(err);
+      showToast(err.response?.data?.message || "Manzilni saqlashda xatolik yuz berdi", 'error');
     }
   };
 
   const handlePlaceOrder = async () => {
     if (!selectedAddressId) {
-      setErrorMsg('Please select or add a delivery address.');
+      setAddressSelectionError("Iltimos, yetkazib berish manzilini tanlang yoki yangi manzil qo'shing");
+      showToast("Iltimos, yetkazib berish manzilini tanlang", 'warning');
       return;
     }
+    setAddressSelectionError('');
 
     try {
       setSubmitting(true);
@@ -95,9 +117,12 @@ const Checkout = () => {
       if (res.data.success) {
         setOrderSuccess(res.data.innerData);
         clearCart();
+        showToast("Buyurtmangiz muvaffaqiyatli qabul qilindi!", 'success');
       }
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || 'Failed to place order. Please try again.');
+      const msg = err.response?.data?.message || "Buyurtmani rasmiylashtirishda xatolik yuz berdi.";
+      setErrorMsg(msg);
+      showToast(msg, 'error');
     } finally {
       setSubmitting(false);
     }
@@ -175,22 +200,42 @@ const Checkout = () => {
 
               {showAddressForm && (
                 <form onSubmit={handleAddNewAddress} className="new-address-form">
-                  <input
-                    type="text"
-                    placeholder="City / State (e.g. Tashkent, Yunusabad)"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    required
-                    className="input-field"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Street address, Apt, Suite"
-                    value={street}
-                    onChange={(e) => setStreet(e.target.value)}
-                    required
-                    className="input-field"
-                  />
+                  <div className="form-group" style={{ marginBottom: '8px' }}>
+                    <input
+                      type="text"
+                      placeholder="City / State (e.g. Tashkent, Yunusabad)"
+                      value={city}
+                      onChange={(e) => {
+                        setCity(e.target.value);
+                        if (addressErrors.city) setAddressErrors((prev) => ({ ...prev, city: '' }));
+                      }}
+                      className={`input-field ${addressErrors.city ? 'error' : ''}`}
+                    />
+                    {addressErrors.city && (
+                      <div className="input-error-msg">
+                        <AlertCircle size={13} />
+                        <span>{addressErrors.city}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="form-group" style={{ marginBottom: '12px' }}>
+                    <input
+                      type="text"
+                      placeholder="Street address, Apt, Suite"
+                      value={street}
+                      onChange={(e) => {
+                        setStreet(e.target.value);
+                        if (addressErrors.street) setAddressErrors((prev) => ({ ...prev, street: '' }));
+                      }}
+                      className={`input-field ${addressErrors.street ? 'error' : ''}`}
+                    />
+                    {addressErrors.street && (
+                      <div className="input-error-msg">
+                        <AlertCircle size={13} />
+                        <span>{addressErrors.street}</span>
+                      </div>
+                    )}
+                  </div>
                   <div className="address-form-btns">
                     <button type="submit" className="btn-primary">
                       {t('checkout.save_address')}
@@ -198,7 +243,10 @@ const Checkout = () => {
                     <button
                       type="button"
                       className="btn-secondary"
-                      onClick={() => setShowAddressForm(false)}
+                      onClick={() => {
+                        setShowAddressForm(false);
+                        setAddressErrors({});
+                      }}
                     >
                       {t('checkout.cancel')}
                     </button>
@@ -222,7 +270,10 @@ const Checkout = () => {
                         name="address"
                         value={addr._id}
                         checked={selectedAddressId === addr._id}
-                        onChange={() => setSelectedAddressId(addr._id)}
+                        onChange={() => {
+                          setSelectedAddressId(addr._id);
+                          setAddressSelectionError('');
+                        }}
                       />
                       <div className="address-details">
                         <div className="addr-top">
@@ -234,6 +285,12 @@ const Checkout = () => {
                       </div>
                     </label>
                   ))}
+                  {addressSelectionError && (
+                    <div className="input-error-msg" style={{ marginTop: '8px' }}>
+                      <AlertCircle size={14} />
+                      <span>{addressSelectionError}</span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -292,7 +349,7 @@ const Checkout = () => {
                         <span className="checkout-item-qty">Qty: {item.quantity}</span>
                       </div>
                       <span className="checkout-item-price">
-                        ${(Number(prod.price) * item.quantity).toFixed(2)}
+                        {formatPrice(Number(prod.price) * item.quantity)}
                       </span>
                     </div>
                   );
@@ -303,26 +360,26 @@ const Checkout = () => {
 
               <div className="summary-row">
                 <span>{t('cart.subtotal')}</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>{formatPrice(subtotal)}</span>
               </div>
 
               {discountAmount > 0 && (
                 <div className="summary-row discount-row">
                   <span>{t('cart.discount')} ({appliedCoupon?.code})</span>
-                  <span>-${discountAmount.toFixed(2)}</span>
+                  <span>-{formatPrice(discountAmount)}</span>
                 </div>
               )}
 
               <div className="summary-row">
                 <span>{t('cart.shipping')}</span>
-                <span>{shipping === 0 ? <strong className="free-ship">{t('cart.free')}</strong> : `$${shipping.toFixed(2)}`}</span>
+                <span>{shipping === 0 ? <strong className="free-ship">{t('cart.free')}</strong> : formatPrice(shipping)}</span>
               </div>
 
               <div className="summary-divider"></div>
 
               <div className="summary-row total-row">
                 <span>{t('cart.total')}</span>
-                <span>${finalTotal.toFixed(2)}</span>
+                <span>{formatPrice(finalTotal)}</span>
               </div>
 
               <button

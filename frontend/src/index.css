@@ -12,8 +12,8 @@
   --bg-input: #F5F5F7;
   
   --ink-primary: #1D1D1F;
-  --ink-secondary: #6E6E73;
-  --ink-tertiary: #86868B;
+  --ink-secondary: #4A4A4F;
+  --ink-tertiary: #65656B;
   --ink-inverted: #FFFFFF;
   
   --accent-blue: #0071E3;
@@ -58,9 +58,9 @@
   --bg-card: #131A26;
   --bg-input: #1A2436;
 
-  --ink-primary: #F1F5F9;
-  --ink-secondary: #94A3B8;
-  --ink-tertiary: #64748B;
+  --ink-primary: #F8FAFC;
+  --ink-secondary: #CBD5E1;
+  --ink-tertiary: #94A3B8;
   --ink-inverted: #0B0F17;
 
   --accent-blue: #0284C7;
@@ -342,7 +342,47 @@ input[type="radio"] {
 input[type="checkbox"]:focus-visible,
 input[type="radio"]:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px var(--accent-blue-subtle);
+  box-shadow: 0 0 0 3.5px var(--accent-blue-subtle), 0 0 0 1.5px var(--accent-blue) !important;
+}
+
+/* ==========================================================================
+   UNIVERSAL ACCESSIBLE FOCUS-VISIBLE SYSTEM (WCAG 2.1 AA Compliance)
+   ========================================================================== */
+
+:focus-visible {
+  outline: 2px solid var(--accent-blue) !important;
+  outline-offset: 2px !important;
+}
+
+button:focus-visible,
+[role="button"]:focus-visible,
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.add-cart-btn:focus-visible,
+.wishlist-btn:focus-visible,
+.nav-action-icon:focus-visible,
+.lang-trigger-capsule:focus-visible,
+.custom-sort-trigger-capsule:focus-visible,
+.facet-pill-btn:focus-visible,
+.active-filter-chip button:focus-visible {
+  outline: 2px solid var(--accent-blue) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px var(--accent-blue-subtle) !important;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent-blue) !important;
+  outline-offset: 2px !important;
+  border-radius: 4px;
+}
+
+.input-field:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none !important;
+  border-color: var(--accent-blue) !important;
+  box-shadow: 0 0 0 3.5px var(--accent-blue-subtle), 0 0 0 1px var(--accent-blue) !important;
 }
 
 /* Card System */

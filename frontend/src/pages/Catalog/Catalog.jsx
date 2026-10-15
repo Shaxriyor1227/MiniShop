@@ -339,115 +339,147 @@ const Catalog = () => {
             </div>
           </div>
 
-          {/* Left Filter Sidebar */}
+          {/* Mobile Bottom Sheet Backdrop */}
+          {mobileFilterOpen && (
+            <div
+              className="catalog-bottomsheet-backdrop"
+              onClick={() => setMobileFilterOpen(false)}
+              aria-label="Yopish"
+            />
+          )}
+
+          {/* Left Filter Sidebar / Mobile Bottom Sheet */}
           <aside className={`catalog-sidebar card ${mobileFilterOpen ? 'mobile-open' : ''}`}>
+            {/* Pull handle bar for mobile bottom sheet */}
+            <div className="bottomsheet-drag-handle" />
+
             <div className="sidebar-header">
               <h3>{t('catalog.filters')}</h3>
-              {activeFiltersCount > 0 && (
-                <button className="reset-sidebar-btn" onClick={handleResetFilters}>
-                  {t('catalog.reset_all')}
-                </button>
-              )}
-            </div>
-
-            {/* 1. Search Box */}
-            <div className="filter-group">
-              <label className="filter-group-title">{t('catalog.search_label', 'Qidirish')}</label>
-              <form onSubmit={handleSearchSubmit} className="sidebar-search-box">
-                <input
-                  type="text"
-                  placeholder={t('catalog.search_input')}
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                />
-                <button type="submit" aria-label="Search">
-                  <Search size={14} />
-                </button>
-              </form>
-            </div>
-
-            {/* 2. Brands Facet */}
-            {brands.length > 0 && (
-              <div className="filter-group">
-                <label className="filter-group-title">{t('catalog.brands')}</label>
-                <div className="facet-list">
-                  <button
-                    className={`facet-pill-btn ${selectedBrand === '' ? 'active' : ''}`}
-                    onClick={() => handleBrandChange('')}
-                  >
-                    <span>{t('catalog.all_brands', 'Barcha brendlar')}</span>
-                    {selectedBrand === '' && <Check size={14} className="facet-check" />}
+              <div className="sidebar-header-actions">
+                {activeFiltersCount > 0 && (
+                  <button className="reset-sidebar-btn" onClick={handleResetFilters}>
+                    {t('catalog.reset_all')}
                   </button>
-                  {brands.map((b) => (
+                )}
+                <button
+                  type="button"
+                  className="bottomsheet-close-btn"
+                  onClick={() => setMobileFilterOpen(false)}
+                  aria-label="Yopish"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            <div className="bottomsheet-scrollable-content">
+              {/* 1. Search Box */}
+              <div className="filter-group">
+                <label className="filter-group-title">{t('catalog.search_label', 'Qidirish')}</label>
+                <form onSubmit={handleSearchSubmit} className="sidebar-search-box">
+                  <input
+                    type="text"
+                    placeholder={t('catalog.search_input')}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                  />
+                  <button type="submit" aria-label="Search">
+                    <Search size={14} />
+                  </button>
+                </form>
+              </div>
+
+              {/* 2. Brands Facet */}
+              {brands.length > 0 && (
+                <div className="filter-group">
+                  <label className="filter-group-title">{t('catalog.brands')}</label>
+                  <div className="facet-list">
                     <button
-                      key={b._id}
-                      className={`facet-pill-btn ${selectedBrand === b._id ? 'active' : ''}`}
-                      onClick={() => handleBrandChange(b._id)}
+                      className={`facet-pill-btn ${selectedBrand === '' ? 'active' : ''}`}
+                      onClick={() => handleBrandChange('')}
                     >
-                      <span>{b.name}</span>
-                      {selectedBrand === b._id && <Check size={14} className="facet-check" />}
+                      <span>{t('catalog.all_brands', 'Barcha brendlar')}</span>
+                      {selectedBrand === '' && <Check size={14} className="facet-check" />}
+                    </button>
+                    {brands.map((b) => (
+                      <button
+                        key={b._id}
+                        className={`facet-pill-btn ${selectedBrand === b._id ? 'active' : ''}`}
+                        onClick={() => handleBrandChange(b._id)}
+                      >
+                        <span>{b.name}</span>
+                        {selectedBrand === b._id && <Check size={14} className="facet-check" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 4. Price Ranges Facet */}
+              <div className="filter-group">
+                <label className="filter-group-title">{t('catalog.price_range')}</label>
+                <div className="facet-list">
+                  {priceRanges.map((range, idx) => (
+                    <button
+                      key={idx}
+                      className={`facet-pill-btn ${selectedPriceRange === idx ? 'active' : ''}`}
+                      onClick={() => setSelectedPriceRange(idx)}
+                    >
+                      <span>{range.defaultLabel}</span>
+                      {selectedPriceRange === idx && <Check size={14} className="facet-check" />}
                     </button>
                   ))}
                 </div>
               </div>
-            )}
 
-            {/* 4. Price Ranges Facet */}
-            <div className="filter-group">
-              <label className="filter-group-title">{t('catalog.price_range')}</label>
-              <div className="facet-list">
-                {priceRanges.map((range, idx) => (
-                  <button
-                    key={idx}
-                    className={`facet-pill-btn ${selectedPriceRange === idx ? 'active' : ''}`}
-                    onClick={() => setSelectedPriceRange(idx)}
-                  >
-                    <span>{range.defaultLabel}</span>
-                    {selectedPriceRange === idx && <Check size={14} className="facet-check" />}
-                  </button>
-                ))}
+              {/* 5. In-Stock Only Checkbox */}
+              <div className="filter-group in-stock-group">
+                <label className="custom-checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={inStockOnly}
+                    onChange={(e) => setInStockOnly(e.target.checked)}
+                  />
+                  <span className="checkbox-custom"></span>
+                  <span className="checkbox-text">{t('catalog.in_stock_only')}</span>
+                </label>
               </div>
             </div>
 
-            {/* 5. In-Stock Only Checkbox */}
-            <div className="filter-group in-stock-group">
-              <label className="custom-checkbox-label">
-                <input
-                  type="checkbox"
-                  checked={inStockOnly}
-                  onChange={(e) => setInStockOnly(e.target.checked)}
-                />
-                <span className="checkbox-custom"></span>
-                <span className="checkbox-text">{t('catalog.in_stock_only')}</span>
-              </label>
-            </div>
-
-            {mobileFilterOpen && (
+            {/* Mobile bottom sheet sticky action footer */}
+            <div className="bottomsheet-footer-bar">
               <button
-                className="btn-primary apply-mobile-filters-btn"
+                className="btn-primary bottomsheet-apply-btn"
                 onClick={() => setMobileFilterOpen(false)}
               >
-                {t('catalog.apply_filters')} ({products.length})
+                {t('catalog.show_results', { count: products.length })}
               </button>
-            )}
+            </div>
           </aside>
 
           {/* Right Product Grid Area */}
           <main className="catalog-content-pane">
             {/* Desktop Top Bar */}
             <div className="catalog-top-controls">
-              <div className="active-chips-container">
-                {activeFiltersCount > 0 ? (
-                  <>
+              <div className="catalog-status-and-chips">
+                <span className="showing-results-text">
+                  <strong>{products.length}</strong> {t('catalog.count_products', { count: products.length }) || 'ta mahsulot'}
+                </span>
+
+                {activeFiltersCount > 0 && (
+                  <div className="active-chips-container">
                     <span className="chips-title">{t('catalog.active_filters')}</span>
                     {searchParam && (
                       <span className="active-filter-chip">
                         "{searchParam}"
-                        <button onClick={() => {
-                          const p = new URLSearchParams(searchParams);
-                          p.delete('search');
-                          setSearchParams(p);
-                        }}>
+                        <button
+                          onClick={() => {
+                            const p = new URLSearchParams(searchParams);
+                            p.delete('search');
+                            setSearchParams(p);
+                          }}
+                          aria-label="Remove search"
+                        >
                           <X size={12} />
                         </button>
                       </span>
@@ -455,7 +487,7 @@ const Catalog = () => {
                     {selectedCategory && (
                       <span className="active-filter-chip">
                         {categories.find((c) => c._id === selectedCategory)?.name}
-                        <button onClick={() => handleCategoryChange('')}>
+                        <button onClick={() => handleCategoryChange('')} aria-label="Remove category">
                           <X size={12} />
                         </button>
                       </span>
@@ -463,7 +495,7 @@ const Catalog = () => {
                     {selectedBrand && (
                       <span className="active-filter-chip">
                         {brands.find((b) => b._id === selectedBrand)?.name}
-                        <button onClick={() => handleBrandChange('')}>
+                        <button onClick={() => handleBrandChange('')} aria-label="Remove brand">
                           <X size={12} />
                         </button>
                       </span>
@@ -471,7 +503,7 @@ const Catalog = () => {
                     {selectedPriceRange > 0 && (
                       <span className="active-filter-chip">
                         {priceRanges[selectedPriceRange].defaultLabel}
-                        <button onClick={() => setSelectedPriceRange(0)}>
+                        <button onClick={() => setSelectedPriceRange(0)} aria-label="Remove price">
                           <X size={12} />
                         </button>
                       </span>
@@ -479,7 +511,7 @@ const Catalog = () => {
                     {inStockOnly && (
                       <span className="active-filter-chip">
                         {t('catalog.in_stock_only')}
-                        <button onClick={() => setInStockOnly(false)}>
+                        <button onClick={() => setInStockOnly(false)} aria-label="Remove in-stock">
                           <X size={12} />
                         </button>
                       </span>
@@ -487,11 +519,7 @@ const Catalog = () => {
                     <button className="clear-all-chips-btn" onClick={handleResetFilters}>
                       {t('catalog.clear_all')}
                     </button>
-                  </>
-                ) : (
-                  <span className="showing-results-text">
-                    <strong>{products.length}</strong> {t('catalog.count_products', { count: products.length })}
-                  </span>
+                  </div>
                 )}
               </div>
 
@@ -539,11 +567,14 @@ const Catalog = () => {
               </div>
             ) : products.length === 0 ? (
               <div className="catalog-empty-card card">
-                <img src="/images/empty_cart.png" alt="No items" className="empty-catalog-img" />
-                <h3>{t('catalog.empty_title')}</h3>
-                <p>{t('catalog.empty_desc')}</p>
-                <button className="btn-primary" onClick={handleResetFilters}>
-                  {t('catalog.reset_all')}
+                <div className="empty-state-badge">
+                  <Filter size={34} strokeWidth={1.8} className="empty-filter-svg" />
+                </div>
+                <h3 className="empty-state-headline">{t('catalog.empty_title', 'Hech narsa topilmadi')}</h3>
+                <p className="empty-state-desc">{t('catalog.empty_desc', 'Qidiruv mezonlariga mos keladigan mahsulot topilmadi. Filtrlarni tozalab ko\'ring.')}</p>
+                <button className="btn-primary empty-state-reset-btn" onClick={handleResetFilters}>
+                  <RotateCcw size={15} />
+                  <span>{t('catalog.reset_all', 'Filtrlarni tozalash')}</span>
                 </button>
               </div>
             ) : (

@@ -56,11 +56,12 @@ const getAll = async (req, res) => {
       if (mongoose.Types.ObjectId.isValid(cat)) {
         catDoc = await Category.findById(cat).lean();
       }
+      const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       if (!catDoc) {
         catDoc = await Category.findOne({
           $or: [
             { slug: String(cat).toLowerCase().trim() },
-            { name: new RegExp('^' + String(cat).trim() + '$', 'i') }
+            { name: new RegExp('^' + escapeRegex(String(cat).trim()) + '$', 'i') }
           ]
         }).lean();
       }
@@ -79,6 +80,7 @@ const getAll = async (req, res) => {
 
     const br = brand_id || brand;
     if (br) {
+      const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       let brandDoc = null;
       if (mongoose.Types.ObjectId.isValid(br)) {
         brandDoc = await Brand.findById(br).lean();
@@ -87,7 +89,7 @@ const getAll = async (req, res) => {
         brandDoc = await Brand.findOne({
           $or: [
             { slug: String(br).toLowerCase().trim() },
-            { name: new RegExp('^' + String(br).trim() + '$', 'i') }
+            { name: new RegExp('^' + escapeRegex(String(br).trim()) + '$', 'i') }
           ]
         }).lean();
       }

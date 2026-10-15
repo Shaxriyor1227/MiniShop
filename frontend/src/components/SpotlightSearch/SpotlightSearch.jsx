@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useFormatters } from '../../utils/formatters';
 import { Search, X, ArrowRight, Sparkles, ShoppingBag, Tag, Headphones, Watch, Laptop } from 'lucide-react';
 import axiosInstance from '../../api/axiosInstance';
 import './SpotlightSearch.css';
 
 const SpotlightSearch = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
+  const { formatPrice } = useFormatters();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -140,7 +142,7 @@ const SpotlightSearch = ({ isOpen, onClose }) => {
                         <span className="spotlight-prod-brand">{prod.brand_id?.name || 'MiniShop'}</span>
                         <h4 className="spotlight-prod-name">{prod.name}</h4>
                       </div>
-                      <span className="spotlight-prod-price">${Number(prod.price).toFixed(2)}</span>
+                      <span className="spotlight-prod-price">{formatPrice(prod.price)}</span>
                       <ArrowRight size={14} className="spotlight-arrow" />
                     </div>
                   ))}

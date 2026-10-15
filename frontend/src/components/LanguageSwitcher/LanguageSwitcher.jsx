@@ -4,9 +4,9 @@ import { Globe, ChevronDown, Check } from 'lucide-react';
 import './LanguageSwitcher.css';
 
 const languages = [
-  { code: 'uz', name: "O'zbekcha", short: 'UZB', flag: '🇺🇿' },
-  { code: 'ru', name: 'Русский', short: 'RU', flag: '🇷🇺' },
-  { code: 'en', name: 'English', short: 'ENG', flag: '🇬🇧' },
+  { code: 'uz', name: "O'zbekcha", short: 'UZ' },
+  { code: 'ru', name: 'Русский', short: 'RU' },
+  { code: 'en', name: 'English', short: 'EN' },
 ];
 
 const LanguageSwitcher = ({ variant = 'dropdown' }) => {
@@ -31,7 +31,7 @@ const LanguageSwitcher = ({ variant = 'dropdown' }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Segmented Pills Variant (ideal for inside Profile Menu & Drawers)
+  // Segmented Pills Variant (For mobile drawer)
   if (variant === 'pills') {
     return (
       <div className="lang-pills-container">
@@ -44,8 +44,8 @@ const LanguageSwitcher = ({ variant = 'dropdown' }) => {
               className={`lang-pill-btn ${isSelected ? 'active' : ''}`}
               onClick={() => handleSelect(lang.code)}
             >
-              <span>{lang.flag}</span>
-              <span>{lang.short}</span>
+              <span className="lang-pill-badge">{lang.short}</span>
+              <span className="lang-pill-name">{lang.name}</span>
             </button>
           );
         })}
@@ -53,7 +53,7 @@ const LanguageSwitcher = ({ variant = 'dropdown' }) => {
     );
   }
 
-  // Clean Dropdown Variant
+  // Clean Dropdown Variant (Navbar)
   return (
     <div className="lang-switcher-container" ref={dropdownRef}>
       <button
@@ -80,9 +80,8 @@ const LanguageSwitcher = ({ variant = 'dropdown' }) => {
                   className={`lang-option-item ${isSelected ? 'selected' : ''}`}
                   onClick={() => handleSelect(lang.code)}
                 >
-                  <span className="lang-option-flag">{lang.flag}</span>
+                  <span className="lang-badge-tag">{lang.short}</span>
                   <span className="lang-option-name">{lang.name}</span>
-                  <span className="lang-option-code">({lang.short})</span>
                   {isSelected && <Check size={14} className="lang-check-icon" />}
                 </button>
               );
