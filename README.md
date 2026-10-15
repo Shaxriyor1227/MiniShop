@@ -6,11 +6,17 @@ MiniShop — bu zamonaviy dizayn, tezkor ishlash va to'liq e-tijorat funksiyalar
 
 ## ✨ Asosiy Xususiyatlar (Features)
 
-- **🛡️ Admin Dashboard & Boshqaruv Paneli (`/admin`):**
-  - **Statistika:** Jami tushum, jami buyurtmalar, tovarlar soni va kam qolgan zaxiralar monitoringi.
-  - **Tovarlar CRUD:** Yangi tovar qo'shish, narx va zaxirasini tahrirlash, o'chirish.
-  - **Rasm yuklash:** Yangi tovar qo'shishda kompyuterdan rasm yuklash (Multer orqali).
-  - **Buyurtmalar nazorati:** Buyurtma holatini darhol o'zgartirish (`pending` ➔ `paid` ➔ `shipped` ➔ `delivered` ➔ `cancelled`).
+- **🛡️ Professional Admin Dashboard & Boshqaruv Paneli (`/admin`):**
+  - **Interaktiv Analitika (`/admin`):** Sof daromad, buyurtmalar, foydalanuvchilar va tovarlar soni, Recharts asosidagi 7/30 kunlik dinamik grafik, status bo'yicha donut diagramma, eng ko'p sotilgan tovarlar va zaxirasi kam tovarlar (&lt; 5) ogohlantirishi.
+  - **Mahsulotlar boshqaruvi (`/admin/products`):** Server-side pagination, real-time qidiruv, kategoriya va brend filtri, yangi mahsulot qo'shish, rasm yuklash (/upload/image preview bilan), narx va zaxirani tahrirlash, tasdiqlash dialogi orqali o'chirish.
+  - **Kategoriyalar & Brendlar (`/admin/categories`, `/admin/brands`):** Modal orqali to'liq CRUD amallari, rasmlar va ikonkalarni boshqarish.
+  - **Buyurtmalar nazorati (`/admin/orders`):** Status va sana oralig'i (startDate, endDate) filtri, batafsil modali (mijoz, manzil, tovarlar, kupon), status o'zgartirish (`pending`, `paid`, `shipped`, `delivered`, `cancelled`). Buyurtma bekor qilinganda ombordagi tovar zaxirasi (stock) avtomatik qaytariladi!
+  - **Foydalanuvchilar boshqaruvi (`/admin/users`):** Qidiruv, foydalanuvchini bloklash/blokdan chiqarish (`PUT /user/block/:id`, bloklangan user tizimga kira olmaydi), administratorlik rolini o'zgartirish (`PUT /user/role/:id`), xavfsizlik (admin o'zini o'zi bloklay/o'chira olmaydi).
+  - **Kuponlar boshqaruvi (`/admin/coupons`):** Chegirma foizi, amal qilish muddati, faol/nofaol holatlarini boshqarish.
+  - **Sharhlar moderatsiyasi (`/admin/reviews`):** Mahsulot va reyting bo'yicha filtr, nomaqbul sharhlarni moderatsiyadan o'chirish.
+  - **To'lovlar monitoringi (`/admin/payments`):** Tranzaksiyalar ro'yxati, to'lov usuli va holati bo'yicha filtr, to'lov statusini o'zgartirish.
+  - **Bildirishnomalar markazi (`/admin/notifications`):** Barcha foydalanuvchilarga (broadcast) yoki alohida mijozga tizim xabarnomalarini yuborish.
+  - **Maxsus AdminLayout:** Public Navbar va Footerdan to'liq ajratilgan, responsiv drawer mobil menyu, Apple minimalist UI tokenlari va Dark/Light theme qo'llab-quvvatlovi.
 - **🤖 Telegram Bot Integratsiyasi:**
   - Har bir yangi buyurtma tushganda admin Telegram botiga yoki guruhiga avtomatik ravishda to'liq chek (mijoz ismi, tel, manzil, mahsulotlar va jami summa) yuboriladi.
   - `.env` faylga bot tokeni va chat ID kiritilishi bilan avtomatik ishga tushadi.
@@ -32,7 +38,8 @@ MiniShop — bu zamonaviy dizayn, tezkor ishlash va to'liq e-tijorat funksiyalar
 
 ### **Frontend**
 - **React 18** + **Vite 6**
-- **React Router DOM v7** (SPA routing va Protected Routes)
+- **React Router DOM v7** (Nested SPA routing va Protected/Admin Routes)
+- **Recharts** (Interaktiv sotuvlar va status grafiklari)
 - **Lucide React** (Ikonkalar to'plami)
 - **Axios** (Interceptors bilan API so'rovlari)
 - **Vanilla CSS** (Design system tokenlari va dark theme)
