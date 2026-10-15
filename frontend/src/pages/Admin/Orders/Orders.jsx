@@ -347,10 +347,14 @@ const Orders = () => {
                   return (
                     <div key={item._id || idx} className="modal-item-row">
                       <img
-                        src={item.product_id?.images?.[0] || '/images/product_placeholder.png'}
+                        src={(item.product_id?.images?.[0] || '/images/product_placeholder.png').replace(/\.(png|jpe?g)$/i, '.webp')}
                         alt={localizedItemName}
                         className="modal-item-thumb"
-                        onError={(e) => { e.target.src = '/images/product_placeholder.png'; }}
+                        width="40"
+                        height="40"
+                        loading="lazy"
+                        decoding="async"
+                        onError={(e) => { e.target.src = '/images/product_placeholder.webp'; }}
                       />
                       <div className="modal-item-name">
                         <span>{localizedItemName}</span>

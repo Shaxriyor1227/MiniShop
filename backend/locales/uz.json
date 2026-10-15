@@ -8,6 +8,7 @@
   "AUTH_REGISTER_SUCCESS": "Muvaffaqiyatli ro'yxatdan o'tildi",
   "AUTH_LOGIN_SUCCESS": "Tizimga muvaffaqiyatli kirildi",
   "AUTH_PROFILE_SUCCESS": "Foydalanuvchi ma'lumotlari olindi",
+  "AUTH_RATE_LIMIT_EXCEEDED": "So'rovlar soni me'yoridan oshib ketdi, iltimos keyinroq qayta urining",
   "PRODUCT_NOT_FOUND": "Mahsulot topilmadi",
   "PRODUCT_CREATED": "Mahsulot muvaffaqiyatli yaratildi",
   "PRODUCT_UPDATED": "Mahsulot yangilandi",

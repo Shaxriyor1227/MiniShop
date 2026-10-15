@@ -27,4 +27,4 @@ const CategoryPills = ({ categories, selectedCategory, onSelectCategory }) => {
   );
 };
 
-export default CategoryPills;
+export default React.memo(CategoryPills);

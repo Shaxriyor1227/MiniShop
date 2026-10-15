@@ -33,28 +33,36 @@ const SpotlightSearch = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  // Live search debounce
+  // Live search with 300ms debounce and AbortController
   useEffect(() => {
     if (!query.trim()) {
       setResults([]);
       return;
     }
 
+    const controller = new AbortController();
     const timer = setTimeout(async () => {
       try {
         setLoading(true);
-        const res = await axiosInstance.get(`/product/search?q=${encodeURIComponent(query.trim())}`);
+        const res = await axiosInstance.get(`/product/search?q=${encodeURIComponent(query.trim())}`, {
+          signal: controller.signal
+        });
         if (res.data.success) {
           setResults(res.data.innerData || []);
         }
       } catch (err) {
-        console.error(err);
+        if (err.name !== 'CanceledError' && err.code !== 'ERR_CANCELED') {
+          console.error(err);
+        }
       } finally {
         setLoading(false);
       }
-    }, 200);
+    }, 300);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, [query]);
 
   // Handle ESC key
@@ -133,10 +141,14 @@ const SpotlightSearch = ({ isOpen, onClose }) => {
                       onClick={() => handleSelectProduct(prod._id)}
                     >
                       <img
-                        src={prod.images?.[0] || '/images/product_placeholder.png'}
+                        src={(prod.images?.[0] || '/images/product_placeholder.png').replace(/\.(png|jpe?g)$/i, '.webp')}
                         alt={prod.name}
+                        width="44"
+                        height="44"
+                        loading="lazy"
+                        decoding="async"
                         onError={(e) => {
-                          e.currentTarget.src = '/images/product_placeholder.png';
+                          e.currentTarget.src = '/images/product_placeholder.webp';
                         }}
                       />
                       <div className="spotlight-prod-info">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, ChevronLeft, ChevronRight, ArrowUpDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import './DataTable.css';
@@ -18,6 +18,19 @@ const DataTable = ({
   sortOrder
 }) => {
   const { t } = useTranslation();
+  const [localSearch, setLocalSearch] = useState(searchValue);
+
+  useEffect(() => {
+    setLocalSearch(searchValue);
+  }, [searchValue]);
+
+  useEffect(() => {
+    if (localSearch === searchValue) return;
+    const timer = setTimeout(() => {
+      onSearchChange?.(localSearch);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [localSearch, searchValue, onSearchChange]);
 
   const finalPlaceholder = searchPlaceholder || t('admin.table.search_placeholder');
   const finalEmptyMessage = emptyMessage || t('admin.table.empty_message');
@@ -31,16 +44,19 @@ const DataTable = ({
               <Search size={16} className="search-icon" />
               <input
                 type="text"
-                value={searchValue}
-                onChange={(e) => onSearchChange(e.target.value)}
+                value={localSearch}
+                onChange={(e) => setLocalSearch(e.target.value)}
                 placeholder={finalPlaceholder}
                 className="admin-search-input"
               />
-              {searchValue && (
+              {localSearch && (
                 <button
                   type="button"
                   className="search-clear-btn"
-                  onClick={() => onSearchChange('')}
+                  onClick={() => {
+                    setLocalSearch('');
+                    onSearchChange?.('');
+                  }}
                 >
                   &times;
                 </button>

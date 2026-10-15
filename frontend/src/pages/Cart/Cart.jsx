@@ -95,7 +95,18 @@ const Cart = () => {
       <div className="cart-page page-enter">
         <div className="container">
           <div className="empty-cart-card card">
-            <img src="/images/empty_cart.png" alt="Empty Cart" className="empty-cart-img" />
+            <picture>
+              <source srcSet="/images/empty_cart.webp" type="image/webp" />
+              <img
+                src="/images/empty_cart.png"
+                alt="Empty Cart"
+                className="empty-cart-img"
+                width="160"
+                height="160"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
             <h2>{t('cart.empty_title')}</h2>
             <p>{t('cart.empty_desc')}</p>
             <Link to="/catalog" className="btn-primary">
@@ -141,7 +152,7 @@ const Cart = () => {
             {items.map((item) => {
               const prod = item.product_id || {};
               const prodId = prod._id || prod.id;
-              const imgUrl = prod.images?.[0] || '/images/product_placeholder.png';
+              const imgUrl = (prod.images?.[0] || '/images/product_placeholder.png').replace(/\.(png|jpe?g)$/i, '.webp');
 
               return (
                 <div key={prodId} className="cart-item-card card">
@@ -149,8 +160,12 @@ const Cart = () => {
                     <img
                       src={imgUrl}
                       alt={prod.name}
+                      width="80"
+                      height="80"
+                      loading="lazy"
+                      decoding="async"
                       onError={(e) => {
-                        e.currentTarget.src = '/images/product_placeholder.png';
+                        e.currentTarget.src = '/images/product_placeholder.webp';
                       }}
                     />
                   </Link>

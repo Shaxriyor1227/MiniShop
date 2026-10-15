@@ -1,4 +1,5 @@
 const Category = require('../model/categorySchema');
+const { invalidateCategoriesCache } = require('../middleware/cache.middleware');
 
 const formatCategory = (doc, lang = 'en') => {
   if (!doc) return null;
@@ -19,6 +20,10 @@ const create = async (req, res) => {
 
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     const category = await Category.create({ name, slug, translations: translations || {} });
+
+    // Invalidate categories and products caches
+    invalidateCategoriesCache();
+
     return res.sendResponse(201, 'CATEGORY_CREATED', formatCategory(category, req.lang));
   } catch (error) {
     console.error('[Category Create Error]:', error);
@@ -28,7 +33,7 @@ const create = async (req, res) => {
 
 const getAll = async (req, res) => {
   try {
-    const categories = await Category.find().sort({ name: 1 });
+    const categories = await Category.find().sort({ name: 1 }).lean();
     const formatted = categories.map((c) => formatCategory(c, req.lang));
     return res.sendResponse(200, 'CATEGORIES_FETCHED', formatted);
   } catch (error) {
@@ -39,7 +44,7 @@ const getAll = async (req, res) => {
 
 const getById = async (req, res) => {
   try {
-    const category = await Category.findById(req.params.id);
+    const category = await Category.findById(req.params.id).lean();
     if (!category) {
       return res.sendResponse(404, 'CATEGORY_NOT_FOUND');
     }
@@ -56,10 +61,14 @@ const update = async (req, res) => {
     if (req.body.name !== undefined) updateData.name = req.body.name;
     if (req.body.translations !== undefined) updateData.translations = req.body.translations;
 
-    const category = await Category.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    const category = await Category.findByIdAndUpdate(req.params.id, updateData, { new: true }).lean();
     if (!category) {
       return res.sendResponse(404, 'CATEGORY_NOT_FOUND');
     }
+
+    // Invalidate categories and products caches
+    invalidateCategoriesCache();
+
     return res.sendResponse(200, 'CATEGORY_UPDATED', formatCategory(category, req.lang));
   } catch (error) {
     console.error('[Category Update Error]:', error);
@@ -73,6 +82,10 @@ const deleteCategory = async (req, res) => {
     if (!category) {
       return res.sendResponse(404, 'CATEGORY_NOT_FOUND');
     }
+
+    // Invalidate categories and products caches
+    invalidateCategoriesCache();
+
     return res.sendResponse(200, 'CATEGORY_DELETED', null);
   } catch (error) {
     console.error('[Category Delete Error]:', error);

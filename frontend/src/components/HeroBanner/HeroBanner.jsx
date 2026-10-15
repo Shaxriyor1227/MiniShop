@@ -62,11 +62,19 @@ const HeroBanner = () => {
           {/* Right Image Showcase Column with Floating Glass Cards */}
           <div className="hero-image-wrapper">
             <div className="hero-visual-frame">
-              <img
-                src="/images/hero_banner.png"
-                alt="MiniShop Premium Workspace Showcase"
-                className="hero-image"
-              />
+              <picture>
+                <source srcSet="/images/hero_banner.webp" type="image/webp" />
+                <img
+                  src="/images/hero_banner.png"
+                  alt="MiniShop Premium Workspace Showcase"
+                  className="hero-image"
+                  width="680"
+                  height="500"
+                  loading="eager"
+                  decoding="async"
+                  fetchpriority="high"
+                />
+              </picture>
 
               {/* Floating Glass Highlight 1 */}
               <div className="hero-floating-glass hero-float-top">

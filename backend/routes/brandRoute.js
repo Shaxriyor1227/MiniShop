@@ -4,6 +4,7 @@ const brandController = require('../controllers/brand.controller');
 const validateSchema = require('../middleware/validateSchema');
 const { brandCreateValidation, brandUpdateValidation } = require('../validation/brandValidation');
 const { verifyToken, isAdmin } = require('../middleware/auth.middleware');
+const { cacheMiddleware } = require('../middleware/cache.middleware');
 
 /**
  * @swagger
@@ -49,7 +50,7 @@ router.post('/create', verifyToken, isAdmin, validateSchema(brandCreateValidatio
  *       200:
  *         description: List of all brands
  */
-router.get('/getAll', brandController.getAll);
+router.get('/getAll', cacheMiddleware('brands'), brandController.getAll);
 
 /**
  * @swagger

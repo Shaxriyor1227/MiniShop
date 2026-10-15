@@ -4,6 +4,7 @@ const productController = require('../controllers/product.controller');
 const validateSchema = require('../middleware/validateSchema');
 const { productCreateValidation, productUpdateValidation } = require('../validation/productValidation');
 const { verifyToken, isAdmin } = require('../middleware/auth.middleware');
+const { cacheMiddleware } = require('../middleware/cache.middleware');
 
 /**
  * @swagger
@@ -110,7 +111,7 @@ router.get('/search', productController.search);
  *       200:
  *         description: List of products
  */
-router.get('/getAll', productController.getAll);
+router.get('/getAll', cacheMiddleware('products'), productController.getAll);
 
 /**
  * @swagger

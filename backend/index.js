@@ -20,6 +20,8 @@ const couponRoute = require('./routes/couponRoute');
 const notificationRoute = require('./routes/notificationRoute');
 const uploadRoute = require('./routes/uploadRoute');
 const adminRoute = require('./routes/adminRoute');
+const compression = require('compression');
+const helmet = require('helmet');
 const path = require('path');
 
 const app = express();
@@ -28,7 +30,12 @@ const PORT = process.env.PORT || 5000;
 // Connect to MongoDB
 connectDB();
 
-// Global Middlewares
+// Security & Optimization Middlewares
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginEmbedderPolicy: false
+}));
+app.use(compression());
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -36,8 +43,11 @@ app.use(express.urlencoded({ extended: true }));
 const i18nMiddleware = require('./middleware/i18n.middleware');
 app.use(i18nMiddleware);
 
-// Serve static uploaded files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Serve static uploaded files with 7-day immutable caching
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+  maxAge: '7d',
+  immutable: true
+}));
 
 // Health check endpoint
 app.get('/health', (req, res) => {

@@ -253,10 +253,14 @@ const Products = () => {
       width: '70px',
       render: (_, row) => (
         <img
-          src={row.images?.[0] || '/images/product_placeholder.png'}
+          src={(row.images?.[0] || '/images/product_placeholder.png').replace(/\.(png|jpe?g)$/i, '.webp')}
           alt={row.name}
           className="prod-table-thumb"
-          onError={(e) => { e.target.src = '/images/product_placeholder.png'; }}
+          width="44"
+          height="44"
+          loading="lazy"
+          decoding="async"
+          onError={(e) => { e.target.src = '/images/product_placeholder.webp'; }}
         />
       )
     },
@@ -557,7 +561,11 @@ const Products = () => {
                     src={formData.imageUrl}
                     alt="Preview"
                     className="uploaded-preview"
-                    onError={(e) => { e.target.src = '/images/product_placeholder.png'; }}
+                    width="100"
+                    height="100"
+                    loading="lazy"
+                    decoding="async"
+                    onError={(e) => { e.target.src = '/images/product_placeholder.webp'; }}
                   />
                 ) : (
                   <div className="no-image-placeholder">

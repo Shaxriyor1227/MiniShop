@@ -144,9 +144,20 @@ const ProductDetail = () => {
 
   if (loading) {
     return (
-      <div className="container product-detail-loading">
-        <div className="loading-spinner"></div>
-        <p>{t('product.loading')}</p>
+      <div className="product-detail-page page-enter">
+        <div className="container">
+          <div className="breadcrumb-nav shimmer" style={{ width: '220px', height: '18px', borderRadius: '4px', marginBottom: '28px' }} />
+          <div className="product-detail-grid">
+            <div className="product-gallery card shimmer" style={{ height: '480px', borderRadius: '16px' }} />
+            <div className="product-buy-panel" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="shimmer" style={{ width: '110px', height: '24px', borderRadius: '12px' }} />
+              <div className="shimmer" style={{ width: '85%', height: '38px', borderRadius: '6px' }} />
+              <div className="shimmer" style={{ width: '45%', height: '28px', borderRadius: '6px' }} />
+              <div className="shimmer" style={{ width: '100%', height: '90px', borderRadius: '8px', marginTop: '8px' }} />
+              <div className="shimmer" style={{ width: '100%', height: '52px', borderRadius: '26px', marginTop: '20px' }} />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -188,8 +199,13 @@ const ProductDetail = () => {
                 src={imageUrl}
                 alt={product.name}
                 className="main-detail-img"
+                width="540"
+                height="540"
+                loading="eager"
+                decoding="async"
+                fetchpriority="high"
                 onError={(e) => {
-                  e.currentTarget.src = '/images/product_placeholder.png';
+                  e.currentTarget.src = '/images/product_placeholder.webp';
                 }}
               />
             </div>

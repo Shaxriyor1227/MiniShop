@@ -2,14 +2,20 @@
 <html lang="uz">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/images/minishop_logo.png" />
+    <link rel="icon" type="image/webp" href="/images/minishop_logo.webp" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MiniShop — Simple. Beautiful. Yours.</title>
     <meta name="description" content="MiniShop - Minimalist and premium consumer electronics, accessories and workspace goods designed for modern life." />
-    <!-- Fonts: Inter & Geist -->
+    
+    <!-- Preload Hero Image for Ultra-Fast Mobile LCP -->
+    <link rel="preload" as="image" href="/images/hero_banner.webp" type="image/webp" fetchpriority="high" />
+
+    <!-- Fonts: Preconnect & Optimized Subset with font-display: swap -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div id="root"></div>

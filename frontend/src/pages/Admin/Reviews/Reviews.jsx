@@ -91,10 +91,14 @@ const Reviews = () => {
         return (
           <div className="review-product-cell">
             <img
-              src={product?.images?.[0] || '/images/product_placeholder.png'}
+              src={(product?.images?.[0] || '/images/product_placeholder.png').replace(/\.(png|jpe?g)$/i, '.webp')}
               alt={localizedName}
               className="review-product-thumb"
-              onError={(e) => { e.target.src = '/images/product_placeholder.png'; }}
+              width="36"
+              height="36"
+              loading="lazy"
+              decoding="async"
+              onError={(e) => { e.target.src = '/images/product_placeholder.webp'; }}
             />
             <span className="review-product-name">{localizedName}</span>
           </div>

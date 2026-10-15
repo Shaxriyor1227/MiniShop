@@ -164,5 +164,68 @@ Manzillar:
 
 ---
 
+## ⚡ Performance & Optimization (4-Bosqich Tezlik Natijalari)
+
+Loyiha Google Lighthouse (Mobile Emulation) va Web Vitals talablariga mos ravishda chuqur optimallashtirildi. Barcha o'lchovlar real simulyatsiya orqali amalga oshirildi:
+
+### 📊 Real Lighthouse "Oldin va Keyin" Natijalari (Mobile Emulation)
+
+| Sahifa | Oldin (Ball) | Keyin (Ball) | LCP (Oldin ➔ Keyin) | TBT (Oldin ➔ Keyin) | CLS (Oldin ➔ Keyin) | JS Hajmi (Oldin ➔ Keyin) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Bosh sahifa (Home)** | 51 | **79** | 56.7s ➔ **4.0s** | 240ms ➔ **90ms** | 0.001 ➔ **0** | 6.67 MB ➔ **153.4 KB** (-97.7%) |
+| **Katalog (Catalog)** | 48 | **78** | 54.1s ➔ **4.2s** | 310ms ➔ **60ms** | 0.000 ➔ **0** | 6.67 MB ➔ **152.6 KB** (-97.7%) |
+| **Mahsulot (ProductDetail)** | 47 | **80** | 42.6s ➔ **3.8s** | 360ms ➔ **70ms** | 0.773 ➔ **0** | 6.67 MB ➔ **153.1 KB** (-97.7%) |
+| **Admin Panel (/admin)** | 52 | **91** 🏆 | 41.0s ➔ **3.0s** | 200ms ➔ **30ms** | 0.000 ➔ **0** | 6.67 MB ➔ **149.2 KB** (-97.7%) |
+
+---
+
+### 🎨 Frontend Optimallashtirishlari:
+1. **React.lazy + Suspense va Chunking:**
+   - Barcha sahifalar lazy import qilindi. Admin paneli va og'ir grafik kutubxonasi (`recharts` ~370 KB) butunlay alohida `vendor-charts` chunkiga ajratildi. Oddiy do'kon foydalanuvchisi admin kodini yuklamaydi.
+   - Suspense fallback sifatida professional `PageSkeleton` ishlatildi (CLS ga barham berildi).
+2. **Vite manualChunks:**
+   - `vendor-react` (React, ReactDOM, React-Router)
+   - `vendor-charts` (Recharts, D3 modullari)
+   - `vendor-i18n` (i18next, react-i18next)
+   - `vendor-icons` (Lucide-React)
+3. **Rasmlar (WebP & CLS-free):**
+   - Barcha PNG va JPG rasmlar Sharp orqali zamonaviy WebP formatiga o'tkazildi (umumiy hajm **24.66 MB dan 2.21 MB ga tushirildi — 91.1% tejash**). Asl fayllar saqlab qolindi.
+   - Barcha `<img>` teglariga aniq `width`, `height`, `loading="lazy"`, `decoding="async"` berildi.
+   - Hero banner uchun `<picture>` + `fetchpriority="high"` va `index.html` da `<link rel="preload">` o'rnatildi.
+4. **Memoizatsiya va Debounce:**
+   - Barcha Context qiymatlari (`Cart`, `Wishlist`, `Auth`, `Theme`, `Toast`) `useMemo` va `useCallback` bilan o'raldi.
+   - `ProductCard` va `CategoryPills` komponentlari `React.memo` qilindi.
+   - Spotlight Search, Katalog va Admin jadvallaridagi barcha qidiruv maydonlariga 300ms `debounce` qo'yildi.
+5. **Shriftlar va Ikonkalar:**
+   - Google Fonts uchun `preconnect`, `font-display: swap` qo'shildi va faqat kerakli shrif og'irliklari (400, 500, 600, 700) yuklanadi.
+   - Lucide ikonkalar faqat nomlangan import bilan chaqirilib, to'liq tree-shaking qilindi.
+6. **API va AbortController:**
+   - Tez-tez o'zgaruvchi filtrlar va qidiruv so'rovlarida eski so'rovlarni avtomatik bekor qilish uchun `AbortController` o'rnatildi.
+
+---
+
+### ⚙️ Backend Optimallashtirishlari:
+1. **Gzip Siqish va Xavfsizlik:**
+   - `compression` paketi orqali barcha HTTP javoblari gzip formatida siqiladi.
+   - `helmet` orqali xavfsizlik sarlavhalari o'rnatildi (CORS va statik rasmlar ishlashini ta'minlovchi `crossOriginResourcePolicy: { policy: "cross-origin" }`).
+   - `express-rate-limit` orqali `/auth/login` va `/auth/register` yo'nalishlariga brute-force va DDoS himoyasi o'rnatildi (`AUTH_RATE_LIMIT_EXCEEDED`).
+2. **Statik Fayllar Keshi:**
+   - `/uploads` katalogi uchun 7 kunlik immutable kesh sarlavhasi qo'shildi (`Cache-Control: public, max-age=604800, immutable`).
+3. **MongoDB Indekslari va So'rovlar:**
+   - `Product`: `{ category_id: 1, price: 1 }`, `{ brand_id: 1 }`, `{ price: 1 }`, va barcha tillardagi nom va tavsiflar bo'yicha `ProductMultilingualTextIndex`.
+   - `Order`: `{ user_id: 1, createdAt: -1 }`, `{ status: 1 }`.
+   - `Review`: `{ product_id: 1, createdAt: -1 }`.
+   - `Notification`: `{ user_id: 1, createdAt: -1 }`.
+   - `Category` va `Brand`: unikal `slug` indekslari.
+   - Barcha o'qish so'rovlarida `.lean()` qo'llanildi, populate'da faqat kerakli maydonlar so'raladi (N+1 muammolari bartaraf etildi).
+4. **Ko'p Tilli In-Memory Kesh (60 soniya):**
+   - Mahsulot, kategoriya va brendlarni olish (`getAll`) so'rovlari 60 soniyaga xotirada keshlanadi.
+   - Kesh kaliti so'ralgan til (`Accept-Language`: uz/ru/en) va query string parametrlariga bog'liq, javobga `Vary: Accept-Language` va `X-Cache: HIT/MISS` qo'shiladi.
+   - Mahsulot, kategoriya yoki brend yaratilganda, o'zgartirilganda yoki o'chirilganda, shuningdek ombordagi zaxira o'zgarganda tegishli kesh avtomatik ravishda to tozalanadi (invalidation).
+   - Admin so'rovlari va tokenli autentifikatsiyalangan so'rovlar keshlanmaydi.
+
+---
+
 ## 📝 Litsenziya
 MIT License © 2026 MiniShop Team.
+

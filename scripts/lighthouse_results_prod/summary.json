@@ -1,0 +1,34 @@
+[
+  {
+    "Page": "Home",
+    "Score": 79,
+    "LCP": "4.0 s",
+    "TBT": "90 ms",
+    "CLS": "0",
+    "JS_Transfer_KB": "153.4 KB"
+  },
+  {
+    "Page": "Catalog",
+    "Score": 78,
+    "LCP": "4.2 s",
+    "TBT": "60 ms",
+    "CLS": "0",
+    "JS_Transfer_KB": "152.6 KB"
+  },
+  {
+    "Page": "ProductDetail",
+    "Score": 80,
+    "LCP": "3.8 s",
+    "TBT": "70 ms",
+    "CLS": "0",
+    "JS_Transfer_KB": "153.1 KB"
+  },
+  {
+    "Page": "Admin",
+    "Score": 91,
+    "LCP": "3.0 s",
+    "TBT": "30 ms",
+    "CLS": "0",
+    "JS_Transfer_KB": "149.2 KB"
+  }
+]

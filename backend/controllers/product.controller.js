@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Product = require('../model/productSchema');
 const Category = require('../model/categorySchema');
 const Brand = require('../model/brandSchema');
+const { invalidateProductsCache } = require('../middleware/cache.middleware');
 
 const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -46,7 +47,13 @@ const create = async (req, res) => {
       images: images || []
     });
 
-    const populated = await Product.findById(product._id).populate('category_id').populate('brand_id');
+    // Invalidate product cache
+    invalidateProductsCache();
+
+    const populated = await Product.findById(product._id)
+      .populate('category_id', 'name slug translations')
+      .populate('brand_id', 'name slug logo translations')
+      .lean();
 
     return res.sendResponse(201, 'PRODUCT_CREATED', formatProduct(populated, req.lang));
   } catch (error) {
@@ -159,9 +166,10 @@ const getAll = async (req, res) => {
     const total = await Product.countDocuments(filter);
 
     let query = Product.find(filter)
-      .populate('category_id')
-      .populate('brand_id')
-      .sort(sortOption);
+      .populate('category_id', 'name slug translations')
+      .populate('brand_id', 'name slug logo translations')
+      .sort(sortOption)
+      .lean();
 
     if (page || limit) {
       const pageNum = Math.max(1, parseInt(page, 10) || 1);
@@ -189,8 +197,9 @@ const getAll = async (req, res) => {
 const getById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
-      .populate('category_id')
-      .populate('brand_id');
+      .populate('category_id', 'name slug translations')
+      .populate('brand_id', 'name slug logo translations')
+      .lean();
 
     if (!product) {
       return res.sendResponse(404, 'PRODUCT_NOT_FOUND');
@@ -210,12 +219,16 @@ const update = async (req, res) => {
     if (updateData.stock !== undefined) updateData.stock = Number(updateData.stock);
 
     const product = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true })
-      .populate('category_id')
-      .populate('brand_id');
+      .populate('category_id', 'name slug translations')
+      .populate('brand_id', 'name slug logo translations')
+      .lean();
 
     if (!product) {
       return res.sendResponse(404, 'PRODUCT_NOT_FOUND');
     }
+
+    // Invalidate product cache
+    invalidateProductsCache();
 
     return res.sendResponse(200, 'PRODUCT_UPDATED', formatProduct(product, req.lang));
   } catch (error) {
@@ -230,6 +243,9 @@ const deleteProduct = async (req, res) => {
     if (!product) {
       return res.sendResponse(404, 'PRODUCT_NOT_FOUND');
     }
+
+    // Invalidate product cache
+    invalidateProductsCache();
 
     return res.sendResponse(200, 'PRODUCT_DELETED', null);
   } catch (error) {
@@ -258,9 +274,10 @@ const search = async (req, res) => {
         { 'translations.en.description': sRegex }
       ]
     })
-      .populate('category_id')
-      .populate('brand_id')
-      .limit(20);
+      .populate('category_id', 'name slug translations')
+      .populate('brand_id', 'name slug logo translations')
+      .limit(20)
+      .lean();
 
     const formattedProducts = products.map((p) => formatProduct(p, req.lang));
 

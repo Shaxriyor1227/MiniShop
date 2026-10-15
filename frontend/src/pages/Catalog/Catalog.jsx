@@ -136,8 +136,41 @@ const Catalog = () => {
     setSearchInput(searchParam);
   }, [searchParam]);
 
-  // Fetch products from backend
+  // 300ms debounce on search input to auto-update URL searchParams
+  useEffect(() => {
+    if (searchInput === searchParam) return;
+    const timer = setTimeout(() => {
+      const newParams = new URLSearchParams(searchParams);
+      if (searchInput.trim()) {
+        newParams.set('search', searchInput.trim());
+      } else {
+        newParams.delete('search');
+      }
+      setSearchParams(newParams);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchInput, searchParam, searchParams, setSearchParams]);
+
+  const abortControllerRef = useRef(null);
+
+  // Clean up abort controller on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
+  // Fetch products from backend with AbortController to cancel stale queries
   const fetchProducts = useCallback(async () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
       setLoading(true);
       const params = {};
@@ -146,7 +179,10 @@ const Catalog = () => {
       if (searchParam) params.search = searchParam;
       if (sortBy && sortBy !== 'featured') params.sort = sortBy;
 
-      const res = await axiosInstance.get('/product/getAll', { params });
+      const res = await axiosInstance.get('/product/getAll', {
+        params,
+        signal: controller.signal
+      });
       if (res.data.success) {
         let prods = res.data.innerData;
 
@@ -164,9 +200,14 @@ const Catalog = () => {
         setProducts(prods);
       }
     } catch (err) {
+      if (err?.name === 'CanceledError' || err?.code === 'ERR_CANCELED' || err?.name === 'AbortError') {
+        return; // Request was aborted by user filter change, ignore
+      }
       console.error('[Catalog Fetch Error]:', err);
     } finally {
-      setLoading(false);
+      if (abortControllerRef.current === controller) {
+        setLoading(false);
+      }
     }
   }, [selectedCategory, selectedBrand, searchParam, sortBy, selectedPriceRange, inStockOnly]);
 

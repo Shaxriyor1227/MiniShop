@@ -338,10 +338,14 @@ const Checkout = () => {
                   return (
                     <div key={prod._id || prod.id} className="checkout-item-row">
                       <img
-                        src={prod.images?.[0] || '/images/product_placeholder.png'}
+                        src={(prod.images?.[0] || '/images/product_placeholder.png').replace(/\.(png|jpe?g)$/i, '.webp')}
                         alt={prod.name}
+                        width="56"
+                        height="56"
+                        loading="lazy"
+                        decoding="async"
                         onError={(e) => {
-                          e.currentTarget.src = '/images/product_placeholder.png';
+                          e.currentTarget.src = '/images/product_placeholder.webp';
                         }}
                       />
                       <div className="checkout-item-info">

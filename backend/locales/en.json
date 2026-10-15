@@ -8,6 +8,7 @@
   "AUTH_REGISTER_SUCCESS": "Registration completed successfully",
   "AUTH_LOGIN_SUCCESS": "Signed in successfully",
   "AUTH_PROFILE_SUCCESS": "User profile retrieved successfully",
+  "AUTH_RATE_LIMIT_EXCEEDED": "Too many requests, please try again later",
   "PRODUCT_NOT_FOUND": "Product not found",
   "PRODUCT_CREATED": "Product created successfully",
   "PRODUCT_UPDATED": "Product updated successfully",

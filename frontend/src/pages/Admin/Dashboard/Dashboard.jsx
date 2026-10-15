@@ -310,10 +310,14 @@ const Dashboard = () => {
                 <div key={p._id || idx} className="product-mini-item">
                   <div className="product-mini-rank">{idx + 1}</div>
                   <img
-                    src={p.images?.[0] || '/images/product_placeholder.png'}
+                    src={(p.images?.[0] || '/images/product_placeholder.png').replace(/\.(png|jpe?g)$/i, '.webp')}
                     alt={p.name}
                     className="product-mini-img"
-                    onError={(e) => { e.target.src = '/images/product_placeholder.png'; }}
+                    width="40"
+                    height="40"
+                    loading="lazy"
+                    decoding="async"
+                    onError={(e) => { e.target.src = '/images/product_placeholder.webp'; }}
                   />
                   <div className="product-mini-info">
                     <span className="product-mini-name">{p.name}</span>
@@ -360,10 +364,14 @@ const Dashboard = () => {
               stats.lowStockProducts.map((p) => (
                 <div key={p._id} className="product-mini-item low-stock-item">
                   <img
-                    src={p.images?.[0] || '/images/product_placeholder.png'}
+                    src={(p.images?.[0] || '/images/product_placeholder.png').replace(/\.(png|jpe?g)$/i, '.webp')}
                     alt={p.name}
                     className="product-mini-img"
-                    onError={(e) => { e.target.src = '/images/product_placeholder.png'; }}
+                    width="40"
+                    height="40"
+                    loading="lazy"
+                    decoding="async"
+                    onError={(e) => { e.target.src = '/images/product_placeholder.webp'; }}
                   />
                   <div className="product-mini-info">
                     <span className="product-mini-name">{p.name}</span>

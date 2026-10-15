@@ -4,6 +4,7 @@ const categoryController = require('../controllers/category.controller');
 const validateSchema = require('../middleware/validateSchema');
 const { categoryCreateValidation, categoryUpdateValidation } = require('../validation/categoryValidation');
 const { verifyToken, isAdmin } = require('../middleware/auth.middleware');
+const { cacheMiddleware } = require('../middleware/cache.middleware');
 
 /**
  * @swagger
@@ -49,7 +50,7 @@ router.post('/create', verifyToken, isAdmin, validateSchema(categoryCreateValida
  *       200:
  *         description: List of all categories
  */
-router.get('/getAll', categoryController.getAll);
+router.get('/getAll', cacheMiddleware('categories'), categoryController.getAll);
 
 /**
  * @swagger

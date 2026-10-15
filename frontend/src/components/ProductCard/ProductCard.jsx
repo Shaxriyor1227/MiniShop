@@ -87,9 +87,12 @@ const ProductCard = ({ product }) => {
           src={imageUrl}
           alt={product.name}
           className="product-img"
+          width="280"
+          height="280"
           loading="lazy"
+          decoding="async"
           onError={(e) => {
-            e.currentTarget.src = '/images/product_placeholder.png';
+            e.currentTarget.src = '/images/product_placeholder.webp';
           }}
         />
       </Link>

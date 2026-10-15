@@ -6,6 +6,7 @@ const Payment = require('../model/paymentSchema');
 const Notification = require('../model/notificationSchema');
 const { sendOrderTelegramNotification } = require('../utils/telegram');
 const { sendOrderConfirmationEmail } = require('../utils/mailer');
+const { invalidateProductsCache } = require('../middleware/cache.middleware');
 
 /**
  * Helper to restore stock for order items
@@ -20,6 +21,7 @@ const restoreOrderStock = async (items) => {
       });
     }
   }
+  invalidateProductsCache();
 };
 
 /**
@@ -71,6 +73,7 @@ const create = async (req, res) => {
         $inc: { stock: -item.quantity }
       });
     }
+    invalidateProductsCache();
 
     const order = await Order.create({
       user_id: userId,
@@ -160,7 +163,8 @@ const getAll = async (req, res) => {
       .populate('address_id')
       .populate('coupon_id')
       .populate('items.product_id', 'name images price')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     if (page || limit) {
       const pageNum = Math.max(1, parseInt(page, 10) || 1);
@@ -208,7 +212,8 @@ const getById = async (req, res) => {
       .populate('user_id', 'name email phone_number')
       .populate('address_id')
       .populate('coupon_id')
-      .populate('items.product_id', 'name images price');
+      .populate('items.product_id', 'name images price')
+      .lean();
 
     if (!order) {
       return res.sendResponse(404, 'ORDER_NOT_FOUND');
@@ -250,6 +255,7 @@ const updateStatus = async (req, res) => {
           });
         }
       }
+      invalidateProductsCache();
     }
 
     existingOrder.status = status;

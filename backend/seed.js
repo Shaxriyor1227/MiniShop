@@ -304,6 +304,7 @@ const seedData = async () => {
 
     const enrichedProducts = productsData.map((p) => ({
       ...p,
+      images: (p.images || []).map((img) => img.replace(/\.(png|jpg|jpeg)$/i, '.webp')),
       description: productTranslationsMap[p.name]?.en?.description || '',
       translations: productTranslationsMap[p.name] || {}
     }));

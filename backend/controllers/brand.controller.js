@@ -1,4 +1,5 @@
 const Brand = require('../model/brandSchema');
+const { invalidateBrandsCache } = require('../middleware/cache.middleware');
 
 const formatBrand = (doc, lang = 'en') => {
   if (!doc) return null;
@@ -19,6 +20,10 @@ const create = async (req, res) => {
 
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     const brand = await Brand.create({ name, slug, translations: translations || {} });
+
+    // Invalidate brands and products caches
+    invalidateBrandsCache();
+
     return res.sendResponse(201, 'BRAND_CREATED', formatBrand(brand, req.lang));
   } catch (error) {
     console.error('[Brand Create Error]:', error);
@@ -28,7 +33,7 @@ const create = async (req, res) => {
 
 const getAll = async (req, res) => {
   try {
-    const brands = await Brand.find().sort({ name: 1 });
+    const brands = await Brand.find().sort({ name: 1 }).lean();
     const formatted = brands.map((b) => formatBrand(b, req.lang));
     return res.sendResponse(200, 'BRANDS_FETCHED', formatted);
   } catch (error) {
@@ -39,7 +44,7 @@ const getAll = async (req, res) => {
 
 const getById = async (req, res) => {
   try {
-    const brand = await Brand.findById(req.params.id);
+    const brand = await Brand.findById(req.params.id).lean();
     if (!brand) {
       return res.sendResponse(404, 'BRAND_NOT_FOUND');
     }
@@ -56,10 +61,14 @@ const update = async (req, res) => {
     if (req.body.name !== undefined) updateData.name = req.body.name;
     if (req.body.translations !== undefined) updateData.translations = req.body.translations;
 
-    const brand = await Brand.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    const brand = await Brand.findByIdAndUpdate(req.params.id, updateData, { new: true }).lean();
     if (!brand) {
       return res.sendResponse(404, 'BRAND_NOT_FOUND');
     }
+
+    // Invalidate brands and products caches
+    invalidateBrandsCache();
+
     return res.sendResponse(200, 'BRAND_UPDATED', formatBrand(brand, req.lang));
   } catch (error) {
     console.error('[Brand Update Error]:', error);
@@ -73,6 +82,10 @@ const deleteBrand = async (req, res) => {
     if (!brand) {
       return res.sendResponse(404, 'BRAND_NOT_FOUND');
     }
+
+    // Invalidate brands and products caches
+    invalidateBrandsCache();
+
     return res.sendResponse(200, 'BRAND_DELETED', null);
   } catch (error) {
     console.error('[Brand Delete Error]:', error);

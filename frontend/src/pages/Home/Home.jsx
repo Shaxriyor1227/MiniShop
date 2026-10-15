@@ -46,7 +46,7 @@ const newArrivalsData = [
     descKey: 'home.arr_desc3',
     defaultDesc: 'Grade 5 titanium chassis, sapphire crystal, and 7-day battery.',
     price: 420,
-    img: '/images/stitch/smart_watch.png',
+    img: '/images/stitch/smart_watch.webp',
     link: '/catalog?category=wearables'
   },
   {
@@ -57,7 +57,7 @@ const newArrivalsData = [
     descKey: 'home.arr_desc1',
     defaultDesc: 'Hybrid Active Noise Cancellation with 40-hour endurance.',
     price: 540,
-    img: '/images/stitch/audio_headphones.png',
+    img: '/images/stitch/audio_headphones.webp',
     link: '/catalog?category=audio'
   },
   {
@@ -68,7 +68,7 @@ const newArrivalsData = [
     descKey: 'home.arr_desc4',
     defaultDesc: 'Circadian balanced light with precision aluminum touch dimmer.',
     price: 85,
-    img: '/images/stitch/walnut_tray.png',
+    img: '/images/stitch/walnut_tray.webp',
     link: '/catalog?category=accessories'
   },
   {
@@ -79,7 +79,7 @@ const newArrivalsData = [
     descKey: 'home.arr_desc2',
     defaultDesc: 'Low-profile wireless mechanical deck with double-shot PBT.',
     price: 179,
-    img: '/images/stitch/mechanical_kb.png',
+    img: '/images/stitch/mechanical_kb.webp',
     link: '/catalog?category=workspace'
   }
 ];
@@ -90,7 +90,7 @@ const testimonials = [
     name: 'Sarah Jenkins',
     role: 'Lead UX Architect, San Francisco',
     avatar: 'SJ',
-    avatarImg: '/images/avatars/sarah.jpg',
+    avatarImg: '/images/avatars/sarah.webp',
     rating: 5,
     text: 'The Studio Wireless Pro headphones deliver acoustic clarity on par with studio monitors. Build quality feels like true Apple-tier craftsmanship.',
     product: 'Studio Wireless Pro Headphones'
@@ -100,7 +100,7 @@ const testimonials = [
     name: 'Marcus Vance',
     role: 'Staff Software Engineer, Seattle',
     avatar: 'MV',
-    avatarImg: '/images/avatars/marcus.jpg',
+    avatarImg: '/images/avatars/marcus.webp',
     rating: 5,
     text: 'The mechanical keyboard and desk setup transformed my daily flow. Instant delivery, packaging was immaculate, and setup took under 30 seconds.',
     product: 'Ultra-Slim Mechanical Keyboard'
@@ -110,7 +110,7 @@ const testimonials = [
     name: 'Elena Rostova',
     role: 'Creative Director, London',
     avatar: 'ER',
-    avatarImg: '/images/avatars/elena.jpg',
+    avatarImg: '/images/avatars/elena.webp',
     rating: 5,
     text: 'MiniShop is my go-to for minimalist workspace tech. Clean aesthetic, zero bloat, and authentic hardware with rapid global shipping.',
     product: 'Minimal OLED Smartwatch Series X'
@@ -120,7 +120,7 @@ const testimonials = [
     name: 'David Chen',
     role: 'Hardware Architect, Austin',
     avatar: 'DC',
-    avatarImg: '/images/avatars/david.jpg',
+    avatarImg: '/images/avatars/david.webp',
     rating: 5,
     text: 'The 0.02mm CNC aluminum finish on the desk lamp is pure perfection. Touch sensor dimmer and circadian color balance work flawlessly.',
     product: 'Smart Desk Ambient Lamp'
@@ -130,7 +130,7 @@ const testimonials = [
     name: 'Sophia Martinez',
     role: 'Sound Designer, Los Angeles',
     avatar: 'SM',
-    avatarImg: '/images/avatars/sophia.jpg',
+    avatarImg: '/images/avatars/sophia.webp',
     rating: 5,
     text: 'Spatial Audio 3D with low-latency AAC gives me seamless audio monitoring on the go. Super comfortable even after 8-hour mixing sessions.',
     product: 'Pro Wireless Earbuds Gen 2'
@@ -140,7 +140,7 @@ const testimonials = [
     name: 'Liam Novak',
     role: 'Industrial Designer, Berlin',
     avatar: 'LN',
-    avatarImg: '/images/avatars/liam.jpg',
+    avatarImg: '/images/avatars/liam.webp',
     rating: 5,
     text: 'The minimalist full-grain leather wallet and MagSafe charger have replaced all my bulky EDC gear. Exceptionally durable and timeless.',
     product: 'Minimalist Leather Card Wallet'
@@ -225,14 +225,21 @@ const Home = () => {
 
           {/* Dominant 16:9 Cinematic Hero Image Container */}
           <div className="hero-cinema-frame">
-            <img
-              src="/images/stitch/hero_podium.png"
-              alt="MiniShop Flagship Workspace Presentation"
-              className="hero-cinema-img"
-              onError={(e) => {
-                e.currentTarget.src = '/images/hero_banner.png';
-              }}
-            />
+            <picture>
+              <source srcSet="/images/stitch/hero_podium.webp" type="image/webp" />
+              <img
+                src="/images/stitch/hero_podium.png"
+                alt="MiniShop Flagship Workspace Presentation"
+                className="hero-cinema-img"
+                width="880"
+                height="495"
+                loading="lazy"
+                decoding="async"
+                onError={(e) => {
+                  e.currentTarget.src = '/images/hero_banner.webp';
+                }}
+              />
+            </picture>
             <div className="hero-cinema-badge">
               <Sparkles size={14} />
               <span>{t('home.hero_display_title')}</span>
@@ -298,14 +305,21 @@ const Home = () => {
           <div className="collections-asymmetric-grid">
             {/* Audio (8 Columns) */}
             <Link to="/catalog?category=audio" className="collection-tile tile-audio">
-              <img
-                src="/images/stitch/audio_headphones.png"
-                alt="Audio Collection"
-                className="tile-bg-img"
-                onError={(e) => {
-                  e.currentTarget.src = '/images/product_wireless_headphones.png';
-                }}
-              />
+              <picture>
+                <source srcSet="/images/stitch/audio_headphones.webp" type="image/webp" />
+                <img
+                  src="/images/stitch/audio_headphones.png"
+                  alt="Audio Collection"
+                  className="tile-bg-img"
+                  width="600"
+                  height="400"
+                  loading="lazy"
+                  decoding="async"
+                  onError={(e) => {
+                    e.currentTarget.src = '/images/product_wireless_headphones.webp';
+                  }}
+                />
+              </picture>
               <div className="tile-gradient-overlay"></div>
               <div className="tile-content">
                 <span className="tile-micro-tag">{t('home.col_audio_tag')}</span>
@@ -319,14 +333,21 @@ const Home = () => {
 
             {/* Smart Watches (4 Columns) */}
             <Link to="/catalog?category=wearables" className="collection-tile tile-watches">
-              <img
-                src="/images/stitch/smart_watch.png"
-                alt="Smart Watches Collection"
-                className="tile-bg-img"
-                onError={(e) => {
-                  e.currentTarget.src = '/images/product_smart_watch.png';
-                }}
-              />
+              <picture>
+                <source srcSet="/images/stitch/smart_watch.webp" type="image/webp" />
+                <img
+                  src="/images/stitch/smart_watch.png"
+                  alt="Smart Watches Collection"
+                  className="tile-bg-img"
+                  width="400"
+                  height="400"
+                  loading="lazy"
+                  decoding="async"
+                  onError={(e) => {
+                    e.currentTarget.src = '/images/product_smart_watch.webp';
+                  }}
+                />
+              </picture>
               <div className="tile-gradient-overlay"></div>
               <div className="tile-content">
                 <span className="tile-micro-tag">{t('home.col_watches_tag')}</span>
@@ -340,14 +361,21 @@ const Home = () => {
 
             {/* Workspace (6 Columns) */}
             <Link to="/catalog?category=workspace" className="collection-tile tile-workspace">
-              <img
-                src="/images/stitch/workspace_setup.png"
-                alt="Workspace Collection"
-                className="tile-bg-img"
-                onError={(e) => {
-                  e.currentTarget.src = '/images/product_mechanical_keyboard.png';
-                }}
-              />
+              <picture>
+                <source srcSet="/images/stitch/workspace_setup.webp" type="image/webp" />
+                <img
+                  src="/images/stitch/workspace_setup.png"
+                  alt="Workspace Collection"
+                  className="tile-bg-img"
+                  width="600"
+                  height="400"
+                  loading="lazy"
+                  decoding="async"
+                  onError={(e) => {
+                    e.currentTarget.src = '/images/product_mechanical_keyboard.webp';
+                  }}
+                />
+              </picture>
               <div className="tile-gradient-overlay"></div>
               <div className="tile-content">
                 <span className="tile-micro-tag">{t('home.col_workspace_tag')}</span>
@@ -361,14 +389,21 @@ const Home = () => {
 
             {/* Accessories (6 Columns) */}
             <Link to="/catalog?category=accessories" className="collection-tile tile-accessories">
-              <img
-                src="/images/stitch/accessories_flatlay.png"
-                alt="Accessories Collection"
-                className="tile-bg-img"
-                onError={(e) => {
-                  e.currentTarget.src = '/images/product_desk_lamp.png';
-                }}
-              />
+              <picture>
+                <source srcSet="/images/stitch/accessories_flatlay.webp" type="image/webp" />
+                <img
+                  src="/images/stitch/accessories_flatlay.png"
+                  alt="Accessories Collection"
+                  className="tile-bg-img"
+                  width="600"
+                  height="400"
+                  loading="lazy"
+                  decoding="async"
+                  onError={(e) => {
+                    e.currentTarget.src = '/images/product_desk_lamp.webp';
+                  }}
+                />
+              </picture>
               <div className="tile-gradient-overlay"></div>
               <div className="tile-content">
                 <span className="tile-micro-tag">{t('home.col_accessories_tag')}</span>
@@ -388,14 +423,21 @@ const Home = () => {
         <div className="container">
           <div className="specimen-card card">
             <div className="specimen-visual-pane">
-              <img
-                src="/images/stitch/audio_headphones.png"
-                alt="Acoustic Horizon One Specimen"
-                className="specimen-img"
-                onError={(e) => {
-                  e.currentTarget.src = '/images/product_wireless_headphones.png';
-                }}
-              />
+              <picture>
+                <source srcSet="/images/stitch/audio_headphones.webp" type="image/webp" />
+                <img
+                  src="/images/stitch/audio_headphones.png"
+                  alt="Acoustic Horizon One Specimen"
+                  className="specimen-img"
+                  width="500"
+                  height="500"
+                  loading="lazy"
+                  decoding="async"
+                  onError={(e) => {
+                    e.currentTarget.src = '/images/product_wireless_headphones.webp';
+                  }}
+                />
+              </picture>
             </div>
 
             <div className="specimen-info-pane">
@@ -492,14 +534,21 @@ const Home = () => {
               </div>
 
               <div className="promo-visual-side">
-                <img
-                  src="/images/stitch/workspace_setup.png"
-                  alt="Minimal Studio Workspace Architecture"
-                  className="promo-visual-img"
-                  onError={(e) => {
-                    e.currentTarget.src = '/images/hero_banner.png';
-                  }}
-                />
+                <picture>
+                  <source srcSet="/images/stitch/workspace_setup.webp" type="image/webp" />
+                  <img
+                    src="/images/stitch/workspace_setup.png"
+                    alt="Minimal Studio Workspace Architecture"
+                    className="promo-visual-img"
+                    width="600"
+                    height="450"
+                    loading="lazy"
+                    decoding="async"
+                    onError={(e) => {
+                      e.currentTarget.src = '/images/hero_banner.webp';
+                    }}
+                  />
+                </picture>
               </div>
             </div>
           </div>
@@ -540,8 +589,12 @@ const Home = () => {
                     src={item.img}
                     alt={t(item.nameKey, item.defaultName)}
                     className="arrival-img"
+                    width="280"
+                    height="280"
+                    loading="lazy"
+                    decoding="async"
                     onError={(e) => {
-                      e.currentTarget.src = '/images/product_placeholder.png';
+                      e.currentTarget.src = '/images/product_placeholder.webp';
                     }}
                   />
                 </div>
@@ -584,6 +637,10 @@ const Home = () => {
                       src={tItem.avatarImg}
                       alt={tItem.name}
                       className="author-avatar-img"
+                      width="44"
+                      height="44"
+                      loading="lazy"
+                      decoding="async"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                         if (e.currentTarget.nextSibling) {

@@ -117,10 +117,14 @@ const Orders = () => {
                         return (
                           <div key={idx} className="order-product-row">
                             <img
-                              src={prod.images?.[0] || '/images/product_placeholder.png'}
+                              src={(prod.images?.[0] || '/images/product_placeholder.png').replace(/\.(png|jpe?g)$/i, '.webp')}
                               alt={prod.name}
+                              width="50"
+                              height="50"
+                              loading="lazy"
+                              decoding="async"
                               onError={(e) => {
-                                e.currentTarget.src = '/images/product_placeholder.png';
+                                e.currentTarget.src = '/images/product_placeholder.webp';
                               }}
                             />
                             <div className="order-prod-info">

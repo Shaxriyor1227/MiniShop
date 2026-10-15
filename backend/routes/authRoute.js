@@ -1,9 +1,20 @@
 const express = require('express');
 const router = express.Router();
+const rateLimit = require('express-rate-limit');
 const authController = require('../controllers/auth.controller');
 const validateSchema = require('../middleware/validateSchema');
 const { registerValidation, loginValidation } = require('../validation/authValidation');
 const { verifyToken } = require('../middleware/auth.middleware');
+
+const authLimiter = rateLimit({
+  windowMs: process.env.RATE_LIMIT_WINDOW_MS ? parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) : 15 * 60 * 1000,
+  max: process.env.RATE_LIMIT_MAX ? parseInt(process.env.RATE_LIMIT_MAX, 10) : 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    return res.sendResponse(429, 'AUTH_RATE_LIMIT_EXCEEDED');
+  }
+});
 
 /**
  * @swagger
@@ -52,7 +63,7 @@ const { verifyToken } = require('../middleware/auth.middleware');
  *       400:
  *         description: Validation error or email already exists
  */
-router.post('/register', validateSchema(registerValidation), authController.register);
+router.post('/register', authLimiter, validateSchema(registerValidation), authController.register);
 
 /**
  * @swagger
@@ -83,7 +94,7 @@ router.post('/register', validateSchema(registerValidation), authController.regi
  *       400:
  *         description: Invalid credentials
  */
-router.post('/login', validateSchema(loginValidation), authController.login);
+router.post('/login', authLimiter, validateSchema(loginValidation), authController.login);
 
 /**
  * @swagger

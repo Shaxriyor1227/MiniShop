@@ -8,6 +8,7 @@
   "AUTH_REGISTER_SUCCESS": "Регистрация прошла успешно",
   "AUTH_LOGIN_SUCCESS": "Успешный вход в систему",
   "AUTH_PROFILE_SUCCESS": "Данные профиля получены",
+  "AUTH_RATE_LIMIT_EXCEEDED": "Слишком много запросов, пожалуйста, попробуйте позже",
   "PRODUCT_NOT_FOUND": "Товар не найден",
   "PRODUCT_CREATED": "Товар успешно создан",
   "PRODUCT_UPDATED": "Товар успешно обновлен",
