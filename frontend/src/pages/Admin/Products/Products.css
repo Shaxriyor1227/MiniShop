@@ -32,21 +32,8 @@
   color: var(--ink-tertiary);
 }
 
-.admin-select {
-  padding: 8px 14px;
-  font-size: 13.5px;
-  background: var(--bg-surface-hover);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  color: var(--ink-primary);
-  outline: none;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.admin-select:focus {
-  border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px var(--accent-blue-subtle);
+.filter-select-group .admin-select {
+  min-width: 180px;
 }
 
 .clear-filter-btn {

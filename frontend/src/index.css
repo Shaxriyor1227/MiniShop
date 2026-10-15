@@ -196,16 +196,18 @@ button, input, select, textarea {
 }
 
 /* Universal Input Field & Native Inputs */
-.input-field,
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="number"],
-input[type="tel"],
-input[type="date"],
-input[type="search"],
-select,
-textarea {
+:where(
+  .input-field,
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="date"],
+  input[type="search"],
+  select,
+  textarea
+) {
   width: 100%;
   padding: 11px 16px;
   font-size: 14px;
@@ -228,29 +230,35 @@ textarea::placeholder {
 }
 
 /* Hover State */
-.input-field:hover:not(:disabled),
-input:hover:not(:disabled),
-select:hover:not(:disabled),
-textarea:hover:not(:disabled) {
+:where(
+  .input-field,
+  input,
+  select,
+  textarea
+):hover:not(:disabled) {
   border-color: rgba(0, 113, 227, 0.35);
   background-color: var(--bg-surface);
 }
 
 /* Focus State with Apple-grade glow */
-.input-field:focus,
-input:focus,
-select:focus,
-textarea:focus {
+:where(
+  .input-field,
+  input,
+  select,
+  textarea
+):focus {
   background-color: var(--bg-surface);
   border-color: var(--accent-blue);
   box-shadow: 0 0 0 3.5px var(--accent-blue-subtle);
 }
 
 /* Disabled State */
-.input-field:disabled,
-input:disabled,
-select:disabled,
-textarea:disabled {
+:where(
+  .input-field,
+  input,
+  select,
+  textarea
+):disabled {
   opacity: 0.55;
   cursor: not-allowed;
   background-color: var(--bg-main);
@@ -260,15 +268,21 @@ textarea:disabled {
 /* Select specific dropdown arrow */
 select {
   cursor: pointer;
-  padding-right: 38px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2386868B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  background-size: 15px;
+  padding-right: 38px !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2386868B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
+  background-size: 15px 15px !important;
 }
 
 [data-theme="dark"] select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
+  background-size: 15px 15px !important;
 }
 
 /* Textarea defaults */
