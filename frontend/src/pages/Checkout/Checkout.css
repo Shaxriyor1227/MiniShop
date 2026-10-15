@@ -90,9 +90,10 @@
 .new-address-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   background-color: var(--bg-main);
-  padding: 18px;
+  border: 1px solid var(--border-subtle);
+  padding: 20px;
   border-radius: var(--radius-md);
   margin-bottom: 20px;
 }
@@ -100,6 +101,7 @@
 .address-form-btns {
   display: flex;
   gap: 10px;
+  margin-top: 4px;
 }
 
 .address-options-list {
@@ -112,20 +114,33 @@
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  padding: 16px;
-  border: 1px solid var(--border-subtle);
+  padding: 16px 18px;
+  border: 1.5px solid var(--border-subtle);
   border-radius: var(--radius-md);
+  background-color: var(--bg-surface);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .address-option-label:hover {
-  background-color: var(--bg-main);
+  background-color: var(--bg-surface-hover);
+  border-color: rgba(0, 113, 227, 0.35);
+}
+
+.address-option-label input[type="radio"],
+.payment-option input[type="radio"] {
+  margin: 2px 0 0 0;
+  accent-color: var(--accent-blue);
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .address-option-label.selected {
   border-color: var(--accent-blue);
   background-color: var(--accent-blue-subtle);
+  box-shadow: 0 0 0 1px var(--accent-blue);
 }
 
 .address-details {
@@ -142,10 +157,12 @@
 
 .default-badge {
   font-size: 11px;
-  background-color: var(--bg-main);
+  background-color: var(--bg-surface-hover);
   color: var(--ink-secondary);
-  padding: 2px 6px;
-  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+  padding: 2px 7px;
+  border-radius: var(--radius-xs);
+  font-weight: 600;
 }
 
 .addr-street {
@@ -162,10 +179,11 @@
 .payment-option {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px;
-  border: 1px solid var(--border-subtle);
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1.5px solid var(--border-subtle);
   border-radius: var(--radius-md);
+  background-color: var(--bg-surface);
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
@@ -173,12 +191,14 @@
 }
 
 .payment-option:hover {
-  background-color: var(--bg-main);
+  background-color: var(--bg-surface-hover);
+  border-color: rgba(0, 113, 227, 0.35);
 }
 
 .payment-option.selected {
   border-color: var(--accent-blue);
   background-color: var(--accent-blue-subtle);
+  box-shadow: 0 0 0 1px var(--accent-blue);
 }
 
 /* Summary Column */

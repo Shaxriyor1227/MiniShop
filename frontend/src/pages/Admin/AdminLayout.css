@@ -416,3 +416,153 @@
     padding: 0 16px;
   }
 }
+
+/* ==========================================================================
+   ADMIN UNIVERSAL FORM & INPUT SYSTEM
+   ========================================================================== */
+
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .admin-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-form-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  letter-spacing: -0.01em;
+}
+
+/* Admin Input Fields */
+.admin-input,
+.admin-select,
+.admin-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 13.5px;
+  font-family: inherit;
+  background: var(--bg-surface-hover);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--ink-primary);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.admin-input::placeholder,
+.admin-textarea::placeholder {
+  color: var(--ink-tertiary);
+}
+
+.admin-input:hover:not(:disabled),
+.admin-select:hover:not(:disabled),
+.admin-textarea:hover:not(:disabled) {
+  background: var(--bg-surface);
+  border-color: rgba(0, 113, 227, 0.35);
+}
+
+.admin-input:focus,
+.admin-select:focus,
+.admin-textarea:focus {
+  background: var(--bg-surface);
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px var(--accent-blue-subtle);
+}
+
+/* Custom Styled Select with Apple-grade Chevron */
+.admin-select {
+  cursor: pointer;
+  padding-right: 36px;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2386868B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 14px;
+}
+
+[data-theme='dark'] .admin-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239DA3B4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+.admin-date-input {
+  padding: 8px 12px;
+  font-size: 13px;
+  background: var(--bg-surface-hover);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--ink-primary);
+  outline: none;
+  font-family: inherit;
+  transition: all var(--transition-fast);
+}
+
+.admin-date-input:focus {
+  border-color: var(--accent-blue);
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 3px var(--accent-blue-subtle);
+}
+
+/* Checkbox Labels */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--ink-primary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent-blue);
+  cursor: pointer;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.admin-textarea {
+  min-height: 90px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* Modal Form Action Buttons */
+.modal-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.modal-form-actions.full-width {
+  grid-column: 1 / -1;
+}

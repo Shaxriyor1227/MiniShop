@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
+  color-scheme: light;
   /* Color Palette */
   --bg-main: #F5F5F7;
   --bg-surface: #FFFFFF;
@@ -49,6 +50,7 @@
 }
 
 [data-theme="dark"] {
+  color-scheme: dark;
   --bg-main: #0B0F17;
   --bg-surface: #131A26;
   --bg-surface-translucent: rgba(19, 26, 38, 0.88);
@@ -172,6 +174,175 @@ button, input, select, textarea {
 .btn-secondary:hover {
   background-color: var(--bg-surface-hover);
   border-color: var(--border-focus);
+}
+
+/* ==========================================================================
+   GLOBAL FORM & INPUT DESIGN SYSTEM (Apple & Linear Grade)
+   ========================================================================== */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 16px;
+}
+
+.form-label, label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  letter-spacing: -0.01em;
+  display: inline-block;
+}
+
+/* Universal Input Field & Native Inputs */
+.input-field,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="date"],
+input[type="search"],
+select,
+textarea {
+  width: 100%;
+  padding: 11px 16px;
+  font-size: 14px;
+  font-family: var(--font-family-body);
+  color: var(--ink-primary);
+  background-color: var(--bg-surface-hover);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: all var(--transition-fast);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.input-field::placeholder,
+input::placeholder,
+textarea::placeholder {
+  color: var(--ink-tertiary);
+  opacity: 0.85;
+}
+
+/* Hover State */
+.input-field:hover:not(:disabled),
+input:hover:not(:disabled),
+select:hover:not(:disabled),
+textarea:hover:not(:disabled) {
+  border-color: rgba(0, 113, 227, 0.35);
+  background-color: var(--bg-surface);
+}
+
+/* Focus State with Apple-grade glow */
+.input-field:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  background-color: var(--bg-surface);
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3.5px var(--accent-blue-subtle);
+}
+
+/* Disabled State */
+.input-field:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background-color: var(--bg-main);
+  border-color: var(--border-subtle);
+}
+
+/* Select specific dropdown arrow */
+select {
+  cursor: pointer;
+  padding-right: 38px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2386868B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 15px;
+}
+
+[data-theme="dark"] select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* Textarea defaults */
+textarea {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* Chrome / Safari / Edge Autofill Fix for Dark and Light Modes */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px var(--bg-surface-hover) inset !important;
+  -webkit-text-fill-color: var(--ink-primary) !important;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: var(--ink-primary);
+}
+
+/* Date Input Indicator */
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.85);
+  cursor: pointer;
+}
+
+/* Number input spin button subtle */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+/* Error States */
+.input-field.error,
+input.error,
+select.error,
+textarea.error {
+  border-color: var(--color-danger) !important;
+  box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.15) !important;
+}
+
+.input-error-msg {
+  font-size: 12px;
+  color: var(--color-danger);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Modern Checkbox & Radio */
+input[type="checkbox"],
+input[type="radio"] {
+  width: 17px;
+  height: 17px;
+  border-radius: 4.5px;
+  border: 1.5px solid var(--border-subtle);
+  background-color: var(--bg-surface);
+  accent-color: var(--accent-blue);
+  cursor: pointer;
+  vertical-align: middle;
+  transition: all var(--transition-fast);
+  margin-right: 8px;
+}
+
+input[type="radio"] {
+  border-radius: 50%;
+}
+
+input[type="checkbox"]:focus-visible,
+input[type="radio"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-blue-subtle);
 }
 
 /* Card System */

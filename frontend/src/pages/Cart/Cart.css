@@ -277,23 +277,40 @@
 
 .coupon-form {
   display: flex;
-  gap: 8px;
+  gap: 10px;
+  align-items: stretch;
 }
 
 .coupon-form input {
   flex: 1;
-  padding: 8px 12px;
-  border: 1px solid var(--border-subtle);
+  padding: 10px 14px;
+  border: 1.5px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  background-color: var(--bg-input);
+  background-color: var(--bg-surface-hover);
   color: var(--ink-primary);
   font-size: 13.5px;
+  font-family: 'SF Mono', Consolas, monospace;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   outline: none;
   text-transform: uppercase;
+  transition: all var(--transition-fast);
+}
+
+.coupon-form input:hover {
+  background-color: var(--bg-surface);
+  border-color: rgba(0, 113, 227, 0.35);
 }
 
 .coupon-form input:focus {
+  background-color: var(--bg-surface);
   border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px var(--accent-blue-subtle);
+}
+
+.coupon-form .btn-secondary {
+  border-radius: var(--radius-sm);
+  padding: 10px 18px;
 }
 
 .applied-coupon-pill {

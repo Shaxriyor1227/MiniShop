@@ -479,15 +479,18 @@
 }
 
 .add-review-box {
-  background-color: var(--bg-main);
+  background-color: var(--bg-surface);
+  border: 1.5px solid var(--border-subtle);
   padding: 24px;
   border-radius: var(--radius-md);
   margin-bottom: 32px;
+  box-shadow: var(--shadow-soft);
 }
 
 .add-review-box h4 {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--ink-primary);
   margin-bottom: 16px;
 }
 
@@ -496,16 +499,35 @@
   align-items: center;
   gap: 12px;
   margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-secondary);
 }
 
 .stars-input {
   display: flex;
-  gap: 4px;
+  gap: 6px;
+  align-items: center;
 }
 
 .star-btn {
   background: none;
-  padding: 2px;
+  border: none;
+  cursor: pointer;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xs);
+  transition: transform var(--transition-fast);
+}
+
+.star-btn:hover {
+  transform: scale(1.2);
+}
+
+.star-btn:focus-visible {
+  outline: 2px solid var(--accent-blue);
 }
 
 .review-textarea {
