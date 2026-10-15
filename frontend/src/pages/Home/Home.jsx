@@ -153,6 +153,25 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const arrivalsScrollRef = useRef(null);
 
+  // Refresh & Mount Entrance Splash Animation
+  const [showSplash, setShowSplash] = useState(true);
+  const [splashFading, setSplashFading] = useState(false);
+
+  useEffect(() => {
+    const fadeTimer = setTimeout(() => {
+      setSplashFading(true);
+    }, 850);
+
+    const removeTimer = setTimeout(() => {
+      setShowSplash(false);
+    }, 1300);
+
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(removeTimer);
+    };
+  }, []);
+
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
@@ -178,7 +197,32 @@ const Home = () => {
   };
 
   return (
-    <div className="home-editorial-page page-enter">
+    <div className={`home-editorial-page page-enter ${showSplash ? 'is-entering' : ''}`}>
+      {/* Refresh / Mount Splash Animation */}
+      {showSplash && (
+        <div
+          className={`home-refresh-splash ${splashFading ? 'splash-fading' : ''}`}
+          aria-hidden="true"
+        >
+          <div className="splash-ambient-glow" />
+          <div className="splash-center-content">
+            <div className="splash-icon-cluster">
+              <div className="splash-pulse-halo" />
+              <div className="splash-icon-disc">
+                <Sparkles size={28} className="splash-sparkle-symbol" />
+              </div>
+            </div>
+            <div className="splash-brand-text">
+              <span className="splash-brand-title">MINISHOP</span>
+              <span className="splash-brand-motto">Simple. Beautiful. Yours.</span>
+            </div>
+            <div className="splash-meter-track">
+              <div className="splash-meter-fill" />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 1. EDITORIAL HERO SECTION */}
       <section className="editorial-hero-section">
         <div className="container">
