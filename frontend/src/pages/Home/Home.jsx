@@ -39,51 +39,47 @@ const brandLogos = [
 
 const newArrivalsData = [
   {
-    tag: 'TITANIUM DLC',
-    name: 'Chronos Stealth',
-    desc: 'Sapphire crystal lens, 14-day battery',
+    tagKey: 'home.arr_tag3',
+    defaultTag: 'CHRONO X',
+    nameKey: 'home.arr_name3',
+    defaultName: 'Minimal OLED Smartwatch',
+    descKey: 'home.arr_desc3',
+    defaultDesc: 'Grade 5 titanium chassis, sapphire crystal, and 7-day battery.',
     price: 420,
     img: '/images/stitch/smart_watch.png',
     link: '/catalog?category=wearables'
   },
   {
-    tag: 'LIMITED RUN',
-    name: 'Horizon Noir',
-    desc: 'Matte vapor deposition acoustic finish',
+    tagKey: 'home.arr_tag1',
+    defaultTag: 'STUDIO AUDIO',
+    nameKey: 'home.arr_name1',
+    defaultName: 'Studio Wireless Pro',
+    descKey: 'home.arr_desc1',
+    defaultDesc: 'Hybrid Active Noise Cancellation with 40-hour endurance.',
     price: 540,
     img: '/images/stitch/audio_headphones.png',
     link: '/catalog?category=audio'
   },
   {
-    tag: 'SOLID WALNUT',
-    name: 'Form Studio Tray',
-    desc: 'Solid american walnut & anodized aluminum',
+    tagKey: 'home.arr_tag4',
+    defaultTag: 'LIGHTING',
+    nameKey: 'home.arr_name4',
+    defaultName: 'Smart Desk Ambient Lamp',
+    descKey: 'home.arr_desc4',
+    defaultDesc: 'Circadian balanced light with precision aluminum touch dimmer.',
     price: 85,
     img: '/images/stitch/walnut_tray.png',
     link: '/catalog?category=accessories'
   },
   {
-    tag: 'CUSTOM LINEAR',
-    name: 'Aer Wireless 75',
-    desc: 'Low-profile wireless mechanical keyboard',
+    tagKey: 'home.arr_tag2',
+    defaultTag: 'TACTILE GEAR',
+    nameKey: 'home.arr_name2',
+    defaultName: 'Ultra-Slim Mechanical Keyboard',
+    descKey: 'home.arr_desc2',
+    defaultDesc: 'Low-profile wireless mechanical deck with double-shot PBT.',
     price: 179,
     img: '/images/stitch/mechanical_kb.png',
-    link: '/catalog?category=workspace'
-  },
-  {
-    tag: 'FAST MAG CHARGE',
-    name: 'Linear Stand 3',
-    desc: 'Three-device inductive aluminum tower',
-    price: 129,
-    img: '/images/stitch/mag_stand.png',
-    link: '/catalog?category=accessories'
-  },
-  {
-    tag: '4K POLLING',
-    name: 'Tangent Mouse',
-    desc: 'Precision machined thumb scroll & ceramic feet',
-    price: 115,
-    img: '/images/stitch/tangent_mouse.png',
     link: '/catalog?category=workspace'
   }
 ];
@@ -189,10 +185,10 @@ const Home = () => {
           <div className="hero-top-row">
             <div className="hero-top-left">
               <span className="hero-eyebrow-tag">
-                MINISHOP / NEW COLLECTION
+                {t('home.hero_badge')}
               </span>
               <h1 className="hero-display-headline">
-                Technology,<br />beautifully simple.
+                {t('home.hero_title')}
               </h1>
               <p className="hero-editorial-subtext">
                 {t('home.hero_desc')}
@@ -239,7 +235,7 @@ const Home = () => {
             />
             <div className="hero-cinema-badge">
               <Sparkles size={14} />
-              <span>Studio Grade 5K Retina Ecosystem</span>
+              <span>{t('home.hero_display_title')}</span>
             </div>
           </div>
         </div>
@@ -251,19 +247,19 @@ const Home = () => {
           <div className="trust-strip-inner">
             <div className="trust-item">
               <span className="trust-dot"></span>
-              <span className="trust-text">100% Original</span>
+              <span className="trust-text">{t('home.trust_original')}</span>
             </div>
             <div className="trust-item">
               <span className="trust-dot"></span>
-              <span className="trust-text">Express Delivery</span>
+              <span className="trust-text">{t('home.trust_delivery')}</span>
             </div>
             <div className="trust-item">
               <span className="trust-dot"></span>
-              <span className="trust-text">4.98 / 5.0 Rating</span>
+              <span className="trust-text">{t('home.trust_rating')}</span>
             </div>
             <div className="trust-item">
               <span className="trust-dot"></span>
-              <span className="trust-text">Secure 256-bit SSL</span>
+              <span className="trust-text">{t('home.trust_security')}</span>
             </div>
           </div>
         </div>
@@ -290,8 +286,8 @@ const Home = () => {
         <div className="container">
           <div className="section-title-header">
             <div>
-              <span className="section-eyebrow">COLLECTIONS</span>
-              <h2 className="section-title-large">Find what fits your world.</h2>
+              <span className="section-eyebrow">{t('home.collections_eyebrow')}</span>
+              <h2 className="section-title-large">{t('home.collections_title')}</h2>
             </div>
             <Link to="/catalog" className="section-header-link">
               <span>{t('home.explore_all')}</span>
@@ -312,10 +308,10 @@ const Home = () => {
               />
               <div className="tile-gradient-overlay"></div>
               <div className="tile-content">
-                <span className="tile-micro-tag">ACOUSTIC SYSTEMS</span>
-                <h3 className="tile-title">Audio</h3>
+                <span className="tile-micro-tag">{t('home.col_audio_tag')}</span>
+                <h3 className="tile-title">{t('home.col_audio_title')}</h3>
                 <p className="tile-action-link">
-                  <span>Explore sound</span>
+                  <span>{t('home.col_audio_action')}</span>
                   <ArrowRight size={15} />
                 </p>
               </div>
@@ -333,10 +329,10 @@ const Home = () => {
               />
               <div className="tile-gradient-overlay"></div>
               <div className="tile-content">
-                <span className="tile-micro-tag">WEARABLE CHRONO</span>
-                <h3 className="tile-title">Smart Watches</h3>
+                <span className="tile-micro-tag">{t('home.col_watches_tag')}</span>
+                <h3 className="tile-title">{t('home.col_watches_title')}</h3>
                 <p className="tile-action-link">
-                  <span>Precision timepieces</span>
+                  <span>{t('home.col_watches_action')}</span>
                   <ArrowRight size={15} />
                 </p>
               </div>
@@ -354,10 +350,10 @@ const Home = () => {
               />
               <div className="tile-gradient-overlay"></div>
               <div className="tile-content">
-                <span className="tile-micro-tag">ERGONOMIC SANCTUARY</span>
-                <h3 className="tile-title">Workspace</h3>
+                <span className="tile-micro-tag">{t('home.col_workspace_tag')}</span>
+                <h3 className="tile-title">{t('home.col_workspace_title')}</h3>
                 <p className="tile-action-link">
-                  <span>Curate your desk</span>
+                  <span>{t('home.col_workspace_action')}</span>
                   <ArrowRight size={15} />
                 </p>
               </div>
@@ -375,10 +371,10 @@ const Home = () => {
               />
               <div className="tile-gradient-overlay"></div>
               <div className="tile-content">
-                <span className="tile-micro-tag">TACTILE ESSENTIALS</span>
-                <h3 className="tile-title">Accessories</h3>
+                <span className="tile-micro-tag">{t('home.col_accessories_tag')}</span>
+                <h3 className="tile-title">{t('home.col_accessories_title')}</h3>
                 <p className="tile-action-link">
-                  <span>Essential companions</span>
+                  <span>{t('home.col_accessories_action')}</span>
                   <ArrowRight size={15} />
                 </p>
               </div>
@@ -403,35 +399,35 @@ const Home = () => {
             </div>
 
             <div className="specimen-info-pane">
-              <span className="specimen-badge">FEATURED SPECIMEN</span>
-              <h2 className="specimen-headline">Acoustic Horizon One</h2>
+              <span className="specimen-badge">{t('home.specimen_badge')}</span>
+              <h2 className="specimen-headline">{t('home.specimen_title')}</h2>
               <p className="specimen-desc">
-                Custom 40mm beryllium drivers suspended in aerospace-grade aluminum. Pure acoustic transparency meets uncompromising comfort for deep uninterrupted immersion.
+                {t('home.specimen_desc')}
               </p>
 
               {/* Technical 3-Column Specification Matrix */}
               <div className="specimen-tech-matrix">
                 <div className="tech-matrix-col">
-                  <span className="matrix-lbl">DRIVER</span>
-                  <span className="matrix-val">40mm Beryllium</span>
+                  <span className="matrix-lbl">{t('home.specimen_driver')}</span>
+                  <span className="matrix-val">{t('home.specimen_driver_val')}</span>
                 </div>
                 <div className="tech-matrix-col">
-                  <span className="matrix-lbl">FREQUENCY</span>
-                  <span className="matrix-val">5Hz – 48kHz</span>
+                  <span className="matrix-lbl">{t('home.specimen_freq')}</span>
+                  <span className="matrix-val">{t('home.specimen_freq_val')}</span>
                 </div>
                 <div className="tech-matrix-col">
-                  <span className="matrix-lbl">WEIGHT</span>
-                  <span className="matrix-val">248 Grams</span>
+                  <span className="matrix-lbl">{t('home.specimen_weight')}</span>
+                  <span className="matrix-val">{t('home.specimen_weight_val')}</span>
                 </div>
               </div>
 
               <div className="specimen-action-row">
                 <div className="specimen-price-box">
-                  <span className="price-lbl">PRICE</span>
+                  <span className="price-lbl">{t('home.specimen_price')}</span>
                   <span className="price-val">$499</span>
                 </div>
                 <Link to="/catalog?category=audio" className="btn-primary specimen-btn">
-                  <span>Discover product</span>
+                  <span>{t('home.specimen_action')}</span>
                   <ArrowRight size={16} />
                 </Link>
               </div>
@@ -445,11 +441,11 @@ const Home = () => {
         <div className="container">
           <div className="section-title-header">
             <div>
-              <span className="section-eyebrow">TRENDING</span>
-              <h2 className="section-title-large">Popular right now</h2>
+              <span className="section-eyebrow">{t('home.trending_eyebrow')}</span>
+              <h2 className="section-title-large">{t('home.trending_title')}</h2>
             </div>
             <Link to="/catalog" className="section-header-link">
-              <span>View all products</span>
+              <span>{t('home.trending_all')}</span>
               <ArrowRight size={16} />
             </Link>
           </div>
@@ -481,17 +477,17 @@ const Home = () => {
             <div className="promo-ambient-light"></div>
             <div className="promo-layout-grid">
               <div className="promo-text-side">
-                <span className="promo-eyebrow">WORKSPACE ARCHITECTURE</span>
-                <h2 className="promo-headline">Build your perfect setup.</h2>
+                <span className="promo-eyebrow">{t('home.promo_eyebrow')}</span>
+                <h2 className="promo-headline">{t('home.promo_title')}</h2>
                 <p className="promo-body">
-                  Curated ergonomics, audiophile acoustics, and tactile mechanical precision engineered to elevate your daily focus and quiet your surroundings.
+                  {t('home.promo_desc')}
                 </p>
                 <div className="promo-btn-group">
                   <Link to="/catalog?category=workspace" className="btn-primary promo-pill-btn">
-                    <span>Build your workspace</span>
+                    <span>{t('home.promo_cta')}</span>
                     <ArrowRight size={16} />
                   </Link>
-                  <span className="promo-bundles-tag">BUNDLES FROM $699</span>
+                  <span className="promo-bundles-tag">{t('home.promo_bundle_tag')}</span>
                 </div>
               </div>
 
@@ -515,8 +511,8 @@ const Home = () => {
         <div className="container">
           <div className="section-title-header">
             <div>
-              <span className="section-eyebrow">EDITION 04</span>
-              <h2 className="section-title-large">Just arrived.</h2>
+              <span className="section-eyebrow">{t('home.arrivals_eyebrow')}</span>
+              <h2 className="section-title-large">{t('home.arrivals_title')}</h2>
             </div>
             <div className="arrivals-nav-btns">
               <button
@@ -542,16 +538,16 @@ const Home = () => {
                 <div className="arrival-img-frame">
                   <img
                     src={item.img}
-                    alt={item.name}
+                    alt={t(item.nameKey, item.defaultName)}
                     className="arrival-img"
                     onError={(e) => {
                       e.currentTarget.src = '/images/product_placeholder.png';
                     }}
                   />
                 </div>
-                <span className="arrival-tag">{item.tag}</span>
-                <h4 className="arrival-title">{item.name}</h4>
-                <p className="arrival-desc">{item.desc}</p>
+                <span className="arrival-tag">{t(item.tagKey, item.defaultTag)}</span>
+                <h4 className="arrival-title">{t(item.nameKey, item.defaultName)}</h4>
+                <p className="arrival-desc">{t(item.descKey, item.defaultDesc)}</p>
                 <div className="arrival-footer-row">
                   <span className="arrival-price">${item.price}</span>
                   <ArrowUpRight size={18} className="arrival-link-arrow" />
@@ -574,19 +570,19 @@ const Home = () => {
 
         <div className="reviews-marquee-container">
           <div className="reviews-marquee-track">
-            {[...testimonials, ...testimonials].map((t, idx) => (
-              <div key={`${t.id}-${idx}`} className="editorial-review-card card">
+            {[...testimonials, ...testimonials].map((tItem, idx) => (
+              <div key={`${tItem.id}-${idx}`} className="editorial-review-card card">
                 <div className="review-rating-stars">
-                  {[...Array(t.rating)].map((_, i) => (
+                  {[...Array(tItem.rating)].map((_, i) => (
                     <Star key={i} size={15} fill="#FFB800" color="#FFB800" />
                   ))}
                 </div>
-                <p className="review-quote-text">"{t.text}"</p>
+                <p className="review-quote-text">"{tItem.text}"</p>
                 <div className="review-author-meta">
                   <div className="author-avatar-circle">
                     <img
-                      src={t.avatarImg}
-                      alt={t.name}
+                      src={tItem.avatarImg}
+                      alt={tItem.name}
                       className="author-avatar-img"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
@@ -596,17 +592,17 @@ const Home = () => {
                       }}
                     />
                     <div className="author-avatar-fallback" style={{ display: 'none' }}>
-                      {t.avatar}
+                      {tItem.avatar}
                     </div>
                   </div>
                   <div className="author-text-info">
-                    <h5>{t.name}</h5>
-                    <span>{t.role}</span>
+                    <h5>{tItem.name}</h5>
+                    <span>{tItem.role}</span>
                   </div>
                 </div>
                 <div className="review-verified-badge">
                   <CheckCircle2 size={13} className="verified-check" />
-                  <span>Verified Purchase: {t.product}</span>
+                  <span>{t('home.verified_purchase')}: {tItem.product}</span>
                 </div>
               </div>
             ))}
@@ -618,10 +614,10 @@ const Home = () => {
       <section className="editorial-final-cta-section">
         <div className="container">
           <div className="final-cta-inner">
-            <span className="final-cta-eyebrow">MINIMALIST CALIBRATION</span>
-            <h2 className="final-cta-headline">Your next favorite device is waiting.</h2>
+            <span className="final-cta-eyebrow">{t('home.final_cta_eyebrow')}</span>
+            <h2 className="final-cta-headline">{t('home.final_cta_title')}</h2>
             <Link to="/catalog" className="btn-primary final-cta-pill">
-              <span>Explore MiniShop</span>
+              <span>{t('home.final_cta_btn')}</span>
               <ArrowRight size={17} />
             </Link>
           </div>

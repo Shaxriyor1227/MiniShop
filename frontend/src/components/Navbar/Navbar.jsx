@@ -152,7 +152,7 @@ const Navbar = () => {
                 }
               >
                 <Shield size={14} />
-                <span>Admin</span>
+                <span>{t('nav.admin')}</span>
               </NavLink>
             )}
           </nav>
@@ -163,7 +163,7 @@ const Navbar = () => {
             <button
               className="spotlight-search-trigger"
               onClick={() => setShowSpotlight(true)}
-              title="Search (Ctrl+K)"
+              title={`${t('nav.search_placeholder')} (${t('nav.search_shortcut')})`}
             >
               <Search size={15} className="trigger-search-icon" />
               <span className="trigger-text">{t('nav.search_placeholder').replace('...', '')}</span>
@@ -177,7 +177,7 @@ const Navbar = () => {
             <button
               className="nav-action-icon theme-toggle-btn"
               onClick={toggleTheme}
-              title={isDark ? "Yorug' rejim (Light)" : "Qorong'i rejim (Dark)"}
+              title={isDark ? t('nav.theme_light') : t('nav.theme_dark')}
               aria-label="Toggle Theme"
             >
               {isDark ? <Sun size={18} strokeWidth={2} /> : <Moon size={18} strokeWidth={2} />}
@@ -287,7 +287,7 @@ const Navbar = () => {
             <button
               className="mobile-drawer-toggle-btn"
               onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
-              aria-label="Menu"
+              aria-label={t('nav.menu')}
             >
               {mobileDrawerOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -309,7 +309,7 @@ const Navbar = () => {
                   Mini<span className="brand-blue-part">Shop</span>
                 </span>
               </div>
-              <button className="drawer-close-btn" onClick={() => setMobileDrawerOpen(false)}>
+              <button className="drawer-close-btn" onClick={() => setMobileDrawerOpen(false)} aria-label={t('nav.close')}>
                 <X size={18} />
               </button>
             </div>
@@ -331,7 +331,7 @@ const Navbar = () => {
 
             {/* Drawer Navigation Links */}
             <div className="mobile-drawer-content">
-              <div className="drawer-section-title">Navigation & Catalog</div>
+              <div className="drawer-section-title">{t('nav.nav_and_catalog')}</div>
               <div className="mobile-nav-categories">
                 <Link to="/" className="mobile-category-row" onClick={() => setMobileDrawerOpen(false)}>
                   <div className="cat-icon-frame">
@@ -402,7 +402,7 @@ const Navbar = () => {
 
               <div className="drawer-divider"></div>
 
-              <div className="drawer-section-title">Account & Settings</div>
+              <div className="drawer-section-title">{t('nav.account_and_settings')}</div>
               <div className="mobile-nav-categories">
                 <div style={{ padding: '8px 12px' }}>
                   <LanguageSwitcher variant="pills" />
@@ -416,7 +416,7 @@ const Navbar = () => {
                   <div className="cat-icon-frame">
                     {isDark ? <Sun size={16} /> : <Moon size={16} />}
                   </div>
-                  <span>Rejim: {isDark ? "Dark" : "Light"}</span>
+                  <span>{t('nav.mode_label')}: {isDark ? t('nav.theme_dark') : t('nav.theme_light')}</span>
                 </div>
 
                 <Link

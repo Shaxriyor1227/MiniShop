@@ -7,6 +7,7 @@ import { useWishlist } from '../../context/WishlistContext';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useFormatters } from '../../utils/formatters';
+import { getCategoryName, getBrandName } from '../../utils/i18nHelpers';
 import {
   Heart,
   ShoppingBag,
@@ -90,12 +91,12 @@ const ProductDetail = () => {
     const res = await addToCart(product, quantity);
     if (res?.success) {
       setAdded(true);
-      showToast(`${quantity}x ${product.name} savatga qo'shildi!`, 'success');
+      showToast(t('toast.cart_added', { name: `${quantity}x ${product.name}` }), 'success');
       setTimeout(() => setAdded(false), 2000);
     } else {
-      showToast(res?.message || 'Savatga qo\'shishda xatolik', 'error');
+      showToast(res?.message || t('toast.cart_error'), 'error');
     }
-  }, [product, addToCart, quantity, showToast]);
+  }, [product, addToCart, quantity, showToast, t]);
 
   const handleToggleWishlist = useCallback(async () => {
     if (!product) return;
@@ -103,12 +104,12 @@ const ProductDetail = () => {
     if (res?.success) {
       showToast(
         res.isAdded
-          ? `${product.name} istaklar ro'yxatiga qo'shildi`
-          : `${product.name} istaklar ro'yxatidan o'chirildi`,
+          ? t('toast.wishlist_added', { name: product.name })
+          : t('toast.wishlist_removed', { name: product.name }),
         'info'
       );
     }
-  }, [product, toggleWishlist, showToast]);
+  }, [product, toggleWishlist, showToast, t]);
 
   const handleReviewSubmit = useCallback(async (e) => {
     e.preventDefault();
@@ -125,16 +126,16 @@ const ProductDetail = () => {
         setReviews((prev) => [res.data.innerData, ...prev]);
         setComment('');
         setRating(5);
-        showToast("Sharhingiz muvaffaqiyatli qoldirildi!", 'success');
+        showToast(t('toast.review_submitted'), 'success');
       }
     } catch (err) {
-      const msg = err.response?.data?.message || 'Sharh qoldirishda xatolik yuz berdi';
+      const msg = err.response?.data?.message || t('toast.review_error');
       setReviewError(msg);
       showToast(msg, 'error');
     } finally {
       setReviewSubmitting(false);
     }
-  }, [isAuthenticated, id, rating, comment, showToast]);
+  }, [isAuthenticated, id, rating, comment, showToast, t]);
 
   const averageRating = useMemo(() => {
     if (!reviews.length) return '5.0';
@@ -145,7 +146,7 @@ const ProductDetail = () => {
     return (
       <div className="container product-detail-loading">
         <div className="loading-spinner"></div>
-        <p>Loading product details...</p>
+        <p>{t('product.loading')}</p>
       </div>
     );
   }
@@ -153,9 +154,9 @@ const ProductDetail = () => {
   if (!product) {
     return (
       <div className="container not-found-wrapper">
-        <h2>Product not found</h2>
-        <Link to="/" className="btn-primary">
-          <ArrowLeft size={16} /> Back to Catalog
+        <h2>{t('product.not_found')}</h2>
+        <Link to="/catalog" className="btn-primary">
+          <ArrowLeft size={16} /> {t('product.back_to_catalog')}
         </Link>
       </div>
     );
@@ -172,7 +173,7 @@ const ProductDetail = () => {
           <Link to="/">{t('catalog.breadcrumb_home')}</Link>
           <span>/</span>
           <Link to={`/catalog?category=${product.category_id?.slug || product.category_id?._id || ''}`}>
-            {product.category_id?.name || t('nav.catalog')}
+            {product.category_id ? getCategoryName(product.category_id, t) : t('nav.catalog')}
           </Link>
           <span>/</span>
           <span className="current-crumb">{product.name}</span>
@@ -199,7 +200,9 @@ const ProductDetail = () => {
 
           {/* Info & Buy Panel */}
           <div className="product-buy-panel">
-            <div className="detail-brand-badge">{product.brand_id?.name || 'MiniShop Collection'}</div>
+            <div className="detail-brand-badge">
+              {product.brand_id ? getBrandName(product.brand_id, t) : t('nav.hardware_vault')}
+            </div>
             <h1 className="detail-product-title">{product.name}</h1>
 
             <div className="detail-rating-row">
@@ -214,13 +217,13 @@ const ProductDetail = () => {
                 ))}
               </div>
               <span className="rating-num">{averageRating}</span>
-              <span className="rating-count">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
+              <span className="rating-count">({reviews.length} {t('product.reviews_tab', { count: reviews.length })})</span>
             </div>
 
             <div className="detail-price-box">
               <span className="detail-price">{formatPrice(product.price)}</span>
               <span className={`detail-stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
-                {product.stock > 0 ? `Stock: ${product.stock}` : t('product.out_of_stock')}
+                {product.stock > 0 ? t('product.stock_left', { count: product.stock }) : t('product.out_of_stock')}
               </span>
             </div>
 
@@ -291,7 +294,7 @@ const ProductDetail = () => {
               <button
                 className={`btn-secondary detail-wish-btn ${isLiked ? 'liked' : ''}`}
                 onClick={handleToggleWishlist}
-                title={isLiked ? "Wishlist" : "Wishlist"}
+                title={isLiked ? t('product.remove_wishlist') : t('product.add_wishlist')}
               >
                 <Heart size={20} fill={isLiked ? '#FF3B30' : 'none'} color={isLiked ? '#FF3B30' : '#1D1D1F'} />
               </button>
@@ -388,7 +391,7 @@ const ProductDetail = () => {
         <div className="product-reviews-section card">
           <div className="reviews-header">
             <h3>{t('product.reviews_tab', { count: reviews.length })}</h3>
-            <span className="reviews-avg-badge">Rating: {averageRating} / 5</span>
+            <span className="reviews-avg-badge">{t('product.rating_val', { val: averageRating })}</span>
           </div>
 
           {/* Add Review Form */}
@@ -397,7 +400,7 @@ const ProductDetail = () => {
               <h4>{t('product.write_review')}</h4>
               {reviewError && <p className="review-err-msg">{reviewError}</p>}
               <div className="rating-select-row">
-                <span>Rating:</span>
+                <span>{t('product.your_rating')}</span>
                 <div className="stars-input">
                   {[1, 2, 3, 4, 5].map((starVal) => (
                     <button
@@ -417,7 +420,7 @@ const ProductDetail = () => {
               </div>
               <textarea
                 className="input-field review-textarea"
-                placeholder="Share your thoughts and experience with this product..."
+                placeholder={t('product.review_placeholder')}
                 rows="3"
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
@@ -429,7 +432,7 @@ const ProductDetail = () => {
             </form>
           ) : (
             <div className="login-to-review-box">
-              <p>{t('auth.login_subtitle')}</p>
+              <p>{t('product.login_to_review')}</p>
               <Link to="/login" className="btn-secondary">
                 {t('nav.login')}
               </Link>
@@ -439,7 +442,7 @@ const ProductDetail = () => {
           {/* Review List */}
           <div className="reviews-list">
             {reviews.length === 0 ? (
-              <p className="no-reviews-text">No reviews yet.</p>
+              <p className="no-reviews-text">{t('product.no_reviews')}</p>
             ) : (
               reviews.map((rev) => (
                 <div key={rev._id} className="review-card">

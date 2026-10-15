@@ -3,16 +3,17 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../../context/ToastContext';
 import { useFormatters } from '../../utils/formatters';
+import { getOrderStatus } from '../../utils/i18nHelpers';
 import axiosInstance from '../../api/axiosInstance';
 import { Package, Clock, CheckCircle2, Truck, XCircle, ArrowRight } from 'lucide-react';
 import './Orders.css';
 
 const statusConfig = {
-  pending: { label: 'Processing', color: 'badge-amber', icon: Clock },
-  paid: { label: 'Paid & Processing', color: 'badge-blue', icon: CheckCircle2 },
-  shipped: { label: 'Shipped', color: 'badge-blue', icon: Truck },
-  delivered: { label: 'Delivered', color: 'badge-green', icon: CheckCircle2 },
-  cancelled: { label: 'Cancelled', color: 'badge-danger', icon: XCircle }
+  pending: { color: 'badge-amber', icon: Clock },
+  paid: { color: 'badge-blue', icon: CheckCircle2 },
+  shipped: { color: 'badge-blue', icon: Truck },
+  delivered: { color: 'badge-green', icon: CheckCircle2 },
+  cancelled: { color: 'badge-danger', icon: XCircle }
 };
 
 const Orders = () => {
@@ -41,17 +42,17 @@ const Orders = () => {
   }, []);
 
   const handleCancelOrder = async (orderId) => {
-    if (!window.confirm('Haqiqatan ham bu buyurtmani bekor qilmoqchimisiz?')) return;
+    if (!window.confirm(t('orders.confirm_cancel'))) return;
     try {
       const res = await axiosInstance.put(`/order/cancel/${orderId}`);
       if (res.data.success) {
         setOrders((prev) =>
           prev.map((o) => (o._id === orderId ? { ...o, status: 'cancelled' } : o))
         );
-        showToast("Buyurtma muvaffaqiyatli bekor qilindi", 'info');
+        showToast(t('toast.order_cancelled'), 'info');
       }
     } catch (err) {
-      showToast(err.response?.data?.message || 'Buyurtmani bekor qilishda xatolik yuz berdi', 'error');
+      showToast(err.response?.data?.message || t('toast.order_cancel_error'), 'error');
     }
   };
 
@@ -71,7 +72,7 @@ const Orders = () => {
       <div className="container">
         <div className="orders-header">
           <h1 className="page-title">{t('orders.title')}</h1>
-          <p className="page-subtitle">Track, review, and manage your recent purchases</p>
+          <p className="page-subtitle">{t('orders.subtitle')}</p>
         </div>
 
         {orders.length === 0 ? (
@@ -103,7 +104,7 @@ const Orders = () => {
                     <div className="order-status-group">
                       <span className={`badge ${statusInfo.color}`}>
                         <StatusIcon size={12} style={{ marginRight: '4px' }} />
-                        {statusInfo.label}
+                        {getOrderStatus(order.status, t)}
                       </span>
                     </div>
                   </div>
@@ -139,14 +140,14 @@ const Orders = () => {
                     {/* Address & Total */}
                     <div className="order-meta-footer">
                       <div className="order-address-box">
-                        <strong>Shipping Address:</strong>
+                        <strong>{t('orders.shipping_address')}</strong>
                         <p>
                           {order.address_id?.city}, {order.address_id?.street}
                         </p>
                       </div>
 
                       <div className="order-total-box">
-                        <span>Total Paid:</span>
+                        <span>{t('orders.total_paid')}</span>
                         <h4>{formatPrice(order.total)}</h4>
                       </div>
                     </div>

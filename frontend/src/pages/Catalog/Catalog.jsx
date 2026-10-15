@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import axiosInstance from '../../api/axiosInstance';
 import ProductCard from '../../components/ProductCard/ProductCard';
+import { getCategoryName, getBrandName } from '../../utils/i18nHelpers';
 import {
   SlidersHorizontal,
   ArrowUpDown,
@@ -252,10 +253,17 @@ const Catalog = () => {
         {/* Page Header */}
         <div className="catalog-editorial-header">
           <div className="header-left-col">
-            <span className="catalog-eyebrow">MINISHOP / HARDWARE VAULT</span>
+            <span className="catalog-eyebrow">{t('nav.hardware_vault')}</span>
             <h1 className="catalog-main-title">
               {categoryParam
-                ? `${categoryParam}`
+                ? (() => {
+                    const matchedCat = categories.find(
+                      (c) => (c.slug && c.slug.toLowerCase() === categoryParam.toLowerCase()) ||
+                             c.name.toLowerCase() === categoryParam.toLowerCase() ||
+                             c._id === categoryParam
+                    );
+                    return matchedCat ? getCategoryName(matchedCat, t) : categoryParam;
+                  })()
                 : searchParam
                 ? `"${searchParam}"`
                 : t('catalog.title')}
@@ -290,7 +298,7 @@ const Catalog = () => {
                 onClick={() => handleCategoryChange(cat._id)}
               >
                 <IconComp size={15} />
-                <span>{cat.name}</span>
+                <span>{getCategoryName(cat, t)}</span>
               </button>
             );
           })}
@@ -344,7 +352,7 @@ const Catalog = () => {
             <div
               className="catalog-bottomsheet-backdrop"
               onClick={() => setMobileFilterOpen(false)}
-              aria-label="Yopish"
+              aria-label={t('nav.close')}
             />
           )}
 
@@ -365,7 +373,7 @@ const Catalog = () => {
                   type="button"
                   className="bottomsheet-close-btn"
                   onClick={() => setMobileFilterOpen(false)}
-                  aria-label="Yopish"
+                  aria-label={t('nav.close')}
                 >
                   <X size={18} />
                 </button>
@@ -375,7 +383,7 @@ const Catalog = () => {
             <div className="bottomsheet-scrollable-content">
               {/* 1. Search Box */}
               <div className="filter-group">
-                <label className="filter-group-title">{t('catalog.search_label', 'Qidirish')}</label>
+                <label className="filter-group-title">{t('catalog.search_label')}</label>
                 <form onSubmit={handleSearchSubmit} className="sidebar-search-box">
                   <input
                     type="text"
@@ -383,7 +391,7 @@ const Catalog = () => {
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                   />
-                  <button type="submit" aria-label="Search">
+                  <button type="submit" aria-label={t('catalog.search_label')}>
                     <Search size={14} />
                   </button>
                 </form>
@@ -398,7 +406,7 @@ const Catalog = () => {
                       className={`facet-pill-btn ${selectedBrand === '' ? 'active' : ''}`}
                       onClick={() => handleBrandChange('')}
                     >
-                      <span>{t('catalog.all_brands', 'Barcha brendlar')}</span>
+                      <span>{t('catalog.all_brands')}</span>
                       {selectedBrand === '' && <Check size={14} className="facet-check" />}
                     </button>
                     {brands.map((b) => (
@@ -407,7 +415,7 @@ const Catalog = () => {
                         className={`facet-pill-btn ${selectedBrand === b._id ? 'active' : ''}`}
                         onClick={() => handleBrandChange(b._id)}
                       >
-                        <span>{b.name}</span>
+                        <span>{getBrandName(b, t)}</span>
                         {selectedBrand === b._id && <Check size={14} className="facet-check" />}
                       </button>
                     ))}
@@ -425,7 +433,7 @@ const Catalog = () => {
                       className={`facet-pill-btn ${selectedPriceRange === idx ? 'active' : ''}`}
                       onClick={() => setSelectedPriceRange(idx)}
                     >
-                      <span>{range.defaultLabel}</span>
+                      <span>{t(range.labelKey, range.defaultLabel)}</span>
                       {selectedPriceRange === idx && <Check size={14} className="facet-check" />}
                     </button>
                   ))}
@@ -463,7 +471,7 @@ const Catalog = () => {
             <div className="catalog-top-controls">
               <div className="catalog-status-and-chips">
                 <span className="showing-results-text">
-                  <strong>{products.length}</strong> {t('catalog.count_products', { count: products.length }) || 'ta mahsulot'}
+                  <strong>{products.length}</strong> {t('catalog.count_products', { count: products.length })}
                 </span>
 
                 {activeFiltersCount > 0 && (
@@ -486,7 +494,7 @@ const Catalog = () => {
                     )}
                     {selectedCategory && (
                       <span className="active-filter-chip">
-                        {categories.find((c) => c._id === selectedCategory)?.name}
+                        {getCategoryName(categories.find((c) => c._id === selectedCategory), t)}
                         <button onClick={() => handleCategoryChange('')} aria-label="Remove category">
                           <X size={12} />
                         </button>
@@ -494,7 +502,7 @@ const Catalog = () => {
                     )}
                     {selectedBrand && (
                       <span className="active-filter-chip">
-                        {brands.find((b) => b._id === selectedBrand)?.name}
+                        {getBrandName(brands.find((b) => b._id === selectedBrand), t)}
                         <button onClick={() => handleBrandChange('')} aria-label="Remove brand">
                           <X size={12} />
                         </button>
@@ -502,7 +510,7 @@ const Catalog = () => {
                     )}
                     {selectedPriceRange > 0 && (
                       <span className="active-filter-chip">
-                        {priceRanges[selectedPriceRange].defaultLabel}
+                        {t(priceRanges[selectedPriceRange].labelKey, priceRanges[selectedPriceRange].defaultLabel)}
                         <button onClick={() => setSelectedPriceRange(0)} aria-label="Remove price">
                           <X size={12} />
                         </button>

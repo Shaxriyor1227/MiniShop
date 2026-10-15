@@ -57,10 +57,10 @@ const Checkout = () => {
     e.preventDefault();
     const errors = {};
     if (!city.trim()) {
-      errors.city = "Shahar yoki viloyat nomini kiriting";
+      errors.city = t('checkout.city_req');
     }
     if (!street.trim()) {
-      errors.street = "Ko'cha va uy raqamini kiriting";
+      errors.street = t('checkout.street_req');
     }
     if (Object.keys(errors).length > 0) {
       setAddressErrors(errors);
@@ -82,18 +82,18 @@ const Checkout = () => {
         setShowAddressForm(false);
         setCity('');
         setStreet('');
-        showToast("Yangi manzil muvaffaqiyatli saqlandi", 'success');
+        showToast(t('toast.address_saved'), 'success');
       }
     } catch (err) {
       console.error(err);
-      showToast(err.response?.data?.message || "Manzilni saqlashda xatolik yuz berdi", 'error');
+      showToast(err.response?.data?.message || t('toast.address_error'), 'error');
     }
   };
 
   const handlePlaceOrder = async () => {
     if (!selectedAddressId) {
-      setAddressSelectionError("Iltimos, yetkazib berish manzilini tanlang yoki yangi manzil qo'shing");
-      showToast("Iltimos, yetkazib berish manzilini tanlang", 'warning');
+      setAddressSelectionError(t('checkout.select_address_error'));
+      showToast(t('toast.select_address_warning'), 'warning');
       return;
     }
     setAddressSelectionError('');
@@ -117,10 +117,10 @@ const Checkout = () => {
       if (res.data.success) {
         setOrderSuccess(res.data.innerData);
         clearCart();
-        showToast("Buyurtmangiz muvaffaqiyatli qabul qilindi!", 'success');
+        showToast(t('toast.order_placed'), 'success');
       }
     } catch (err) {
-      const msg = err.response?.data?.message || "Buyurtmani rasmiylashtirishda xatolik yuz berdi.";
+      const msg = err.response?.data?.message || t('toast.order_error');
       setErrorMsg(msg);
       showToast(msg, 'error');
     } finally {
@@ -203,7 +203,7 @@ const Checkout = () => {
                   <div className="form-group" style={{ marginBottom: '8px' }}>
                     <input
                       type="text"
-                      placeholder="City / State (e.g. Tashkent, Yunusabad)"
+                      placeholder={t('checkout.city_placeholder')}
                       value={city}
                       onChange={(e) => {
                         setCity(e.target.value);
@@ -221,7 +221,7 @@ const Checkout = () => {
                   <div className="form-group" style={{ marginBottom: '12px' }}>
                     <input
                       type="text"
-                      placeholder="Street address, Apt, Suite"
+                      placeholder={t('checkout.street_placeholder')}
                       value={street}
                       onChange={(e) => {
                         setStreet(e.target.value);
@@ -256,7 +256,7 @@ const Checkout = () => {
 
               {addresses.length === 0 && !showAddressForm ? (
                 <p className="no-address-text">
-                  No saved addresses found. Please add your delivery address.
+                  {t('checkout.no_addresses')}
                 </p>
               ) : (
                 <div className="address-options-list">
@@ -279,7 +279,7 @@ const Checkout = () => {
                         <div className="addr-top">
                           <MapPin size={16} />
                           <strong>{addr.city}</strong>
-                          {addr.is_default && <span className="default-badge">Default</span>}
+                          {addr.is_default && <span className="default-badge">{t('profile.default_badge')}</span>}
                         </div>
                         <p className="addr-street">{addr.street}</p>
                       </div>
@@ -346,7 +346,7 @@ const Checkout = () => {
                       />
                       <div className="checkout-item-info">
                         <p className="checkout-item-name">{prod.name}</p>
-                        <span className="checkout-item-qty">Qty: {item.quantity}</span>
+                        <span className="checkout-item-qty">{t('product.quantity')} {item.quantity}</span>
                       </div>
                       <span className="checkout-item-price">
                         {formatPrice(Number(prod.price) * item.quantity)}

@@ -41,19 +41,19 @@ const Register = () => {
     const trimmedPhone = phoneNumber.trim();
 
     if (!trimmedName) {
-      errors.name = "Ismingizni to'liq kiriting";
+      errors.name = t('auth.name_req');
     }
 
     if (!trimmedEmail) {
-      errors.email = 'Email manzilini kiriting';
+      errors.email = t('auth.email_req');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      errors.email = 'Yaroqli email manzilini kiriting';
+      errors.email = t('auth.email_invalid');
     }
 
     if (!password) {
-      errors.password = 'Parolni kiriting';
+      errors.password = t('auth.password_req');
     } else if (password.length < 6) {
-      errors.password = "Parol kamida 6 ta belgidan iborat bo'lishi shart";
+      errors.password = t('auth.password_min');
     }
 
     if (Object.keys(errors).length > 0) {
@@ -74,7 +74,7 @@ const Register = () => {
     if (res.success) {
       navigate('/');
     } else {
-      setErrorMsg(res.message || "Ro'yxatdan o'tishda xatolik yuz berdi");
+      setErrorMsg(res.message || t('auth.register_failed'));
       if (res.message?.toLowerCase().includes('email')) {
         setFieldErrors({ email: res.message });
       }
@@ -169,7 +169,7 @@ const Register = () => {
 
             {/* Phone Number */}
             <div className="luxury-field-group">
-              <label className="luxury-label">Telefon raqam (ixtiyoriy)</label>
+              <label className="luxury-label">{t('auth.phone_label')}</label>
               <div className="luxury-input-wrapper">
                 <Phone size={18} className="input-affix-icon" />
                 <input
@@ -188,7 +188,7 @@ const Register = () => {
               <div className="luxury-label-row">
                 <label className="luxury-label">{t('auth.password_label') || 'Password'}</label>
                 <span className="secure-badge">
-                  <ShieldCheck size={13} /> Kamida 6 belgi
+                  <ShieldCheck size={13} /> {t('auth.password_min')}
                 </span>
               </div>
               <div className="luxury-input-wrapper">
@@ -231,7 +231,7 @@ const Register = () => {
               {loading ? (
                 <span className="btn-loading-content">
                   <span className="loading-spinner" />
-                  Ro'yxatdan o'tilmoqda...
+                  {t('checkout.processing')}
                 </span>
               ) : (
                 <span className="btn-content">
@@ -244,9 +244,9 @@ const Register = () => {
 
           {/* Footer Link */}
           <div className="auth-footer-luxury">
-            <span>{t('auth.have_account') || 'Allaqachon hisobingiz bormi?'}</span>{' '}
+            <span>{t('auth.have_account')}</span>{' '}
             <Link to="/login" className="register-link">
-              {t('auth.login_btn') || 'Kirish'}
+              {t('auth.login_btn')}
             </Link>
           </div>
         </div>

@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Bell, Trash2, CheckCircle2 } from 'lucide-react';
+import { useFormatters } from '../../utils/formatters';
 import axiosInstance from '../../api/axiosInstance';
 import './NotificationModal.css';
 
 const NotificationModal = ({ onClose }) => {
+  const { t } = useTranslation();
+  const { formatDateTime } = useFormatters();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -12,7 +16,7 @@ const NotificationModal = ({ onClose }) => {
       setLoading(true);
       const res = await axiosInstance.get('/notification/getAll');
       if (res.data.success) {
-        setNotifications(res.data.innerData);
+        setNotifications(res.data.innerData || []);
       }
     } catch (err) {
       console.error(err);
@@ -51,19 +55,19 @@ const NotificationModal = ({ onClose }) => {
         <div className="notif-modal-header">
           <div className="notif-title-area">
             <Bell size={20} className="notif-header-icon" />
-            <h3>Notifications</h3>
+            <h3>{t('notifications.title')}</h3>
           </div>
           <div className="notif-header-actions">
             {notifications.length > 0 && (
               <button
                 className="clear-all-btn"
                 onClick={handleClearAll}
-                title="Clear all notifications"
+                title={t('notifications.clear_all')}
               >
-                <Trash2 size={16} /> Clear All
+                <Trash2 size={16} /> {t('notifications.clear_all')}
               </button>
             )}
-            <button className="modal-close-btn" onClick={onClose}>
+            <button className="modal-close-btn" onClick={onClose} aria-label={t('nav.close')}>
               <X size={20} />
             </button>
           </div>
@@ -71,11 +75,11 @@ const NotificationModal = ({ onClose }) => {
 
         <div className="notif-modal-body">
           {loading ? (
-            <p className="notif-empty">Loading notifications...</p>
+            <p className="notif-empty">{t('notifications.loading')}</p>
           ) : notifications.length === 0 ? (
             <div className="notif-empty-state">
               <CheckCircle2 size={40} className="empty-check-icon" />
-              <p>You're all caught up! No new notifications.</p>
+              <p>{t('notifications.empty')}</p>
             </div>
           ) : (
             <ul className="notif-list">
@@ -91,7 +95,7 @@ const NotificationModal = ({ onClose }) => {
                   <div className="notif-text-col">
                     <p className="notif-msg">{n.message}</p>
                     <span className="notif-time">
-                      {new Date(n.createdAt).toLocaleDateString()} {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {formatDateTime(n.createdAt)}
                     </span>
                   </div>
                 </li>

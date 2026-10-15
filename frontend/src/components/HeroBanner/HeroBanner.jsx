@@ -44,17 +44,17 @@ const HeroBanner = () => {
             <div className="hero-metrics-strip">
               <div className="hero-metric-item">
                 <Truck size={14} className="metric-icon" />
-                <span>Express Yetkazish</span>
+                <span>{t('home.hero_express_delivery')}</span>
               </div>
               <div className="metric-divider">•</div>
               <div className="hero-metric-item">
                 <ShieldCheck size={14} className="metric-icon" />
-                <span>100% Original</span>
+                <span>{t('home.hero_original')}</span>
               </div>
               <div className="metric-divider">•</div>
               <div className="hero-metric-item">
                 <Star size={14} className="metric-icon gold" />
-                <span>4.98 / 5.0 Reyting</span>
+                <span>{t('home.hero_rating')}</span>
               </div>
             </div>
           </div>
@@ -74,8 +74,8 @@ const HeroBanner = () => {
                   <Sparkles size={14} />
                 </div>
                 <div className="float-glass-info">
-                  <span className="float-glass-title">Studio Retina Display</span>
-                  <span className="float-glass-desc">Ultra-Clear 5K Resolution</span>
+                  <span className="float-glass-title">{t('home.hero_display_title')}</span>
+                  <span className="float-glass-desc">{t('home.hero_display_sub')}</span>
                 </div>
               </div>
 
@@ -85,8 +85,8 @@ const HeroBanner = () => {
                   <Zap size={14} />
                 </div>
                 <div className="float-glass-info">
-                  <span className="float-glass-title">Smart Eco-System</span>
-                  <span className="float-glass-desc">Zero Latency Wireless Sync</span>
+                  <span className="float-glass-title">{t('home.hero_ecosystem_title')}</span>
+                  <span className="float-glass-desc">{t('home.hero_ecosystem_sub')}</span>
                 </div>
               </div>
             </div>

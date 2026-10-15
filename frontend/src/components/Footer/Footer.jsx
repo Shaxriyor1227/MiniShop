@@ -105,7 +105,7 @@ const Footer = () => {
                 <p className="newsletter-subtitle">{t('footer.newsletter_sub')}</p>
                 {subscribed ? (
                   <div className="newsletter-success-msg">
-                    <CheckCircle2 size={16} /> You're on the VIP list! Welcome aboard.
+                    <CheckCircle2 size={16} /> {t('footer.newsletter_success')}
                   </div>
                 ) : (
                   <form onSubmit={handleSubscribe} className="newsletter-input-group">
@@ -129,12 +129,12 @@ const Footer = () => {
             <div className="footer-column">
               <h4 className="footer-column-title">{t('footer.products_col')}</h4>
               <ul className="footer-links-list">
-                <li><Link to="/catalog?category=audio">Audio & Headphones</Link></li>
-                <li><Link to="/catalog?category=wearables">Smart Watches & Bands</Link></li>
-                <li><Link to="/catalog?category=workspace">Mechanical Keyboards</Link></li>
-                <li><Link to="/catalog?category=workspace">Ergonomic Mice & Gear</Link></li>
-                <li><Link to="/catalog?category=accessories">MagSafe & Power Chargers</Link></li>
-                <li><Link to="/catalog?category=accessories">Minimalist Leather Goods</Link></li>
+                <li><Link to="/catalog?category=audio">{t('footer.link_audio')}</Link></li>
+                <li><Link to="/catalog?category=wearables">{t('footer.link_wearables')}</Link></li>
+                <li><Link to="/catalog?category=workspace">{t('footer.link_workspace_kb')}</Link></li>
+                <li><Link to="/catalog?category=workspace">{t('footer.link_workspace_mouse')}</Link></li>
+                <li><Link to="/catalog?category=accessories">{t('footer.link_accessories_chargers')}</Link></li>
+                <li><Link to="/catalog?category=accessories">{t('footer.link_accessories_leather')}</Link></li>
               </ul>
             </div>
 
@@ -155,10 +155,10 @@ const Footer = () => {
             <div className="footer-column">
               <h4 className="footer-column-title">{t('footer.company_col')}</h4>
               <ul className="footer-links-list">
-                <li><a href="#about">About MiniShop</a></li>
-                <li><a href="#sustainability">Sustainability</a></li>
-                <li><a href="#warranty">Warranty & Repairs</a></li>
-                <li><a href="#faq">Help & FAQ</a></li>
+                <li><a href="#about">{t('footer.link_about')}</a></li>
+                <li><a href="#sustainability">{t('footer.link_sustainability')}</a></li>
+                <li><a href="#warranty">{t('footer.link_warranty')}</a></li>
+                <li><a href="#faq">{t('footer.link_faq')}</a></li>
               </ul>
 
               <div className="footer-status-pill">
@@ -182,7 +182,7 @@ const Footer = () => {
             <span className="legal-dot">•</span>
             <a href="#terms">{t('footer.terms')}</a>
             <span className="legal-dot">•</span>
-            <a href="#cookies">Cookie Preferences</a>
+            <a href="#cookies">{t('footer.link_cookies')}</a>
             <span className="legal-dot">•</span>
             <a href="#security">{t('footer.security')}</a>
           </div>

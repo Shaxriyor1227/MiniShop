@@ -40,13 +40,13 @@ const Login = () => {
 
     const trimmedEmail = email.trim();
     if (!trimmedEmail) {
-      errors.email = 'Email manzilini kiriting';
+      errors.email = t('auth.email_req');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      errors.email = 'Yaroqli email manzilini kiriting';
+      errors.email = t('auth.email_invalid');
     }
 
     if (!password) {
-      errors.password = 'Parolni kiriting';
+      errors.password = t('auth.password_req');
     }
 
     if (Object.keys(errors).length > 0) {
@@ -61,9 +61,9 @@ const Login = () => {
     if (res.success) {
       navigate(redirectPath, { replace: true });
     } else {
-      setErrorMsg(res.message || 'Email yoki parol noto\'g\'ri kiritildi');
+      setErrorMsg(res.message || t('auth.login_failed'));
       setFieldErrors({
-        password: res.message || 'Email yoki parol noto\'g\'ri'
+        password: res.message || t('auth.login_failed')
       });
     }
     setLoading(false);
@@ -144,7 +144,7 @@ const Login = () => {
               <div className="luxury-label-row">
                 <label className="luxury-label">{t('auth.password_label') || 'Password'}</label>
                 <span className="secure-badge">
-                  <ShieldCheck size={13} /> 256-bit SSL
+                  <ShieldCheck size={13} /> {t('auth.secure_ssl')}
                 </span>
               </div>
               <div className="luxury-input-wrapper">
@@ -188,7 +188,7 @@ const Login = () => {
               {loading ? (
                 <span className="btn-loading-content">
                   <span className="loading-spinner" />
-                  Kirilmoqda...
+                  {t('checkout.processing')}
                 </span>
               ) : (
                 <span className="btn-content">
@@ -204,7 +204,7 @@ const Login = () => {
             <div className="demo-capsule-box">
               <div className="demo-header-row">
                 <Sparkles size={14} className="sparkle-icon" />
-                <span>{t('auth.quick_demo') || 'Tezkor demo hisoblar (Faqat DEV):'}</span>
+                <span>{t('auth.quick_demo')}</span>
               </div>
 
               <div className="demo-cards-row">
@@ -217,7 +217,7 @@ const Login = () => {
                     <User size={15} />
                   </div>
                   <div className="demo-card-texts">
-                    <span className="demo-role-name">Customer</span>
+                    <span className="demo-role-name">{t('roles.customer')}</span>
                     <span className="demo-email-hint">customer@minishop.com</span>
                   </div>
                 </button>
@@ -232,7 +232,7 @@ const Login = () => {
                   </div>
                   <div className="demo-card-texts">
                     <div className="demo-admin-badge-row">
-                      <span className="demo-role-name">Super Admin</span>
+                      <span className="demo-role-name">{t('roles.admin')}</span>
                       <span className="admin-chip">PRO</span>
                     </div>
                     <span className="demo-email-hint">admin@minishop.com</span>
@@ -244,9 +244,9 @@ const Login = () => {
 
           {/* Footer Link */}
           <div className="auth-footer-luxury">
-            <span>{t('auth.no_account') || "Hisobingiz yo'qmi?"}</span>{' '}
+            <span>{t('auth.no_account')}</span>{' '}
             <Link to="/register" className="register-link">
-              {t('auth.register_btn') || "Ro'yxatdan o'tish"}
+              {t('auth.register_btn')}
             </Link>
           </div>
         </div>

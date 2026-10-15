@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useFormatters } from '../../utils/formatters';
+import { getBrandName } from '../../utils/i18nHelpers';
 import { Search, X, ArrowRight, Sparkles, ShoppingBag, Tag, Headphones, Watch, Laptop } from 'lucide-react';
 import axiosInstance from '../../api/axiosInstance';
 import './SpotlightSearch.css';
@@ -139,7 +140,7 @@ const SpotlightSearch = ({ isOpen, onClose }) => {
                         }}
                       />
                       <div className="spotlight-prod-info">
-                        <span className="spotlight-prod-brand">{prod.brand_id?.name || 'MiniShop'}</span>
+                        <span className="spotlight-prod-brand">{getBrandName(prod.brand_id, t) || 'MiniShop'}</span>
                         <h4 className="spotlight-prod-name">{prod.name}</h4>
                       </div>
                       <span className="spotlight-prod-price">{formatPrice(prod.price)}</span>

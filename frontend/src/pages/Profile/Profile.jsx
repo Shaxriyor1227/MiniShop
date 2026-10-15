@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
+import { getUserRole } from '../../utils/i18nHelpers';
 import axiosInstance from '../../api/axiosInstance';
 import {
   User,
@@ -112,10 +113,10 @@ const Profile = () => {
       });
       if (res.data.success) {
         updateProfile(res.data.innerData);
-        setProfileMsg({ text: 'Profile updated successfully!', isError: false });
+        setProfileMsg({ text: t('profile.msg_updated'), isError: false });
       }
     } catch (err) {
-      setProfileMsg({ text: err.response?.data?.message || 'Failed to update profile', isError: true });
+      setProfileMsg({ text: err.response?.data?.message || t('profile.msg_update_failed'), isError: true });
     } finally {
       setProfileSaving(false);
     }
@@ -124,11 +125,11 @@ const Profile = () => {
   const handleChangePassword = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      setPwdMsg({ text: 'Passwords do not match', isError: true });
+      setPwdMsg({ text: t('profile.pwd_mismatch'), isError: true });
       return;
     }
     if (newPassword.length < 6) {
-      setPwdMsg({ text: 'Password must be at least 6 characters long', isError: true });
+      setPwdMsg({ text: t('profile.pwd_min_len'), isError: true });
       return;
     }
 
@@ -139,12 +140,12 @@ const Profile = () => {
         password: newPassword
       });
       if (res.data.success) {
-        setPwdMsg({ text: 'Password updated successfully!', isError: false });
+        setPwdMsg({ text: t('profile.pwd_updated'), isError: false });
         setNewPassword('');
         setConfirmPassword('');
       }
     } catch (err) {
-      setPwdMsg({ text: err.response?.data?.message || 'Failed to update password', isError: true });
+      setPwdMsg({ text: err.response?.data?.message || t('profile.msg_update_failed'), isError: true });
     } finally {
       setPwdSaving(false);
     }
@@ -221,18 +222,18 @@ const Profile = () => {
               <h2>{user?.name || 'Alex Johnson'}</h2>
               <span className="badge badge-blue">
                 <ShieldCheck size={13} style={{ marginRight: '4px' }} />
-                {user?.role === 'admin' ? 'Administrator' : 'Gold Member'}
+                {getUserRole(user?.role, t)}
               </span>
             </div>
             <p className="hero-email">{user?.email}</p>
             <div className="membership-stats-row">
               <div className="stat-badge">
                 <Sparkles size={14} className="stat-icon" />
-                <span>Tier: <strong>Gold Club</strong></span>
+                <span>{t('profile.tier_label')}</span>
               </div>
               <div className="stat-badge">
                 <Award size={14} className="stat-icon" />
-                <span>Points: <strong>480 pts</strong></span>
+                <span>{t('profile.points_label', { pts: 480 })}</span>
               </div>
             </div>
           </div>
@@ -274,7 +275,7 @@ const Profile = () => {
               onClick={() => setActiveTab('payments')}
             >
               <CreditCard size={18} />
-              <span>Payment Methods</span>
+              <span>{t('profile.tab_payments')}</span>
               <span className="tab-counter">{paymentCards.length}</span>
             </button>
 
@@ -294,8 +295,8 @@ const Profile = () => {
             {activeTab === 'overview' && (
               <div className="tab-pane card">
                 <div className="pane-header">
-                  <h3>Personal Information</h3>
-                  <p>Manage your public identity, contact details, and account preferences.</p>
+                  <h3>{t('profile.personal_info_title')}</h3>
+                  <p>{t('profile.personal_info_sub')}</p>
                 </div>
 
                 {profileMsg.text && (
@@ -306,7 +307,7 @@ const Profile = () => {
 
                 {/* Avatar Color Picker */}
                 <div className="avatar-palette-box">
-                  <span className="palette-label">Avatar Theme Color:</span>
+                  <span className="palette-label">{t('profile.avatar_theme')}</span>
                   <div className="color-swatches-row">
                     {avatarGradients.map((grad, i) => (
                       <button
@@ -323,7 +324,7 @@ const Profile = () => {
 
                 <form onSubmit={handleUpdateProfile} className="profile-form-grid">
                   <div className="form-group">
-                    <label>Full Name</label>
+                    <label>{t('profile.full_name')}</label>
                     <input
                       type="text"
                       className="input-field"
@@ -334,7 +335,7 @@ const Profile = () => {
                   </div>
 
                   <div className="form-group">
-                    <label>Email Address</label>
+                    <label>{t('profile.email_address')}</label>
                     <input
                       type="email"
                       className="input-field"
@@ -345,7 +346,7 @@ const Profile = () => {
                   </div>
 
                   <div className="form-group">
-                    <label>Phone Number</label>
+                    <label>{t('profile.phone_number')}</label>
                     <input
                       type="tel"
                       className="input-field"
@@ -356,7 +357,7 @@ const Profile = () => {
                   </div>
 
                   <div className="form-group">
-                    <label>Short Bio / Note</label>
+                    <label>{t('profile.bio_label')}</label>
                     <input
                       type="text"
                       className="input-field"
@@ -367,7 +368,7 @@ const Profile = () => {
 
                   <div className="form-actions-row">
                     <button type="submit" className="btn-primary" disabled={profileSaving}>
-                      {profileSaving ? 'Saving Changes...' : 'Save Profile Changes'}
+                      {profileSaving ? t('profile.saving') : t('profile.save_changes')}
                     </button>
                   </div>
                 </form>
@@ -378,8 +379,8 @@ const Profile = () => {
             {activeTab === 'security' && (
               <div className="tab-pane card">
                 <div className="pane-header">
-                  <h3>Security & Access</h3>
-                  <p>Keep your account safe by updating your password and reviewing active sessions.</p>
+                  <h3>{t('profile.security_title')}</h3>
+                  <p>{t('profile.security_sub')}</p>
                 </div>
 
                 {pwdMsg.text && (
@@ -391,11 +392,11 @@ const Profile = () => {
                 {/* Password Change Form */}
                 <form onSubmit={handleChangePassword} className="security-pwd-form">
                   <div className="form-group">
-                    <label>New Password</label>
+                    <label>{t('profile.new_password')}</label>
                     <input
                       type="password"
                       className="input-field"
-                      placeholder="Minimum 6 characters"
+                      placeholder={t('profile.pwd_placeholder')}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       required
@@ -403,11 +404,11 @@ const Profile = () => {
                   </div>
 
                   <div className="form-group">
-                    <label>Confirm Password</label>
+                    <label>{t('profile.confirm_password')}</label>
                     <input
                       type="password"
                       className="input-field"
-                      placeholder="Re-enter new password"
+                      placeholder={t('profile.pwd_confirm_placeholder')}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
@@ -415,7 +416,7 @@ const Profile = () => {
                   </div>
 
                   <button type="submit" className="btn-secondary" disabled={pwdSaving}>
-                    {pwdSaving ? 'Updating...' : 'Update Password'}
+                    {pwdSaving ? t('profile.saving') : t('profile.update_password')}
                   </button>
                 </form>
 
@@ -426,9 +427,9 @@ const Profile = () => {
                   <div className="toggle-info">
                     <div className="toggle-title-row">
                       <Lock size={16} className="sec-icon-blue" />
-                      <h4>Two-Factor Authentication (2FA)</h4>
+                      <h4>{t('profile.two_factor_title')}</h4>
                     </div>
-                    <p>Protect your account with an extra security step when logging in from new devices.</p>
+                    <p>{t('profile.two_factor_sub')}</p>
                   </div>
                   <label className="switch-toggle">
                     <input
@@ -442,7 +443,7 @@ const Profile = () => {
 
                 {/* Active Sessions List */}
                 <div className="active-sessions-section">
-                  <h4>Active Sessions & Devices</h4>
+                  <h4>{t('profile.active_sessions_title')}</h4>
                   <div className="sessions-list">
                     <div className="session-item-row">
                       <div className="session-device-icon">
@@ -451,7 +452,7 @@ const Profile = () => {
                       <div className="session-details">
                         <div className="session-top">
                           <strong>Chrome on Windows 11</strong>
-                          <span className="current-badge">This Device (Online)</span>
+                          <span className="current-badge">{t('profile.active_now')}</span>
                         </div>
                         <p>San Francisco, United States • IP: 192.168.1.1</p>
                       </div>
@@ -479,24 +480,24 @@ const Profile = () => {
               <div className="tab-pane card">
                 <div className="pane-header-with-action">
                   <div>
-                    <h3>Saved Addresses ({addresses.length})</h3>
-                    <p>Manage your primary shipping destinations for 1-click checkout.</p>
+                    <h3>{t('profile.addresses_title')} ({addresses.length})</h3>
+                    <p>{t('checkout.step1_title')}</p>
                   </div>
                   <button
                     className="btn-primary add-addr-top-btn"
                     onClick={() => setShowAddAddress(!showAddAddress)}
                   >
-                    <Plus size={16} /> Add Address
+                    <Plus size={16} /> {t('profile.add_address_btn')}
                   </button>
                 </div>
 
                 {showAddAddress && (
                   <form onSubmit={handleAddAddress} className="add-address-card-form">
                     <div className="form-group">
-                      <label>City / Region</label>
+                      <label>{t('profile.city_label')}</label>
                       <input
                         type="text"
-                        placeholder="e.g. San Francisco, CA"
+                        placeholder={t('checkout.city_placeholder')}
                         value={newCity}
                         onChange={(e) => setNewCity(e.target.value)}
                         required
@@ -504,10 +505,10 @@ const Profile = () => {
                       />
                     </div>
                     <div className="form-group">
-                      <label>Street & Apartment</label>
+                      <label>{t('profile.street_label')}</label>
                       <input
                         type="text"
-                        placeholder="e.g. 100 California St, Apt 4B"
+                        placeholder={t('checkout.street_placeholder')}
                         value={newStreet}
                         onChange={(e) => setNewStreet(e.target.value)}
                         required
@@ -516,14 +517,14 @@ const Profile = () => {
                     </div>
                     <div className="addr-submit-btns">
                       <button type="submit" className="btn-primary">
-                        Save Address
+                        {t('profile.save_address_btn')}
                       </button>
                       <button
                         type="button"
                         className="btn-secondary"
                         onClick={() => setShowAddAddress(false)}
                       >
-                        Cancel
+                        {t('checkout.cancel')}
                       </button>
                     </div>
                   </form>
@@ -537,11 +538,11 @@ const Profile = () => {
                           <MapPin size={16} className="pin-blue" />
                           <strong>{addr.city}</strong>
                         </div>
-                        {addr.is_default && <span className="default-pill">Default</span>}
+                        {addr.is_default && <span className="default-pill">{t('profile.default_badge')}</span>}
                         <button
                           className="delete-address-icon-btn"
                           onClick={() => handleDeleteAddress(addr._id)}
-                          title="Delete address"
+                          title={t('profile.delete_btn')}
                         >
                           <Trash2 size={15} />
                         </button>
@@ -558,21 +559,21 @@ const Profile = () => {
               <div className="tab-pane card">
                 <div className="pane-header-with-action">
                   <div>
-                    <h3>Payment Methods ({paymentCards.length})</h3>
-                    <p>Securely stored credit and debit cards for swift checkout.</p>
+                    <h3>{t('profile.payments_title')} ({paymentCards.length})</h3>
+                    <p>{t('checkout.step2_title')}</p>
                   </div>
                   <button
                     className="btn-primary add-addr-top-btn"
                     onClick={() => setShowAddCard(!showAddCard)}
                   >
-                    <Plus size={16} /> Add New Card
+                    <Plus size={16} /> {t('profile.add_card_btn')}
                   </button>
                 </div>
 
                 {showAddCard && (
                   <form onSubmit={handleAddPaymentCard} className="add-card-form">
                     <div className="form-group">
-                      <label>Cardholder Name</label>
+                      <label>{t('profile.card_name_label')}</label>
                       <input
                         type="text"
                         placeholder="John Doe"
@@ -583,7 +584,7 @@ const Profile = () => {
                       />
                     </div>
                     <div className="form-group">
-                      <label>Card Number</label>
+                      <label>{t('profile.card_num_label')}</label>
                       <input
                         type="text"
                         placeholder="•••• •••• •••• 4242"
@@ -594,7 +595,7 @@ const Profile = () => {
                       />
                     </div>
                     <div className="form-group">
-                      <label>Expiry Date</label>
+                      <label>{t('profile.card_exp_label')}</label>
                       <input
                         type="text"
                         placeholder="MM/YY"
@@ -606,14 +607,14 @@ const Profile = () => {
                     </div>
                     <div className="addr-submit-btns">
                       <button type="submit" className="btn-primary">
-                        Save Card
+                        {t('profile.save_address_btn')}
                       </button>
                       <button
                         type="button"
                         className="btn-secondary"
                         onClick={() => setShowAddCard(false)}
                       >
-                        Cancel
+                        {t('checkout.cancel')}
                       </button>
                     </div>
                   </form>
@@ -624,11 +625,11 @@ const Profile = () => {
                     <div key={card.id} className="visual-payment-card">
                       <div className="card-chip-row">
                         <span className="card-brand-badge">{card.brand}</span>
-                        {card.isDefault && <span className="default-pill-light">Primary</span>}
+                        {card.isDefault && <span className="default-pill-light">{t('profile.default_badge')}</span>}
                         <button
                           className="delete-card-btn"
                           onClick={() => handleDeleteCard(card.id)}
-                          title="Remove card"
+                          title={t('profile.delete_btn')}
                         >
                           <Trash2 size={15} />
                         </button>
@@ -650,15 +651,15 @@ const Profile = () => {
             {activeTab === 'notifications' && (
               <div className="tab-pane card">
                 <div className="pane-header">
-                  <h3>Notification Preferences</h3>
-                  <p>Choose what updates, announcements, and alerts you'd like to receive.</p>
+                  <h3>{t('profile.notifs_title')}</h3>
+                  <p>{t('profile.tab_notifications')}</p>
                 </div>
 
                 <div className="notification-toggles-list">
                   <div className="notif-toggle-row">
                     <div className="notif-text">
-                      <h4>Order & Delivery Updates</h4>
-                      <p>Receive real-time tracking alerts when your parcel ships or delivers.</p>
+                      <h4>{t('profile.notif_orders')}</h4>
+                      <p>{t('profile.notif_orders_sub')}</p>
                     </div>
                     <label className="switch-toggle">
                       <input
@@ -674,8 +675,8 @@ const Profile = () => {
 
                   <div className="notif-toggle-row">
                     <div className="notif-text">
-                      <h4>Exclusive Drops & Member Discounts</h4>
-                      <p>Be the first to know when new limited products and seasonal sales launch.</p>
+                      <h4>{t('profile.notif_promo')}</h4>
+                      <p>{t('profile.notif_promo_sub')}</p>
                     </div>
                     <label className="switch-toggle">
                       <input
@@ -691,8 +692,8 @@ const Profile = () => {
 
                   <div className="notif-toggle-row">
                     <div className="notif-text">
-                      <h4>Security & Login Alerts</h4>
-                      <p>Instant alerts when your account is accessed from an unrecognized browser.</p>
+                      <h4>{t('profile.notif_security')}</h4>
+                      <p>{t('profile.notif_security_sub')}</p>
                     </div>
                     <label className="switch-toggle">
                       <input
@@ -711,8 +712,8 @@ const Profile = () => {
 
                   <div className="notif-toggle-row">
                     <div className="notif-text">
-                      <h4>Weekly MiniShop Journal Digest</h4>
-                      <p>Curated tech stories, workspace setups, and minimalist design inspiration.</p>
+                      <h4>{t('profile.notif_news')}</h4>
+                      <p>{t('profile.notif_news_sub')}</p>
                     </div>
                     <label className="switch-toggle">
                       <input

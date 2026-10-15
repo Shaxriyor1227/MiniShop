@@ -1,14 +1,18 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { getCategoryName } from '../../utils/i18nHelpers';
 import './CategoryPills.css';
 
 const CategoryPills = ({ categories, selectedCategory, onSelectCategory }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="category-pills-scroll">
       <button
         className={`pill-btn ${selectedCategory === '' ? 'active' : ''}`}
         onClick={() => onSelectCategory('')}
       >
-        All Products
+        {t('catalog.all_categories')}
       </button>
       {categories.map((cat) => (
         <button
@@ -16,7 +20,7 @@ const CategoryPills = ({ categories, selectedCategory, onSelectCategory }) => {
           className={`pill-btn ${selectedCategory === cat._id ? 'active' : ''}`}
           onClick={() => onSelectCategory(cat._id)}
         >
-          {cat.name}
+          {getCategoryName(cat, t)}
         </button>
       ))}
     </div>

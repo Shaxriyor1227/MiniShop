@@ -5,6 +5,7 @@ import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useToast } from '../../context/ToastContext';
 import { useFormatters } from '../../utils/formatters';
+import { getBrandName } from '../../utils/i18nHelpers';
 import {
   Trash2,
   ArrowRight,
@@ -50,16 +51,17 @@ const Cart = () => {
 
     const result = await applyCoupon(couponCode.trim());
     if (result.success) {
-      setCouponMsg({ text: `Kupon qo'llandi! -${result.coupon.discount}%`, isError: false });
-      showToast(`Kupon qo'llandi! -${result.coupon.discount}%`, 'success');
+      const msg = t('toast.coupon_applied', { discount: result.coupon.discount });
+      setCouponMsg({ text: msg, isError: false });
+      showToast(msg, 'success');
       setCouponCode('');
     } else {
-      const err = result.message || 'Yaroqsiz kupon kodi';
+      const err = result.message || t('toast.invalid_coupon');
       setCouponMsg({ text: err, isError: true });
       showToast(err, 'error');
     }
     setApplying(false);
-  }, [applyCoupon, couponCode, showToast]);
+  }, [applyCoupon, couponCode, showToast, t]);
 
   const handleMoveToWishlist = useCallback((product) => {
     const prodObj = product.product_id || product;
@@ -127,7 +129,7 @@ const Cart = () => {
         </div>
 
         <div className="cart-header-row">
-          <h1 className="page-title">{t('cart.title')} ({items.reduce((s, i) => s + i.quantity, 0)})</h1>
+          <h1 className="page-title">{t('cart.title')} ({t('cart.count_items', { count: items.reduce((s, i) => s + i.quantity, 0) })})</h1>
           <button className="clear-cart-text-btn" onClick={clearCart}>
             <Trash2 size={16} /> {t('cart.clear_cart')}
           </button>
@@ -155,19 +157,19 @@ const Cart = () => {
 
                   <div className="cart-item-details">
                     <div className="item-meta-top">
-                      <span className="item-brand">{prod.brand_id?.name || 'MiniShop'}</span>
+                      <span className="item-brand">{prod.brand_id ? getBrandName(prod.brand_id, t) : t('nav.hardware_vault')}</span>
                       <div className="item-actions-top">
                         <button
                           className="item-action-link"
                           onClick={() => handleMoveToWishlist(item)}
-                          title="Wishlist"
+                          title={t('product.add_wishlist')}
                         >
-                          <Heart size={15} /> Wishlist
+                          <Heart size={15} /> {t('nav.wishlist')}
                         </button>
                         <button
                           className="item-remove-btn"
                           onClick={() => removeFromCart(prodId)}
-                          title="Remove"
+                          title={t('cart.remove_item')}
                         >
                           <Trash2 size={16} />
                         </button>
