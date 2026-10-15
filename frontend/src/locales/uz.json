@@ -205,5 +205,18 @@
     "privacy": "Maxfiylik siyosati",
     "terms": "Foydalanish shartlari",
     "security": "Xavfsizlik"
+  },
+  "admin": {
+    "dashboard": "Boshqaruv paneli",
+    "products": "Mahsulotlar",
+    "categories": "Kategoriyalar",
+    "brands": "Brendlar",
+    "orders": "Buyurtmalar",
+    "users": "Foydalanuvchilar",
+    "coupons": "Kuponlar",
+    "reviews": "Sharhlar",
+    "payments": "To'lovlar",
+    "notifications": "Bildirishnomalar",
+    "back_to_store": "Do'konga qaytish"
   }
 }

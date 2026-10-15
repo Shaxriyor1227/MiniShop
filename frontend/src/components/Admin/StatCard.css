@@ -1,0 +1,113 @@
+.admin-stat-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 22px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.admin-stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-elevated);
+  border-color: rgba(0, 113, 227, 0.25);
+}
+
+.admin-stat-card.clickable {
+  cursor: pointer;
+}
+
+.stat-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.stat-card-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.stat-card-icon-wrap {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-fast);
+}
+
+.admin-stat-card:hover .stat-card-icon-wrap {
+  transform: scale(1.08);
+}
+
+.admin-stat-card.theme-blue .stat-card-icon-wrap {
+  background: var(--accent-blue-subtle);
+  color: var(--accent-blue);
+}
+
+.admin-stat-card.theme-green .stat-card-icon-wrap {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.admin-stat-card.theme-orange .stat-card-icon-wrap {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.admin-stat-card.theme-purple .stat-card-icon-wrap {
+  background: rgba(88, 86, 214, 0.1);
+  color: var(--color-purple);
+}
+
+.admin-stat-card.theme-red .stat-card-icon-wrap {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.stat-card-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--ink-primary);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  margin-bottom: 10px;
+}
+
+.stat-card-bottom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+}
+
+.stat-trend {
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+}
+
+.stat-trend.trend-up {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.stat-trend.trend-down {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.stat-trend-label, .stat-subtitle {
+  color: var(--ink-tertiary);
+}

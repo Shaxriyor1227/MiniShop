@@ -1,0 +1,90 @@
+.admin-notifications-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.notif-message-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notif-icon-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-blue-subtle);
+  color: var(--accent-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.notif-text {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink-primary);
+  line-height: 1.4;
+}
+
+.notif-user-tag {
+  font-size: 12px;
+  color: var(--ink-secondary);
+  background: var(--bg-surface-hover);
+  padding: 3px 8px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-subtle);
+}
+
+.read-status-badge {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+}
+
+.read-status-badge.read {
+  background: var(--bg-surface-hover);
+  color: var(--ink-tertiary);
+}
+
+.read-status-badge.unread {
+  background: var(--accent-blue-subtle);
+  color: var(--accent-blue);
+}
+
+.target-type-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.target-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--bg-surface-hover);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--ink-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.target-btn.active {
+  background: var(--accent-blue-subtle);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.admin-textarea {
+  resize: vertical;
+  min-height: 90px;
+  font-family: inherit;
+}

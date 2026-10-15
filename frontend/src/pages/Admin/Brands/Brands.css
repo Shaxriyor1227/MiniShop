@@ -1,0 +1,35 @@
+.admin-brands-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.brand-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-icon-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  background: rgba(88, 86, 214, 0.1);
+  color: var(--color-purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-title {
+  display: block;
+  font-weight: 600;
+  color: var(--ink-primary);
+  font-size: 14px;
+}
+
+.brand-id {
+  font-family: 'SF Mono', Consolas, monospace;
+  font-size: 11px;
+  color: var(--ink-tertiary);
+}

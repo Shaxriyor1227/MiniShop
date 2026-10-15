@@ -1,0 +1,49 @@
+.admin-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  transition: all var(--transition-fast);
+}
+
+.admin-status-badge.badge-success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  border: 1px solid rgba(52, 199, 89, 0.25);
+}
+
+.admin-status-badge.badge-warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  border: 1px solid rgba(255, 149, 0, 0.25);
+}
+
+.admin-status-badge.badge-danger {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border: 1px solid rgba(255, 59, 48, 0.25);
+}
+
+.admin-status-badge.badge-info {
+  background: var(--accent-blue-subtle);
+  color: var(--accent-blue);
+  border: 1px solid rgba(0, 113, 227, 0.25);
+}
+
+.admin-status-badge.badge-purple {
+  background: rgba(88, 86, 214, 0.1);
+  color: var(--color-purple);
+  border: 1px solid rgba(88, 86, 214, 0.25);
+}
+
+.admin-status-badge.badge-neutral {
+  background: var(--bg-surface-hover);
+  color: var(--ink-secondary);
+  border: 1px solid var(--border-subtle);
+}

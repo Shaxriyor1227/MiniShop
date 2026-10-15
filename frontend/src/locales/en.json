@@ -205,5 +205,18 @@
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "security": "Security"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "categories": "Categories",
+    "brands": "Brands",
+    "orders": "Orders",
+    "users": "Users",
+    "coupons": "Coupons",
+    "reviews": "Reviews",
+    "payments": "Payments",
+    "notifications": "Notifications",
+    "back_to_store": "Back to Store"
   }
 }
