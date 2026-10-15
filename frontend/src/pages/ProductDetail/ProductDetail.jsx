@@ -146,7 +146,9 @@ const ProductDetail = () => {
         <div className="breadcrumb-nav">
           <Link to="/">{t('catalog.breadcrumb_home')}</Link>
           <span>/</span>
-          <Link to={`/?category=${product.category_id?.name || ''}`}>{product.category_id?.name || t('nav.catalog')}</Link>
+          <Link to={`/catalog?category=${product.category_id?.slug || product.category_id?._id || ''}`}>
+            {product.category_id?.name || t('nav.catalog')}
+          </Link>
           <span>/</span>
           <span className="current-crumb">{product.name}</span>
         </div>

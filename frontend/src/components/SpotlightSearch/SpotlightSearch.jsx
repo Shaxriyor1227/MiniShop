@@ -14,10 +14,10 @@ const SpotlightSearch = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
 
   const quickCategories = [
-    { name: t('nav.audio'), query: 'Audio', icon: Headphones },
-    { name: t('nav.wearables'), query: 'Wearables', icon: Watch },
-    { name: t('nav.workspace'), query: 'Workspace', icon: Laptop },
-    { name: t('nav.deals'), query: 'Accessories', icon: Tag }
+    { name: t('nav.audio'), query: 'audio', icon: Headphones },
+    { name: t('nav.wearables'), query: 'wearables', icon: Watch },
+    { name: t('nav.workspace'), query: 'workspace', icon: Laptop },
+    { name: t('nav.deals'), query: 'accessories', icon: Tag }
   ];
 
   // Focus on input when opened

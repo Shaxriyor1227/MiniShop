@@ -12,7 +12,8 @@ const create = async (req, res) => {
       });
     }
 
-    const brand = await Brand.create({ name });
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const brand = await Brand.create({ name, slug });
     return res.status(201).json({
       success: true,
       message: 'Brend muvaffaqiyatli yaratildi',

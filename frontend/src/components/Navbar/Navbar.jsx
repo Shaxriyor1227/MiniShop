@@ -107,44 +107,44 @@ const Navbar = () => {
             </NavLink>
 
             <NavLink
-              to="/catalog?category=Audio"
+              to="/catalog?category=audio"
               className={() =>
-                `nav-link-item ${location.pathname === '/catalog' && location.search.includes('Audio') ? 'active' : ''}`
+                `nav-link-item ${location.pathname === '/catalog' && location.search.toLowerCase().includes('audio') ? 'active' : ''}`
               }
             >
               {t('nav.audio')}
             </NavLink>
 
             <NavLink
-              to="/catalog?category=Wearables"
+              to="/catalog?category=wearables"
               className={() =>
-                `nav-link-item ${location.pathname === '/catalog' && location.search.includes('Wearables') ? 'active' : ''}`
+                `nav-link-item ${location.pathname === '/catalog' && location.search.toLowerCase().includes('wearables') ? 'active' : ''}`
               }
             >
               {t('nav.wearables')}
             </NavLink>
 
             <NavLink
-              to="/catalog?category=Workspace"
+              to="/catalog?category=workspace"
               className={() =>
-                `nav-link-item ${location.pathname === '/catalog' && location.search.includes('Workspace') ? 'active' : ''}`
+                `nav-link-item ${location.pathname === '/catalog' && location.search.toLowerCase().includes('workspace') ? 'active' : ''}`
               }
             >
               {t('nav.workspace')}
             </NavLink>
 
             <NavLink
-              to="/catalog?category=Accessories"
+              to="/catalog?category=accessories"
               className={() =>
-                `nav-link-item promo-link ${location.pathname === '/catalog' && location.search.includes('Accessories') ? 'active' : ''}`
+                `nav-link-item promo-link ${location.pathname === '/catalog' && location.search.toLowerCase().includes('accessories') ? 'active' : ''}`
               }
             >
               <span>{t('nav.deals')}</span>
               <span className="promo-badge">{t('nav.hot')}</span>
             </NavLink>
 
-            {/* Admin link for Admin users */}
-            {isAdmin && (
+            {/* Admin link strictly for Admin users only */}
+            {Boolean(isAuthenticated && isAdmin && user?.role === 'admin') && (
               <NavLink
                 to="/admin"
                 className={({ isActive }) =>
@@ -238,7 +238,7 @@ const Navbar = () => {
                     </div>
                     <div className="flyout-divider"></div>
 
-                    {isAdmin && (
+                    {Boolean(isAuthenticated && isAdmin && user?.role === 'admin') && (
                       <>
                         <Link
                           to="/admin"
@@ -353,7 +353,7 @@ const Navbar = () => {
                   <span>{t('nav.catalog')}</span>
                 </Link>
                 <Link
-                  to="/catalog?category=Audio"
+                  to="/catalog?category=audio"
                   className="mobile-category-row"
                   onClick={() => setMobileDrawerOpen(false)}
                 >
@@ -363,7 +363,7 @@ const Navbar = () => {
                   <span>{t('nav.audio')}</span>
                 </Link>
                 <Link
-                  to="/catalog?category=Wearables"
+                  to="/catalog?category=wearables"
                   className="mobile-category-row"
                   onClick={() => setMobileDrawerOpen(false)}
                 >
@@ -373,7 +373,7 @@ const Navbar = () => {
                   <span>{t('nav.wearables')}</span>
                 </Link>
                 <Link
-                  to="/catalog?category=Workspace"
+                  to="/catalog?category=workspace"
                   className="mobile-category-row"
                   onClick={() => setMobileDrawerOpen(false)}
                 >
@@ -383,7 +383,7 @@ const Navbar = () => {
                   <span>{t('nav.workspace')}</span>
                 </Link>
                 <Link
-                  to="/catalog?category=Accessories"
+                  to="/catalog?category=accessories"
                   className="mobile-category-row"
                   onClick={() => setMobileDrawerOpen(false)}
                 >
@@ -393,7 +393,7 @@ const Navbar = () => {
                   <span>{t('nav.deals')}</span>
                 </Link>
 
-                {isAdmin && (
+                {Boolean(isAuthenticated && isAdmin && user?.role === 'admin') && (
                   <Link
                     to="/admin"
                     className="mobile-category-row mobile-admin-link"

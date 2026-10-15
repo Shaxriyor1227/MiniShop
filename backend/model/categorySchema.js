@@ -7,6 +7,13 @@ const categorySchema = new mongoose.Schema(
       required: [true, 'Kategoriya nomi kiritilishi shart'],
       unique: true,
       trim: true
+    },
+    slug: {
+      type: String,
+      unique: true,
+      sparse: true,
+      lowercase: true,
+      trim: true
     }
   },
   { timestamps: true }

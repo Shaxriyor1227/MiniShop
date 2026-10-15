@@ -44,7 +44,7 @@ const newArrivalsData = [
     desc: 'Sapphire crystal lens, 14-day battery',
     price: 420,
     img: '/images/stitch/smart_watch.png',
-    link: '/catalog?category=Wearables'
+    link: '/catalog?category=wearables'
   },
   {
     tag: 'LIMITED RUN',
@@ -52,7 +52,7 @@ const newArrivalsData = [
     desc: 'Matte vapor deposition acoustic finish',
     price: 540,
     img: '/images/stitch/audio_headphones.png',
-    link: '/catalog?category=Audio'
+    link: '/catalog?category=audio'
   },
   {
     tag: 'SOLID WALNUT',
@@ -60,7 +60,7 @@ const newArrivalsData = [
     desc: 'Solid american walnut & anodized aluminum',
     price: 85,
     img: '/images/stitch/walnut_tray.png',
-    link: '/catalog?category=Accessories'
+    link: '/catalog?category=accessories'
   },
   {
     tag: 'CUSTOM LINEAR',
@@ -68,7 +68,7 @@ const newArrivalsData = [
     desc: 'Low-profile wireless mechanical keyboard',
     price: 179,
     img: '/images/stitch/mechanical_kb.png',
-    link: '/catalog?category=Workspace'
+    link: '/catalog?category=workspace'
   },
   {
     tag: 'FAST MAG CHARGE',
@@ -76,7 +76,7 @@ const newArrivalsData = [
     desc: 'Three-device inductive aluminum tower',
     price: 129,
     img: '/images/stitch/mag_stand.png',
-    link: '/catalog?category=Accessories'
+    link: '/catalog?category=accessories'
   },
   {
     tag: '4K POLLING',
@@ -84,7 +84,7 @@ const newArrivalsData = [
     desc: 'Precision machined thumb scroll & ceramic feet',
     price: 115,
     img: '/images/stitch/tangent_mouse.png',
-    link: '/catalog?category=Workspace'
+    link: '/catalog?category=workspace'
   }
 ];
 
@@ -301,7 +301,7 @@ const Home = () => {
 
           <div className="collections-asymmetric-grid">
             {/* Audio (8 Columns) */}
-            <Link to="/catalog?category=Audio" className="collection-tile tile-audio">
+            <Link to="/catalog?category=audio" className="collection-tile tile-audio">
               <img
                 src="/images/stitch/audio_headphones.png"
                 alt="Audio Collection"
@@ -322,7 +322,7 @@ const Home = () => {
             </Link>
 
             {/* Smart Watches (4 Columns) */}
-            <Link to="/catalog?category=Wearables" className="collection-tile tile-watches">
+            <Link to="/catalog?category=wearables" className="collection-tile tile-watches">
               <img
                 src="/images/stitch/smart_watch.png"
                 alt="Smart Watches Collection"
@@ -343,7 +343,7 @@ const Home = () => {
             </Link>
 
             {/* Workspace (6 Columns) */}
-            <Link to="/catalog?category=Workspace" className="collection-tile tile-workspace">
+            <Link to="/catalog?category=workspace" className="collection-tile tile-workspace">
               <img
                 src="/images/stitch/workspace_setup.png"
                 alt="Workspace Collection"
@@ -364,7 +364,7 @@ const Home = () => {
             </Link>
 
             {/* Accessories (6 Columns) */}
-            <Link to="/catalog?category=Accessories" className="collection-tile tile-accessories">
+            <Link to="/catalog?category=accessories" className="collection-tile tile-accessories">
               <img
                 src="/images/stitch/accessories_flatlay.png"
                 alt="Accessories Collection"
@@ -430,7 +430,7 @@ const Home = () => {
                   <span className="price-lbl">PRICE</span>
                   <span className="price-val">$499</span>
                 </div>
-                <Link to="/catalog?category=Audio" className="btn-primary specimen-btn">
+                <Link to="/catalog?category=audio" className="btn-primary specimen-btn">
                   <span>Discover product</span>
                   <ArrowRight size={16} />
                 </Link>
@@ -487,7 +487,7 @@ const Home = () => {
                   Curated ergonomics, audiophile acoustics, and tactile mechanical precision engineered to elevate your daily focus and quiet your surroundings.
                 </p>
                 <div className="promo-btn-group">
-                  <Link to="/catalog?category=Workspace" className="btn-primary promo-pill-btn">
+                  <Link to="/catalog?category=workspace" className="btn-primary promo-pill-btn">
                     <span>Build your workspace</span>
                     <ArrowRight size={16} />
                   </Link>

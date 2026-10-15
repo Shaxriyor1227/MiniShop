@@ -12,7 +12,8 @@ const create = async (req, res) => {
       });
     }
 
-    const category = await Category.create({ name });
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const category = await Category.create({ name, slug });
     return res.status(201).json({
       success: true,
       message: 'Kategoriya muvaffaqiyatli yaratildi',

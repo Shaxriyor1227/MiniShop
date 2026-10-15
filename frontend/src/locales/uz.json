@@ -67,7 +67,7 @@
     "count_products": "{{count}} ta mahsulot",
     "filters": "Filtrlar",
     "reset_all": "Tozalash",
-    "search_input": "Mahsulot nomini qidiring...",
+    "search_input": "Qidirish...",
     "category": "Kategoriya",
     "all_categories": "Barcha kategoriyalar",
     "brands": "Brendlar",
@@ -87,7 +87,7 @@
   },
   "product": {
     "add_to_cart": "Savatga qo'shish",
-    "added": "Qo'shildi ✓",
+    "added": "Qo'shildi",
     "out_of_stock": "Mavjud emas",
     "select_color": "Rangni tanlang:",
     "quantity": "Miqdor:",

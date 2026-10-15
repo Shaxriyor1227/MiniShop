@@ -72,12 +72,12 @@ const seedData = async () => {
 
     // 2. Create Categories
     const categories = await Category.insertMany([
-      { name: 'Audio' },
-      { name: 'Wearables' },
-      { name: 'Workspace' },
-      { name: 'Accessories' },
-      { name: 'Smart Home' },
-      { name: 'Laptops & PCs' }
+      { name: 'Audio', slug: 'audio' },
+      { name: 'Wearables', slug: 'wearables' },
+      { name: 'Workspace', slug: 'workspace' },
+      { name: 'Accessories', slug: 'accessories' },
+      { name: 'Smart Home', slug: 'smart-home' },
+      { name: 'Laptops & PCs', slug: 'laptops-pcs' }
     ]);
 
     const catMap = {};
@@ -85,15 +85,15 @@ const seedData = async () => {
 
     // 3. Create Brands
     const brands = await Brand.insertMany([
-      { name: 'Apple' },
-      { name: 'Sony' },
-      { name: 'Keychron' },
-      { name: 'Anker' },
-      { name: 'Minimal' },
-      { name: 'Logitech' },
-      { name: 'Dell' },
-      { name: 'Samsung' },
-      { name: 'Bose' }
+      { name: 'Apple', slug: 'apple' },
+      { name: 'Sony', slug: 'sony' },
+      { name: 'Keychron', slug: 'keychron' },
+      { name: 'Anker', slug: 'anker' },
+      { name: 'Minimal', slug: 'minimal' },
+      { name: 'Logitech', slug: 'logitech' },
+      { name: 'Dell', slug: 'dell' },
+      { name: 'Samsung', slug: 'samsung' },
+      { name: 'Bose', slug: 'bose' }
     ]);
 
     const brandMap = {};

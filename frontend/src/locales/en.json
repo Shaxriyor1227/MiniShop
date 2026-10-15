@@ -67,7 +67,7 @@
     "count_products": "{{count}} Products",
     "filters": "Filters",
     "reset_all": "Reset All",
-    "search_input": "Filter by product name...",
+    "search_input": "Search...",
     "category": "Category",
     "all_categories": "All Categories",
     "brands": "Brands",
@@ -87,7 +87,7 @@
   },
   "product": {
     "add_to_cart": "Add to Cart",
-    "added": "Added ✓",
+    "added": "Added",
     "out_of_stock": "Out of Stock",
     "select_color": "Select Finish:",
     "quantity": "Quantity:",

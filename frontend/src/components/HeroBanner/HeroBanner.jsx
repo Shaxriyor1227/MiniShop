@@ -35,7 +35,7 @@ const HeroBanner = () => {
                 <span>{t('home.hero_cta')}</span>
                 <ArrowRight size={16} className="hero-btn-arrow" />
               </Link>
-              <Link to="/catalog?category=Audio" className="btn-secondary hero-btn hero-btn-ghost">
+              <Link to="/catalog?category=audio" className="btn-secondary hero-btn hero-btn-ghost">
                 <span>{t('home.hero_secondary')}</span>
               </Link>
             </div>

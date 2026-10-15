@@ -105,7 +105,11 @@ const Catalog = () => {
   // Sync category param from URL
   useEffect(() => {
     if (categoryParam && categories.length > 0) {
-      const match = categories.find((c) => c.name.toLowerCase() === categoryParam.toLowerCase());
+      const match = categories.find((c) =>
+        (c.slug && c.slug.toLowerCase() === categoryParam.toLowerCase()) ||
+        c.name.toLowerCase() === categoryParam.toLowerCase() ||
+        c._id === categoryParam
+      );
       if (match) setSelectedCategory(match._id);
     } else if (!categoryParam) {
       setSelectedCategory('');
@@ -115,7 +119,11 @@ const Catalog = () => {
   // Sync brand param from URL
   useEffect(() => {
     if (brandParam && brands.length > 0) {
-      const match = brands.find((b) => b.name.toLowerCase() === brandParam.toLowerCase());
+      const match = brands.find((b) =>
+        (b.slug && b.slug.toLowerCase() === brandParam.toLowerCase()) ||
+        b.name.toLowerCase() === brandParam.toLowerCase() ||
+        b._id === brandParam
+      );
       if (match) setSelectedBrand(match._id);
     } else if (!brandParam) {
       setSelectedBrand('');
@@ -192,7 +200,7 @@ const Catalog = () => {
     const newParams = new URLSearchParams(searchParams);
     if (newCat) {
       const catObj = categories.find((c) => c._id === newCat);
-      if (catObj) newParams.set('category', catObj.name);
+      if (catObj) newParams.set('category', catObj.slug || catObj._id);
     } else {
       newParams.delete('category');
     }
@@ -205,7 +213,7 @@ const Catalog = () => {
     const newParams = new URLSearchParams(searchParams);
     if (newBrand) {
       const brandObj = brands.find((b) => b._id === newBrand);
-      if (brandObj) newParams.set('brand', brandObj.name);
+      if (brandObj) newParams.set('brand', brandObj.slug || brandObj._id);
     } else {
       newParams.delete('brand');
     }
@@ -358,31 +366,7 @@ const Catalog = () => {
               </form>
             </div>
 
-            {/* 2. Categories Facet */}
-            <div className="filter-group">
-              <label className="filter-group-title">{t('catalog.category')}</label>
-              <div className="facet-list">
-                <button
-                  className={`facet-pill-btn ${selectedCategory === '' ? 'active' : ''}`}
-                  onClick={() => handleCategoryChange('')}
-                >
-                  <span>{t('catalog.all_categories')}</span>
-                  {selectedCategory === '' && <Check size={14} className="facet-check" />}
-                </button>
-                {categories.map((cat) => (
-                  <button
-                    key={cat._id}
-                    className={`facet-pill-btn ${selectedCategory === cat._id ? 'active' : ''}`}
-                    onClick={() => handleCategoryChange(cat._id)}
-                  >
-                    <span>{cat.name}</span>
-                    {selectedCategory === cat._id && <Check size={14} className="facet-check" />}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* 3. Brands Facet */}
+            {/* 2. Brands Facet */}
             {brands.length > 0 && (
               <div className="filter-group">
                 <label className="filter-group-title">{t('catalog.brands')}</label>

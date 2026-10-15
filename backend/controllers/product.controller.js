@@ -1,4 +1,7 @@
+const mongoose = require('mongoose');
 const Product = require('../model/productSchema');
+const Category = require('../model/categorySchema');
+const Brand = require('../model/brandSchema');
 
 const create = async (req, res) => {
   try {
@@ -48,10 +51,58 @@ const getAll = async (req, res) => {
     const filter = {};
 
     const cat = category_id || category;
-    if (cat) filter.category_id = cat;
+    if (cat) {
+      let catDoc = null;
+      if (mongoose.Types.ObjectId.isValid(cat)) {
+        catDoc = await Category.findById(cat).lean();
+      }
+      if (!catDoc) {
+        catDoc = await Category.findOne({
+          $or: [
+            { slug: String(cat).toLowerCase().trim() },
+            { name: new RegExp('^' + String(cat).trim() + '$', 'i') }
+          ]
+        }).lean();
+      }
+
+      if (catDoc) {
+        filter.category_id = catDoc._id;
+      } else {
+        // Noto'g'ri yoki topilmagan kategoriya kelganda bo'sh natija qaytarish
+        return res.status(200).json({
+          success: true,
+          message: 'Kategoriya topilmadi',
+          innerData: (page || limit) ? { products: [], total: 0, page: 1, totalPages: 0 } : []
+        });
+      }
+    }
 
     const br = brand_id || brand;
-    if (br) filter.brand_id = br;
+    if (br) {
+      let brandDoc = null;
+      if (mongoose.Types.ObjectId.isValid(br)) {
+        brandDoc = await Brand.findById(br).lean();
+      }
+      if (!brandDoc) {
+        brandDoc = await Brand.findOne({
+          $or: [
+            { slug: String(br).toLowerCase().trim() },
+            { name: new RegExp('^' + String(br).trim() + '$', 'i') }
+          ]
+        }).lean();
+      }
+
+      if (brandDoc) {
+        filter.brand_id = brandDoc._id;
+      } else {
+        // Noto'g'ri yoki topilmagan brend kelganda bo'sh natija qaytarish
+        return res.status(200).json({
+          success: true,
+          message: 'Brend topilmadi',
+          innerData: (page || limit) ? { products: [], total: 0, page: 1, totalPages: 0 } : []
+        });
+      }
+    }
 
     if (search && search.trim()) {
       filter.name = { $regex: search.trim(), $options: 'i' };

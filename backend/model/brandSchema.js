@@ -7,6 +7,13 @@ const brandSchema = new mongoose.Schema(
       required: [true, 'Brend nomi kiritilishi shart'],
       unique: true,
       trim: true
+    },
+    slug: {
+      type: String,
+      unique: true,
+      sparse: true,
+      lowercase: true,
+      trim: true
     }
   },
   { timestamps: true }

@@ -16,7 +16,8 @@
   flex-wrap: wrap;
 }
 
-.filter-group, .date-filter-group {
+.orders-filter-toolbar .filter-group,
+.orders-filter-toolbar .date-filter-group {
   display: flex;
   align-items: center;
   gap: 10px;

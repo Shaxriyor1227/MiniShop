@@ -67,7 +67,7 @@
     "count_products": "{{count}} товаров",
     "filters": "Фильтры",
     "reset_all": "Сбросить",
-    "search_input": "Поиск по названию...",
+    "search_input": "Поиск...",
     "category": "Категория",
     "all_categories": "Все категории",
     "brands": "Бренды",
@@ -87,7 +87,7 @@
   },
   "product": {
     "add_to_cart": "В корзину",
-    "added": "Добавлено ✓",
+    "added": "Добавлено",
     "out_of_stock": "Нет в наличии",
     "select_color": "Выберите цвет:",
     "quantity": "Количество:",

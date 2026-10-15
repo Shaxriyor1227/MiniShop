@@ -129,12 +129,12 @@ const Footer = () => {
             <div className="footer-column">
               <h4 className="footer-column-title">{t('footer.products_col')}</h4>
               <ul className="footer-links-list">
-                <li><Link to="/catalog?category=Audio">Audio & Headphones</Link></li>
-                <li><Link to="/catalog?category=Wearables">Smart Watches & Bands</Link></li>
-                <li><Link to="/catalog?category=Workspace">Mechanical Keyboards</Link></li>
-                <li><Link to="/catalog?category=Workspace">Ergonomic Mice & Gear</Link></li>
-                <li><Link to="/catalog?category=Accessories">MagSafe & Power Chargers</Link></li>
-                <li><Link to="/catalog?category=Accessories">Minimalist Leather Goods</Link></li>
+                <li><Link to="/catalog?category=audio">Audio & Headphones</Link></li>
+                <li><Link to="/catalog?category=wearables">Smart Watches & Bands</Link></li>
+                <li><Link to="/catalog?category=workspace">Mechanical Keyboards</Link></li>
+                <li><Link to="/catalog?category=workspace">Ergonomic Mice & Gear</Link></li>
+                <li><Link to="/catalog?category=accessories">MagSafe & Power Chargers</Link></li>
+                <li><Link to="/catalog?category=accessories">Minimalist Leather Goods</Link></li>
               </ul>
             </div>
 
