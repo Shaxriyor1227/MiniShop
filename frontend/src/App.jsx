@@ -9,6 +9,7 @@ import { ToastProvider } from './context/ToastContext';
 // Core Shell Components (eagerly loaded for shell layout)
 import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
+import ScrollToTop from './components/ScrollToTop/ScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import AdminRoute from './components/AdminRoute/AdminRoute';
 import PageSkeleton from './components/PageSkeleton/PageSkeleton';
@@ -49,6 +50,7 @@ const PublicLayout = () => {
         <Outlet />
       </main>
       <Footer />
+      <ScrollToTop />
     </div>
   );
 };

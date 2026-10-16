@@ -56,6 +56,12 @@ export const ToastProvider = ({ children }) => {
             >
               <X size={15} />
             </button>
+            {toast.duration > 0 && (
+              <div
+                className="global-toast-progress"
+                style={{ animationDuration: `${toast.duration}ms` }}
+              />
+            )}
           </div>
         ))}
       </div>

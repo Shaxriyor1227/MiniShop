@@ -147,11 +147,77 @@ const testimonials = [
   }
 ];
 
+const heroSlides = [
+  {
+    id: 1,
+    image: '/images/hero/hero_slide_1.webp',
+    titleKey: 'home.hero_title',
+    descKey: 'home.hero_desc',
+    badge: 'Flagship Display',
+    spotlightBadge: 'FLAGSHIP',
+    specBadge: '5K ULTRA-WIDE',
+    productNameKey: 'home.hero_display_title',
+    productDescKey: 'home.hero_display_sub',
+    price: '$899.00',
+    link: '/catalog?category=workspace'
+  },
+  {
+    id: 2,
+    image: '/images/hero/hero_slide_2.webp',
+    titleKey: 'home.arr_name1',
+    descKey: 'home.arr_desc1',
+    badge: 'Studio Audio',
+    spotlightBadge: 'BESTSELLER',
+    specBadge: 'SPATIAL AUDIO',
+    productNameKey: 'home.arr_name1',
+    productDescKey: 'home.arr_desc1',
+    price: '$349.99',
+    link: '/catalog?category=audio'
+  },
+  {
+    id: 3,
+    image: '/images/hero/hero_slide_3.webp',
+    titleKey: 'home.arr_name3',
+    descKey: 'home.arr_desc3',
+    badge: 'Titanium Chrono',
+    spotlightBadge: 'NEW RELEASE',
+    specBadge: 'SAPPHIRE GLASS',
+    productNameKey: 'home.arr_name3',
+    productDescKey: 'home.arr_desc3',
+    price: '$420.00',
+    link: '/catalog?category=wearables'
+  },
+  {
+    id: 4,
+    image: '/images/hero/hero_slide_4.webp',
+    titleKey: 'home.arr_name2',
+    descKey: 'home.arr_desc2',
+    badge: 'Tactile Keyboard',
+    spotlightBadge: 'CUSTOM RUN',
+    specBadge: 'HOT-SWAP PBT',
+    productNameKey: 'home.arr_name2',
+    productDescKey: 'home.arr_desc2',
+    price: '$179.00',
+    link: '/catalog?category=workspace'
+  }
+];
+
 const Home = () => {
   const { t } = useTranslation();
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const arrivalsScrollRef = useRef(null);
+
+  // 4 Rotating Hero Slides State (Continuous auto-advance)
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
+  // Auto-advance slides every 4.2 seconds continuously
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlideIndex((prev) => (prev + 1) % heroSlides.length);
+    }, 4200);
+    return () => clearInterval(interval);
+  }, []);
 
   // Refresh & Mount Entrance Splash Animation
   const [showSplash, setShowSplash] = useState(true);
@@ -189,6 +255,26 @@ const Home = () => {
     fetchFeatured();
   }, []);
 
+  // Scroll Reveal Animations Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    const animatedElements = document.querySelectorAll('.animate-on-scroll');
+    animatedElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [loading]);
+
   const handleScrollArrivals = (direction) => {
     if (arrivalsScrollRef.current) {
       const scrollAmount = direction === 'left' ? -340 : 340;
@@ -223,77 +309,160 @@ const Home = () => {
         </div>
       )}
 
-      {/* 1. EDITORIAL HERO SECTION */}
+      {/* 1. EDITORIAL HERO SECTION (IMMERSIVE BACKGROUND STAGE WITH 4 SLIDES) */}
       <section className="editorial-hero-section">
         <div className="container">
-          <div className="hero-top-row">
-            <div className="hero-top-left">
-              <span className="hero-eyebrow-tag">
-                {t('home.hero_badge')}
-              </span>
-              <h1 className="hero-display-headline">
-                {t('home.hero_title')}
-              </h1>
-              <p className="hero-editorial-subtext">
-                {t('home.hero_desc')}
-              </p>
-              <div className="hero-action-pills">
-                <Link to="/catalog" className="btn-primary hero-main-pill">
-                  <span>{t('home.hero_cta')}</span>
-                  <ArrowRight size={17} />
-                </Link>
-                <a href="#new-arrivals" className="hero-ghost-link group">
-                  <span>{t('home.hero_secondary')}</span>
-                  <ChevronRight size={16} className="transition-transform group-hover:translate-x-1" />
-                </a>
+          <div className="hero-immersive-stage">
+            {/* Cinematic 4-Slide Background Layers (Smooth Cross-fade & Ken Burns Pan) */}
+            <div className="hero-stage-bg-layers">
+              {heroSlides.map((slide, idx) => (
+                <div
+                  key={slide.id}
+                  className={`hero-slide-bg-layer ${currentSlideIndex === idx ? 'active' : ''}`}
+                  style={{ backgroundImage: `url(${slide.image})` }}
+                  aria-hidden={currentSlideIndex !== idx}
+                />
+              ))}
+            </div>
+
+            <div className="hero-stage-overlay" />
+
+            {/* Dynamic 4-Slide Crossfade Content Decks */}
+            <div className="hero-stage-content">
+              {/* Left Column: Text Content Deck */}
+              <div className="hero-stage-left">
+                <div className="hero-stage-text-deck">
+                  {heroSlides.map((slide, idx) => {
+                    const isActive = currentSlideIndex === idx;
+                    return (
+                      <div
+                        key={slide.id}
+                        className={`hero-slide-text-item ${isActive ? 'active' : ''}`}
+                        aria-hidden={!isActive}
+                      >
+                        <span className="hero-slide-category-pill">
+                          <Sparkles size={13} className="hero-sparkle-icon" />
+                          <span>{slide.badge}</span>
+                        </span>
+
+                        <h1 className="hero-display-headline">
+                          {t(slide.titleKey)}
+                        </h1>
+
+                        <p className="hero-editorial-subtext">
+                          {t(slide.descKey)}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="hero-action-pills">
+                  <Link to="/catalog" className="btn-primary hero-main-pill">
+                    <span>{t('home.hero_cta')}</span>
+                    <ArrowRight size={17} />
+                  </Link>
+                  <a href="#new-arrivals" className="hero-ghost-glass-link group">
+                    <span>{t('home.hero_secondary')}</span>
+                    <ChevronRight size={16} className="transition-transform group-hover:translate-x-1" />
+                  </a>
+                </div>
+
+                {/* Inline Mini Trust Badges */}
+                <div className="hero-stage-trust-row">
+                  <div className="hero-mini-trust-item">
+                    <CheckCircle2 size={15} className="text-blue" />
+                    <span>{t('home.trust_original')}</span>
+                  </div>
+                  <div className="hero-mini-trust-item">
+                    <Zap size={15} className="text-amber" />
+                    <span>{t('home.trust_delivery')}</span>
+                  </div>
+                  <div className="hero-mini-trust-item">
+                    <ShieldCheck size={15} className="text-green" />
+                    <span>{t('home.trust_security')}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Floating Product Spotlight Glass Widget Deck */}
+              <div className="hero-stage-right">
+                <div className="hero-spotlight-deck">
+                  {heroSlides.map((slide, idx) => {
+                    const isActive = currentSlideIndex === idx;
+                    return (
+                      <div
+                        key={slide.id}
+                        className={`hero-spotlight-glass-card ${isActive ? 'active' : ''}`}
+                        aria-hidden={!isActive}
+                      >
+                        <div className="spotlight-card-header">
+                          <span className="spotlight-badge">{slide.spotlightBadge}</span>
+                          <span className="spotlight-spec-badge">{slide.specBadge}</span>
+                        </div>
+
+                        <div className="spotlight-card-body">
+                          <h3 className="spotlight-product-name">{t(slide.productNameKey)}</h3>
+                          <p className="spotlight-product-desc">{t(slide.productDescKey)}</p>
+                          <div className="spotlight-pricing-row">
+                            <span className="spotlight-price">{slide.price}</span>
+                            <span className="spotlight-status-pill">In Stock</span>
+                          </div>
+                        </div>
+
+                        <Link to={slide.link} className="spotlight-action-btn">
+                          <span>{t('home.hero_cta')}</span>
+                          <ArrowUpRight size={15} />
+                        </Link>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
-            {/* Live Mechanical Spec Tolerance Counter */}
-            <div className="hero-spec-counter-box card">
-              <div className="spec-counter-header">
-                <span>CATALOG SPEC</span>
-                <span>EST. 2025</span>
+            {/* Slide Navigation Dots & Arrows */}
+            <div className="hero-stage-nav-bar">
+              <div className="hero-stage-dots">
+                {heroSlides.map((slide, idx) => (
+                  <button
+                    key={slide.id}
+                    type="button"
+                    className={`hero-dot-btn ${currentSlideIndex === idx ? 'active' : ''}`}
+                    onClick={() => setCurrentSlideIndex(idx)}
+                    aria-label={`Slide ${idx + 1}: ${slide.badge}`}
+                  >
+                    <span className="dot-label">{slide.badge}</span>
+                    <span className="dot-indicator-bar" />
+                  </button>
+                ))}
               </div>
-              <div className="spec-counter-val">
-                0.02%
-              </div>
-              <div className="spec-counter-lbl">
-                TOLERANCE THRESHOLD
-              </div>
-              <div className="spec-counter-bar-track">
-                <div className="spec-counter-bar-fill"></div>
-              </div>
-            </div>
-          </div>
 
-          {/* Dominant 16:9 Cinematic Hero Image Container */}
-          <div className="hero-cinema-frame">
-            <picture>
-              <source srcSet="/images/stitch/hero_podium.webp" type="image/webp" />
-              <img
-                src="/images/stitch/hero_podium.png"
-                alt="MiniShop Flagship Workspace Presentation"
-                className="hero-cinema-img"
-                width="880"
-                height="495"
-                loading="lazy"
-                decoding="async"
-                onError={(e) => {
-                  e.currentTarget.src = '/images/hero_banner.webp';
-                }}
-              />
-            </picture>
-            <div className="hero-cinema-badge">
-              <Sparkles size={14} />
-              <span>{t('home.hero_display_title')}</span>
+              <div className="hero-stage-arrows">
+                <button
+                  type="button"
+                  className="hero-arrow-pill"
+                  onClick={() => setCurrentSlideIndex((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)}
+                  aria-label="Previous slide"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button
+                  type="button"
+                  className="hero-arrow-pill"
+                  onClick={() => setCurrentSlideIndex((prev) => (prev + 1) % heroSlides.length)}
+                  aria-label="Next slide"
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* 2. HERO TRUST INFORMATION STRIP */}
-      <section className="editorial-trust-strip">
+      <section className="editorial-trust-strip animate-on-scroll">
         <div className="container">
           <div className="trust-strip-inner">
             <div className="trust-item">
@@ -317,7 +486,7 @@ const Home = () => {
       </section>
 
       {/* 3. BRAND PARTNERS STRIP */}
-      <section className="editorial-brands-section">
+      <section className="editorial-brands-section animate-on-scroll">
         <div className="container">
           <p className="brands-title-label">
             {t('home.partners_label')}
@@ -333,7 +502,7 @@ const Home = () => {
       </section>
 
       {/* 4. ASYMMETRIC COLLECTIONS GRID */}
-      <section className="editorial-collections-section">
+      <section className="editorial-collections-section animate-on-scroll">
         <div className="container">
           <div className="section-title-header">
             <div>
@@ -463,7 +632,7 @@ const Home = () => {
       </section>
 
       {/* 5. FEATURED SPECIMEN SHOWCASE */}
-      <section className="editorial-specimen-section">
+      <section className="editorial-specimen-section animate-on-scroll">
         <div className="container">
           <div className="specimen-card card">
             <div className="specimen-visual-pane">
@@ -523,7 +692,7 @@ const Home = () => {
       </section>
 
       {/* 6. POPULAR RIGHT NOW PRODUCT GRID */}
-      <section className="editorial-trending-section">
+      <section className="editorial-trending-section animate-on-scroll">
         <div className="container">
           <div className="section-title-header">
             <div>
@@ -557,7 +726,7 @@ const Home = () => {
       </section>
 
       {/* 7. PROMOTIONAL WORKSPACE ARCHITECTURE BANNER */}
-      <section className="editorial-promo-banner-section">
+      <section className="editorial-promo-banner-section animate-on-scroll">
         <div className="container">
           <div className="promo-monolith-card">
             <div className="promo-ambient-light"></div>
@@ -600,7 +769,7 @@ const Home = () => {
       </section>
 
       {/* 8. NEW ARRIVALS HORIZONTAL SCROLL CAROUSEL */}
-      <section className="editorial-arrivals-section" id="new-arrivals">
+      <section className="editorial-arrivals-section animate-on-scroll" id="new-arrivals">
         <div className="container">
           <div className="section-title-header">
             <div>
@@ -656,7 +825,7 @@ const Home = () => {
       </section>
 
       {/* 9. CUSTOMER REVIEWS & TESTIMONIALS (Preserved in full fidelity) */}
-      <section className="editorial-reviews-section">
+      <section className="editorial-reviews-section animate-on-scroll">
         <div className="container">
           <div className="section-title-header text-center-header">
             <span className="section-eyebrow">{t('home.reviews_badge')}</span>
@@ -712,7 +881,8 @@ const Home = () => {
       </section>
 
       {/* 10. FINAL MINIMALIST CALIBRATION CTA */}
-      <section className="editorial-final-cta-section">
+      <section className="editorial-final-cta-section animate-on-scroll">
+        <div className="final-cta-ambient-glow" aria-hidden="true" />
         <div className="container">
           <div className="final-cta-inner">
             <span className="final-cta-eyebrow">{t('home.final_cta_eyebrow')}</span>

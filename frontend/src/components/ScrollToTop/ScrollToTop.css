@@ -1,0 +1,113 @@
+/* ScrollToTop Floating Component with Circular Progress Ring */
+.scroll-to-top-container {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px) scale(0.85);
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.35s ease;
+  pointer-events: none;
+}
+
+.scroll-to-top-container.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.scroll-to-top-btn {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--bg-surface-translucent, rgba(255, 255, 255, 0.88));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
+  color: var(--ink-primary, #1D1D1F);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s ease,
+              border-color 0.25s ease;
+}
+
+[data-theme='dark'] .scroll-to-top-btn {
+  background: rgba(19, 26, 38, 0.85);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+}
+
+.scroll-to-top-btn:hover {
+  transform: translateY(-3px) scale(1.06);
+  border-color: var(--accent-blue, #0071E3);
+  box-shadow: 0 14px 30px rgba(0, 113, 227, 0.22);
+}
+
+.scroll-to-top-btn:active {
+  transform: scale(0.92);
+}
+
+/* SVG Circular Progress Ring */
+.scroll-progress-ring {
+  position: absolute;
+  inset: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+.scroll-progress-bg {
+  stroke: var(--border-subtle, rgba(0, 0, 0, 0.06));
+}
+
+.scroll-progress-bar {
+  stroke: var(--accent-blue, #0071E3);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.15s ease;
+}
+
+/* Arrow Icon */
+.scroll-top-arrow {
+  position: relative;
+  z-index: 2;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+}
+
+.scroll-to-top-btn:hover .scroll-top-arrow {
+  color: var(--accent-blue, #0071E3);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 640px) {
+  .scroll-to-top-container {
+    bottom: 20px;
+    right: 20px;
+  }
+  .scroll-to-top-btn {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-to-top-container,
+  .scroll-to-top-btn,
+  .scroll-top-arrow {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}

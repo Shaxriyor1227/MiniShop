@@ -133,6 +133,13 @@
   border-radius: 4px;
   letter-spacing: 0.02em;
   line-height: 1.2;
+  box-shadow: 0 0 8px rgba(255, 59, 48, 0.45);
+  animation: promoHotPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes promoHotPulse {
+  0% { transform: scale(0.96); opacity: 0.9; }
+  100% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 12px rgba(255, 149, 0, 0.65); }
 }
 
 /* 3. Action Group & User Profile */
@@ -164,6 +171,7 @@
   border-color: var(--border-focus);
   color: var(--ink-primary);
   box-shadow: var(--shadow-soft);
+  transform: translateY(-1px);
 }
 
 .trigger-search-icon {
@@ -214,14 +222,19 @@
 .nav-action-icon:hover {
   background-color: var(--bg-surface-hover);
   color: var(--accent-blue);
+  transform: translateY(-1px);
+}
+
+.nav-action-icon:active {
+  transform: scale(0.92);
 }
 
 .nav-count-badge {
   position: absolute;
   top: 2px;
   right: 2px;
-  min-width: 16px;
-  height: 16px;
+  min-width: 17px;
+  height: 17px;
   border-radius: 50%;
   font-size: 10px;
   font-weight: 700;
@@ -232,6 +245,13 @@
   padding: 0 3px;
   border: 1.5px solid var(--bg-surface);
   line-height: 1;
+  animation: badgePop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes badgePop {
+  0% { transform: scale(0.6); }
+  60% { transform: scale(1.25); }
+  100% { transform: scale(1); }
 }
 
 .cart-count-badge {

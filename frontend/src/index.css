@@ -89,11 +89,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: var(--font-family-body);
   background-color: var(--bg-main);
   color: var(--ink-primary);
   line-height: 1.5;
+  overflow-x: hidden;
+  min-height: 100vh;
   transition: background-color var(--transition-smooth), color var(--transition-smooth);
 }
 
@@ -420,5 +427,40 @@ textarea:focus-visible {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Interactive Global Micro-animations */
+.btn-primary:active,
+.btn-secondary:active {
+  transform: scale(0.97);
+}
+
+/* Skeleton Loading Shimmer */
+.skeleton-img,
+.skeleton-line {
+  background: linear-gradient(
+    90deg,
+    var(--bg-surface-hover) 25%,
+    var(--bg-surface) 50%,
+    var(--bg-surface-hover) 75%
+  ) !important;
+  background-size: 200% 100% !important;
+  animation: skeletonShimmer 1.8s infinite linear !important;
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  .page-enter,
+  .skeleton-img,
+  .skeleton-line {
+    animation: none !important;
   }
 }
